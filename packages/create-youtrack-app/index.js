@@ -17,6 +17,7 @@ const {
   formatStatusResults,
   getSkillStatus,
   installSkill,
+  runSystemAgentScan,
 } = require('./utils/agent-skill');
 
 function isCancelled(e) {
@@ -86,6 +87,120 @@ function runGeneratedFilesLintFix(files) {
   }
 }
 
+function isInteractive() {
+  return Boolean(process.stdin.isTTY && process.stdout.isTTY);
+}
+
+function getDefaultSkillInstallOptions() {
+  return {
+    agent: args.agent || 'both',
+    scope: args.scope || 'global',
+  };
+}
+
+function getDetectedAgentIds(agentDiscoveries) {
+  return agentDiscoveries
+    .filter(result => result.detected)
+    .map(result => result.agent);
+}
+
+function buildAgentChoices(agentDiscoveries) {
+  return [
+    {
+      name: 'both',
+      message: 'Claude Code and Codex CLI',
+    },
+    ...agentDiscoveries.map(result => ({
+      name: result.agent,
+      message: `${result.displayName} (${result.detected ? 'detected' : 'not detected'})`,
+    })),
+  ];
+}
+
+function buildScopeChoices(projectAvailable) {
+  const choices = [
+    {
+      name: 'global',
+      message: 'Global - symlink into the home agent config',
+    },
+  ];
+
+  if (projectAvailable) {
+    choices.push(
+      {
+        name: 'project',
+        message: 'Project - copy into this repository',
+      },
+      {
+        name: 'all',
+        message: 'Global and project',
+      }
+    );
+  }
+
+  return choices;
+}
+
+async function promptForSkillInstallOptions() {
+  const agentDiscoveries = runSystemAgentScan({ cwd });
+  const detectedAgents = getDetectedAgentIds(agentDiscoveries);
+  const initialAgent = detectedAgents.length === 1 ? detectedAgents[0] : 'both';
+  const agentChoices = buildAgentChoices(agentDiscoveries);
+
+  const agent = await new Select({
+    name: 'agent',
+    message: 'Install the YouTrack app builder skill for:',
+    initial: agentChoices.findIndex(choice => choice.name === initialAgent),
+    choices: agentChoices,
+  }).run();
+
+  const projectAvailable = agentDiscoveries.some(result => result.projectAvailable);
+
+  const scope = await new Select({
+    name: 'scope',
+    message: 'Choose installation scope:',
+    choices: buildScopeChoices(projectAvailable),
+  }).run();
+
+  return {
+    agent,
+    scope,
+  };
+}
+
+async function resolveSkillInstallOptions() {
+  if (!isInteractive() || args.agent || args.scope) {
+    return getDefaultSkillInstallOptions();
+  }
+
+  return promptForSkillInstallOptions();
+}
+
+function getSkillStatusOptions() {
+  const agent = args.agent || 'both';
+  const projectAvailable = runSystemAgentScan({ cwd }).some(result => result.projectAvailable);
+  const scope = args.scope || (projectAvailable ? 'all' : 'global');
+
+  return { agent, scope, cwd };
+}
+
+async function handleSkillCommand(skillAction) {
+  if (skillAction === 'install') {
+    const installOptions = await resolveSkillInstallOptions();
+    const results = installSkill({ ...installOptions, cwd });
+    console.log(styleText("green", formatInstallResults(results, skillAction)));
+    return true;
+  }
+
+  if (skillAction === 'status') {
+    const statuses = getSkillStatus(getSkillStatusOptions());
+    console.log(formatStatusResults(statuses));
+    return true;
+  }
+
+  return false;
+}
+
 (async function run() {
   if ('help' in args || 'h' in args) {
     require('./help');
@@ -109,22 +224,13 @@ function runGeneratedFilesLintFix(files) {
   const skillIndex = normalizedArgv.findIndex(a => a === 'skill');
   if (skillIndex !== -1) {
     const skillAction = normalizedArgv[skillIndex + 1] || 'status';
-    const agent = args.agent || 'both';
 
     try {
-      if (skillAction === 'install' || skillAction === 'update') {
-        const results = installSkill({ agent });
-        console.log(styleText("green", formatInstallResults(results, skillAction)));
+      if (await handleSkillCommand(skillAction)) {
         return;
       }
 
-      if (skillAction === 'status') {
-        const statuses = getSkillStatus({ agent });
-        console.log(formatStatusResults(statuses));
-        return;
-      }
-
-      console.error(styleText("red", `Invalid skill command: "${skillAction}". Must be one of: install, update, status.`));
+      console.error(styleText("red", `Invalid skill command: "${skillAction}". Must be one of: install, status.`));
       process.exit(1);
     } catch (error) {
       console.error(styleText("red", `Error: ${(error && error.message) || String(error)}`));
