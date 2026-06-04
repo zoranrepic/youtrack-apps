@@ -34,12 +34,10 @@ The skill gives supported AI coding agents YouTrack app development guidance.
 
 | Command | Description |
 | --- | --- |
-| `npx @jetbrains/create-youtrack-app skill install` | Installs the skill for the default agents. |
-| `npx @jetbrains/create-youtrack-app skill update` | Replaces an installed skill with the version bundled in this package. |
-| `npx @jetbrains/create-youtrack-app skill status` | Shows whether the skill is installed. |
-| `npx @jetbrains/create-youtrack-app skill install --agent codex` | Installs the skill for Codex. |
-| `npx @jetbrains/create-youtrack-app skill install --agent claude` | Installs the skill for Claude. |
-| `npx @jetbrains/create-youtrack-app skill install --agent both` | Installs the skill for Codex and Claude. |
+| `npx @jetbrains/create-youtrack-app skill install` | Detects supported agents and lets you choose agents plus global or project installation. |
+| `npx @jetbrains/create-youtrack-app skill status` | Shows global and project installation status. |
+
+Supported agents are Claude Code and Codex CLI. Global installs use symlinks in the agent home config. Project installs use hard copies under the current project root.
 
 ### Enhanced DX: NestJS-Style Code Generation
 
