@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.app.json && vite build && youtrack-app validate dist",
+    "build": "node scripts/build.cjs && youtrack-app validate dist",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
     "pack": "rm -rf <%= appName %>.zip && cd dist/ && bestzip ../<%= appName %>.zip *",

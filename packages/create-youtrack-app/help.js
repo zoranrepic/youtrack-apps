@@ -29,6 +29,7 @@ ${styleText("bold", 'Classic Workflow Rules:')}
   ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule stateMachine issue-state')}
   ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule sla first-reply-sla')}
   ${styleText("dim", '# Creates src/backend/workflows/<name>.js without modifying manifest.json')}
+  ${styleText("dim", '# In generated JavaScript apps, npm run build packages backend-only apps when no widgets exist')}
 
 
 ${styleText("bold", 'Enhanced DX (experimental)')}

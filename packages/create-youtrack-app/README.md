@@ -13,7 +13,7 @@ To learn more about app development for YouTrack, please refer to our [Developer
 
 1. Create an empty directory for your app.
 2. Run `npm create @jetbrains/youtrack-app`.
-3. Follow the prompts in the generator.
+3. Follow the prompts in the generator. If you choose JavaScript, the initial project contains app metadata and build tooling only. Add rules, settings, entity extensions, widgets, and handlers when you need them.
 
 ## Adding Features to a Generated App
 
@@ -46,6 +46,10 @@ Supported agents are Claude Code and Codex CLI. Global installs use symlinks in 
 - `<type>`: `onChange`, `onSchedule`, `action`, `stateMachine`, or `sla`
 - `<name>`: lowercase dashed filename stem, for example `notify-on-change`
 - Creates `src/backend/workflows/<name>.js`
+
+This command only scaffolds the classic workflow source file and does not update `manifest.json`.
+
+Generated JavaScript apps use one build command. `npm run build` packages a backend-only app when `manifest.json` has no widgets, and runs the full widget build after widgets are added.
 
 ### Enhanced DX: NestJS-Style Code Generation
 

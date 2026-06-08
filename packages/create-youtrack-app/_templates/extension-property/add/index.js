@@ -94,5 +94,6 @@ function injectEntity(payload, context) {
       multi: payload.isSet === true || payload.isSet === 'true',
     };
   }
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(entityExtensions, null, 2));
 }
