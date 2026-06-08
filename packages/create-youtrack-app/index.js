@@ -19,6 +19,7 @@ const {
   installSkill,
   runSystemAgentScan,
 } = require('./utils/agent-skill');
+const { buildRuleScaffold } = require('./utils/rule-scaffold');
 
 function isCancelled(e) {
   return e === '' || (e && e.code === 'ERR_USE_AFTER_CLOSE');
@@ -201,6 +202,60 @@ async function handleSkillCommand(skillAction) {
   return false;
 }
 
+function getCommandArgs(commandName, normalizedArgv, positionalArgs) {
+  const positionalIndex = positionalArgs.findIndex(arg => arg === commandName);
+  if (positionalIndex !== -1) {
+    return positionalArgs.slice(positionalIndex);
+  }
+
+  const rawIndex = normalizedArgv.findIndex(arg => arg === commandName);
+  if (rawIndex === -1) {
+    return null;
+  }
+
+  const commandArgs = [];
+  for (const arg of normalizedArgv.slice(rawIndex)) {
+    if (commandArgs.length > 0 && arg.startsWith('--')) {
+      break;
+    }
+    if (arg !== '--') {
+      commandArgs.push(arg);
+    }
+  }
+
+  return commandArgs;
+}
+
+function createWorkflowRule(ruleType, name) {
+  const scaffold = buildRuleScaffold(cwd, ruleType, name);
+
+  if (fs.existsSync(scaffold.absolutePath)) {
+    throw new Error(`Workflow rule already exists at ${scaffold.relativePath}`);
+  }
+
+  fs.mkdirSync(path.dirname(scaffold.absolutePath), { recursive: true });
+  fs.writeFileSync(scaffold.absolutePath, scaffold.content);
+
+  return scaffold.relativePath;
+}
+
+function handleRuleCommand(ruleArgs) {
+  if (!ruleArgs) {
+    return false;
+  }
+
+  if (ruleArgs.length !== 3) {
+    console.error(styleText("red", 'Usage: rule <type> <name>'));
+    process.exit(1);
+  }
+
+  const [, ruleType, name] = ruleArgs;
+  const relativePath = createWorkflowRule(ruleType, name);
+
+  console.log(styleText("green", `\n✓ Workflow rule created at ${relativePath}\n`));
+  return true;
+}
+
 (async function run() {
   if ('help' in args || 'h' in args) {
     require('./help');
@@ -220,6 +275,7 @@ async function handleSkillCommand(skillAction) {
 
   // Replace aliases in argv (create new array to avoid mutation issues)
   const normalizedArgv = argv.map(arg => aliasMap[arg] || arg);
+  const positionalArgs = args._.map(arg => aliasMap[arg] || arg);
 
   const skillIndex = normalizedArgv.findIndex(a => a === 'skill');
   if (skillIndex !== -1) {
@@ -236,6 +292,15 @@ async function handleSkillCommand(skillAction) {
       console.error(styleText("red", `Error: ${(error && error.message) || String(error)}`));
       process.exit(1);
     }
+  }
+
+  try {
+    if (handleRuleCommand(getCommandArgs('rule', normalizedArgv, positionalArgs))) {
+      return;
+    }
+  } catch (error) {
+    console.error(styleText("red", `Error: ${(error && error.message) || String(error)}`));
+    process.exit(1);
   }
 
   const handlerIndex = normalizedArgv.findIndex(a => a === 'http-handler');
