@@ -24,6 +24,20 @@ If you prefer to install it as a dependency in your development environment, run
 
 The package includes scripts for synchronizing local changes with your YouTrack. The following commands are available:
 
+- `youtrack-app list`
+- `youtrack-app upload <directory>`
+- `youtrack-app download <app>`
+- `youtrack-app validate <directory>`
+- `youtrack-app search <query> [--json]`
+- `youtrack-app info <app> [--json]`
+- `youtrack-app delete <app> [--yes]`
+- `youtrack-app enable <app> [--project <project-short-name>]`
+- `youtrack-app disable <app> [--project <project-short-name>]`
+- `youtrack-app attach <app> --project <project-short-name>`
+- `youtrack-app detach <app> --project <project-short-name>`
+- `youtrack-app logs <app> [--top N] [--json]`
+- `youtrack-app requirement-errors <app> [--json]`
+
 ### Using Environment Variables
 
 `youtrack-app` also reads the following environment variables:
@@ -76,6 +90,53 @@ Use `--open` to open the app settings in the browser after the upload is complet
 This command validates the app's `manifest.json` from the specified directory against the [YouTrack App JSON schema][json-schema].
 You can also use `--schema` to provide a custom schema file and `--manifest` to specify a custom manifest file.
 When both `dir` and `--manifest` are provided, the manifest file is used.
+
+### Search
+
+`youtrack-app search <query> --host --token [--json]`
+
+This command searches installed apps by app ID, app name, rule ID, rule name, and rule title.
+
+### Info
+
+`youtrack-app info <app> --host --token [--json]`
+
+This command shows app details, including enabled state, attached projects, rules, and requirement errors when available.
+
+### Delete
+
+`youtrack-app delete <app> --host --token [--yes]`
+
+This command deletes an app. In non-interactive use, pass `--yes` to confirm deletion.
+
+### Enable and Disable
+
+`youtrack-app enable <app> --host --token [--project <project-short-name>]`
+
+`youtrack-app disable <app> --host --token [--project <project-short-name>]`
+
+These commands enable or disable an installed app. Without `--project`, they update the global app configuration.
+With `--project`, they update the app configuration for the project identified by short name.
+
+### Attach and Detach
+
+`youtrack-app attach <app> --project <project-short-name> --host --token`
+
+`youtrack-app detach <app> --project <project-short-name> --host --token`
+
+These commands attach an app to a project or detach it from a project. The project is resolved by short name before the app usages are updated.
+
+### Logs
+
+`youtrack-app logs <app> --host --token [--top N] [--json]`
+
+This command prints app log entries. Use `--top` to limit the number of returned entries.
+
+### Requirement Errors
+
+`youtrack-app requirement-errors <app> --host --token [--json]`
+
+This command prints requirement errors reported for an app from broken pluggable object usages.
 
 ## Enhanced DX Support
 
