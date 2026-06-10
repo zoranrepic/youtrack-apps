@@ -8,6 +8,10 @@ export interface Config {
   manifest: string | null;
   schema: string | null;
   open: string | null;
+  json: boolean;
+  yes: boolean;
+  project: string | null;
+  top: string | null;
   cwd: string;
 }
 

@@ -1,9 +1,9 @@
 import {jest, describe, it, expect, beforeEach, afterEach} from '@jest/globals';
 import nock from 'nock';
-import {list} from './list.js';
+import {list} from './commands/list.js';
 
 nock.back.setMode('record');
-jest.mock('./list');
+jest.mock('./commands/list');
 
 describe('index', function () {
   beforeEach(function () {
@@ -72,6 +72,10 @@ describe('index', function () {
       overwrite: null,
       output: null,
       open: null,
+      json: false,
+      yes: false,
+      project: null,
+      top: null,
     };
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
