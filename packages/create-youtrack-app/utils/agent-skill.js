@@ -7,11 +7,11 @@ const SKILL_NAME = 'youtrack-app-builder';
 const PACKAGE_NAME = '@jetbrains/create-youtrack-app';
 const METADATA_FILENAME = '.youtrack-skill-install.json';
 
-const BOTH_AGENTS = 'both';
+const ALL_AGENTS = 'all';
 const ALL_SCOPES = 'all';
 const GLOBAL_SCOPE = 'global';
 const PROJECT_SCOPE = 'project';
-const DEFAULT_AGENT_SELECTION = BOTH_AGENTS;
+const DEFAULT_AGENT_SELECTION = ALL_AGENTS;
 const DEFAULT_INSTALL_SCOPE = GLOBAL_SCOPE;
 
 const SUPPORTED_AGENTS = [
@@ -39,7 +39,7 @@ const SUPPORTED_AGENT_BY_ID = Object.fromEntries(
   SUPPORTED_AGENTS.map(agent => [agent.id, agent])
 );
 const SUPPORTED_AGENT_IDS = SUPPORTED_AGENTS.map(agent => agent.id);
-const VALID_AGENT_VALUES = [...SUPPORTED_AGENT_IDS, BOTH_AGENTS];
+const VALID_AGENT_VALUES = [...SUPPORTED_AGENT_IDS, ALL_AGENTS];
 const VALID_SCOPE_VALUES = [GLOBAL_SCOPE, PROJECT_SCOPE];
 const VALID_SCOPE_INPUT_VALUES = [...VALID_SCOPE_VALUES, ALL_SCOPES];
 const DEPLOYMENT_BY_SCOPE = {
@@ -79,8 +79,8 @@ function expandAgents(agentInput = DEFAULT_AGENT_SELECTION) {
   const expandedAgents = [];
 
   for (const agentId of requestedAgents) {
-    if (agentId === BOTH_AGENTS) {
-      expandedAgents.push('codex', 'claude');
+    if (agentId === ALL_AGENTS) {
+      expandedAgents.push(...SUPPORTED_AGENT_IDS);
       continue;
     }
 

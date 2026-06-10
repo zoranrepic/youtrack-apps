@@ -41,7 +41,11 @@ function runCLI(args) {
 }
 
 function agentConfigDir(agent) {
-  return agent === 'codex' ? '.codex' : '.claude';
+  return {
+    claude: '.claude',
+    codex: '.codex',
+    junie: '.junie',
+  }[agent];
 }
 
 function targetDir(agent, scope = 'global') {
@@ -68,16 +72,19 @@ describe('Agent skill CLI', () => {
     fs.rmSync(TEST_PROJECT, { recursive: true, force: true });
   });
 
-  test('skill install defaults to global symlinks for Claude and Codex in non-interactive mode', () => {
+  test('skill install defaults to global symlinks for all supported agents in non-interactive mode', () => {
     const result = runCLI(['skill', 'install']);
 
     assert.strictEqual(result.success, true, result.output);
     assert.strictEqual(fs.existsSync(path.join(targetDir('codex'), 'SKILL.md')), true);
     assert.strictEqual(fs.existsSync(path.join(targetDir('claude'), 'SKILL.md')), true);
+    assert.strictEqual(fs.existsSync(path.join(targetDir('junie'), 'SKILL.md')), true);
     assert.strictEqual(fs.lstatSync(targetDir('codex')).isSymbolicLink(), true);
     assert.strictEqual(fs.lstatSync(targetDir('claude')).isSymbolicLink(), true);
+    assert.strictEqual(fs.lstatSync(targetDir('junie')).isSymbolicLink(), true);
     assert.strictEqual(metadata('codex').targetAgent, 'codex');
     assert.strictEqual(metadata('claude').targetAgent, 'claude');
+    assert.strictEqual(metadata('junie').targetAgent, 'junie');
     assert.strictEqual(metadata('codex').deploymentType, 'symlink');
   });
 
@@ -104,7 +111,7 @@ describe('Agent skill CLI', () => {
     });
 
     const statuses = getSkillStatus({
-      agent: 'both',
+      agent: 'all',
       scope: 'global',
       homeDir: TEST_HOME,
       cwd: TEST_PROJECT,
@@ -112,10 +119,12 @@ describe('Agent skill CLI', () => {
 
     const codex = statuses.find(status => status.agent === 'codex');
     const claude = statuses.find(status => status.agent === 'claude');
+    const junie = statuses.find(status => status.agent === 'junie');
 
     assert.strictEqual(codex.installed, true);
     assert.strictEqual(codex.isSymlink, true);
     assert.strictEqual(claude.installed, false);
+    assert.strictEqual(junie.installed, false);
   });
 
   test('agent discovery scans only supported agents', () => {
@@ -125,7 +134,7 @@ describe('Agent skill CLI', () => {
       env: { PATH: process.env.PATH || '' },
     });
 
-    assert.deepStrictEqual(results.map(result => result.agent).sort(), ['claude', 'codex']);
+    assert.deepStrictEqual(results.map(result => result.agent).sort(), ['claude', 'codex', 'junie']);
     assert.strictEqual(results.every(result => result.projectAvailable), true);
   });
 

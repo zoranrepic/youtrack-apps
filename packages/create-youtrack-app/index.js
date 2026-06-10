@@ -93,7 +93,7 @@ function isInteractive() {
 
 function getDefaultSkillInstallOptions() {
   return {
-    agent: args.agent || 'both',
+    agent: args.agent || 'all',
     scope: args.scope || 'global',
   };
 }
@@ -107,8 +107,8 @@ function getDetectedAgentIds(agentDiscoveries) {
 function buildAgentChoices(agentDiscoveries) {
   return [
     {
-      name: 'both',
-      message: 'Claude Code and Codex CLI',
+      name: 'all',
+      message: 'All supported agents',
     },
     ...agentDiscoveries.map(result => ({
       name: result.agent,
@@ -144,7 +144,7 @@ function buildScopeChoices(projectAvailable) {
 async function promptForSkillInstallOptions() {
   const agentDiscoveries = runSystemAgentScan({ cwd });
   const detectedAgents = getDetectedAgentIds(agentDiscoveries);
-  const initialAgent = detectedAgents.length === 1 ? detectedAgents[0] : 'both';
+  const initialAgent = detectedAgents.length === 1 ? detectedAgents[0] : 'all';
   const agentChoices = buildAgentChoices(agentDiscoveries);
 
   const agent = await new Select({
@@ -177,7 +177,7 @@ async function resolveSkillInstallOptions() {
 }
 
 function getSkillStatusOptions() {
-  const agent = args.agent || 'both';
+  const agent = args.agent || 'all';
   const projectAvailable = runSystemAgentScan({ cwd }).some(result => result.projectAvailable);
   const scope = args.scope || (projectAvailable ? 'all' : 'global');
 
