@@ -13,7 +13,7 @@ To learn more about app development for YouTrack, please refer to our [Developer
 
 1. Create an empty directory for your app.
 2. Run `npm create @jetbrains/youtrack-app`.
-3. Follow the prompts in the generator.
+3. Follow the prompts in the generator. If you choose JavaScript, the initial project contains app metadata and build tooling only. Add rules, settings, entity extensions, widgets, and handlers when you need them.
 
 ## Adding Features to a Generated App
 
@@ -26,6 +26,7 @@ After you have generated an app, you may want to add more features. Add new feat
 | Add another [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-widgets.html)                         | `npx @jetbrains/create-youtrack-app widget add` |
 | Declare an [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html) | `npx @jetbrains/create-youtrack-app extension-property add` |
 | Add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html)        | `npx @jetbrains/create-youtrack-app http-handler add` |
+| Add a classic workflow rule                                                                                           | `npx @jetbrains/create-youtrack-app rule onChange notify-on-change` |
 | View a list of available commands                                                                                      | `npx @jetbrains/create-youtrack-app --help` |
 
 ## App Skill Commands
@@ -38,6 +39,17 @@ The skill gives supported AI coding agents YouTrack app development guidance.
 | `npx @jetbrains/create-youtrack-app skill status` | Shows global and project installation status. |
 
 Supported agents are Claude Code, Codex CLI and Junie. Global installs use symlinks in the agent home config. Project installs use hard copies under the current project root.
+
+## Classic Workflow Rules
+
+**Syntax:** `npx @jetbrains/create-youtrack-app rule <type> <name>`
+- `<type>`: `onChange`, `onSchedule`, `action`, `stateMachine`, or `sla`
+- `<name>`: lowercase dashed filename stem, for example `notify-on-change`
+- Creates `src/backend/workflows/<name>.js`
+
+This command only scaffolds the classic workflow source file and does not update `manifest.json`.
+
+Generated JavaScript apps use one build command. `npm run build` packages a backend-only app when `manifest.json` has no widgets, and runs the full widget build after widgets are added.
 
 ### Enhanced DX: NestJS-Style Code Generation
 
@@ -96,7 +108,6 @@ npm run g                                             # Shows a menu for choosin
   - Without args: interactive prompts for the title and description
 - `add`: Adds a new property to an existing settings schema (interactive only)
 - **Aliases:** `settings`, `setting`, `s`
-
 
 ### Contributing
 

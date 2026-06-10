@@ -31,22 +31,14 @@ const AppComponent: React.FunctionComponent = () => {
     </div>
   );
 };
-<% } else { %>import React, {memo, useCallback} from 'react';
-import Button from '@jetbrains/ring-ui-built/components/button/button';
+<% } else { %>import React, {memo} from 'react';
 
-// Register widget in YouTrack. To learn more, see https://www.jetbrains.com/help/youtrack/devportal-apps/apps-host-api.html
-const host = await YTApp.register();
+await YTApp.register();
 
 const AppComponent: React.FunctionComponent = () => {
-  const callBackend = useCallback(async () => {
-    const result = await host.fetchApp('backend/debug', {query: {test: '123'}});
-    // eslint-disable-next-line no-console -- Demo widget shows the sample backend response.
-    console.log('request result', result);
-  }, []);
-
   return (
     <div className="widget">
-      <Button primary onClick={callBackend}>{'Make HTTP Request'}</Button>
+      <h2><%= name %></h2>
     </div>
   );
 };

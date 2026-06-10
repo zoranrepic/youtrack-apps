@@ -6,6 +6,10 @@ const { execSync } = require('node:child_process');
 
 const PKG_DIR = path.join(__dirname, '..');
 const TEST_APP_DIR = path.join(PKG_DIR, 'tmp', 'test-generator-app');
+const MINIMAL_APP_DIR = path.join(PKG_DIR, 'tmp', 'test-rule-minimal-app');
+const EMPTY_RULE_DIR = path.join(PKG_DIR, 'tmp', 'test-rule-empty-dir');
+const WORKFLOW_BUILD_DIR = path.join(PKG_DIR, 'tmp', 'test-workflow-build-app');
+const JS_APP_MENU_DIR = path.join(PKG_DIR, 'tmp', 'test-js-app-menu');
 const CLI_PATH = path.join(PKG_DIR, 'index.js');
 
 /**
@@ -39,6 +43,14 @@ function fileExists(relativePath) {
  */
 function readFile(relativePath) {
   return fs.readFileSync(path.join(TEST_APP_DIR, relativePath), 'utf8');
+}
+
+function readPackageFile(relativePath) {
+  return fs.readFileSync(path.join(PKG_DIR, relativePath), 'utf8');
+}
+
+function stripTemplateFrontmatter(content) {
+  return content.replace(/^---\n[\s\S]*?\n---\n/, '');
 }
 
 function createLintFixScript(argsPath) {
@@ -110,6 +122,18 @@ function setupTestApp() {
 function cleanupTestApp() {
   if (fs.existsSync(TEST_APP_DIR)) {
     fs.rmSync(TEST_APP_DIR, { recursive: true, force: true });
+  }
+  if (fs.existsSync(MINIMAL_APP_DIR)) {
+    fs.rmSync(MINIMAL_APP_DIR, { recursive: true, force: true });
+  }
+  if (fs.existsSync(EMPTY_RULE_DIR)) {
+    fs.rmSync(EMPTY_RULE_DIR, { recursive: true, force: true });
+  }
+  if (fs.existsSync(WORKFLOW_BUILD_DIR)) {
+    fs.rmSync(WORKFLOW_BUILD_DIR, { recursive: true, force: true });
+  }
+  if (fs.existsSync(JS_APP_MENU_DIR)) {
+    fs.rmSync(JS_APP_MENU_DIR, { recursive: true, force: true });
   }
 }
 
@@ -242,15 +266,37 @@ describe('NestJS-Style Code Generation', () => {
       assert.strictEqual(fileExists('src/backend/router/global/ping/GET.ts'), true);
     });
 
+    test('should create root scoped handler when route path is empty', () => {
+      const result = runCLI('handler global/ --method GET', { silent: true });
+
+      assert.strictEqual(result.success, true, result.output);
+      assert.strictEqual(fileExists('src/backend/router/global/GET.ts'), true);
+      assert.strictEqual(
+        fileContains('src/backend/router/global/GET.ts', 'GlobalGETReq'),
+        true
+      );
+    });
+
     test('http-handler interception should use normalized aliases', () => {
       const indexPath = path.join(PKG_DIR, 'index.js');
       const indexContent = fs.readFileSync(indexPath, 'utf8');
 
       // Regression guard: alias commands like `handler add` / `h add`
-      // must be detected via normalizedArgv, not raw argv.
+      // must be routed through normalized Hygen args, not raw argv.
       assert.ok(
-        indexContent.includes("const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler')"),
+        indexContent.includes("const { normalizedArgv, positionalArgs } = normalizeCommandArgs(argv, args._)"),
         'HTTP handler interception should use normalizedArgv for alias handling'
+      );
+      assert.ok(
+        indexContent.includes('return runHygen(hygenArgs)'),
+        'Hygen should receive normalized command args'
+      );
+    });
+
+    test('legacy http-handler action should not include enhanced-dx subtemplates', () => {
+      assert.strictEqual(
+        fs.existsSync(path.join(PKG_DIR, '_templates', 'http-handler', 'add', 'enhanced-dx', 'handler.ts.t')),
+        false
       );
     });
 
@@ -262,6 +308,253 @@ describe('NestJS-Style Code Generation', () => {
       assert.strictEqual(content.includes('READ_PROJECT'), true);
       assert.strictEqual(content.includes('UPDATE_PROJECT'), true);
       assert.strictEqual(content.includes('DELETE_PROJECT'), true);
+    });
+  });
+
+  describe('Classic Workflow Rules', () => {
+    const ruleCases = [
+      ['onChange', 'notify-on-change', 'entities.Issue.onChange'],
+      ['onSchedule', 'weekly-digest', 'entities.Issue.onSchedule'],
+      ['action', 'apply-template', 'entities.Issue.action'],
+      ['stateMachine', 'issue-state', 'entities.Issue.stateMachine'],
+      ['sla', 'first-reply-sla', 'entities.Issue.sla'],
+    ];
+
+    ruleCases.forEach(([type, name, expectedCall]) => {
+      test(`should create ${type} rule`, () => {
+        const result = runCLI(`rule ${type} ${name}`, { silent: true });
+
+        assert.strictEqual(result.success, true, 'Command should succeed');
+        assert.strictEqual(
+          fileExists(`src/backend/workflows/${name}.js`),
+          true,
+          'Workflow rule file should be created'
+        );
+        assert.strictEqual(
+          fileContains(`src/backend/workflows/${name}.js`, expectedCall),
+          true,
+          'Should contain the expected Issue rule call'
+        );
+      });
+    });
+
+    test('should generate placeholder templates without sample business values', () => {
+      const checks = [
+        ['src/backend/workflows/notify-on-change.js', ['title: \'\', // TODO', 'requirements: { /* TODO: add requirements */ }'], ['Notify on change']],
+        ['src/backend/workflows/weekly-digest.js', ['search: \'\', // TODO', 'cron: \'\', // TODO'], ['Weekly digest', 'State: {In Progress}', '0 0 9 ? * MON']],
+        ['src/backend/workflows/apply-template.js', ['command: \'\', // TODO'], ['Apply template', 'command: \'apply-template\'']],
+        ['src/backend/workflows/issue-state.js', ['fieldName: \'\', // TODO', 'states: { /* TODO: define states and transitions */ }'], ['Issue state machine', 'fieldName: \'State\'']],
+        ['src/backend/workflows/first-reply-sla.js', ['title: \'\', // TODO', 'requirements: { /* TODO: add requirements */ }'], ['Response time SLA']],
+      ];
+
+      checks.forEach(([relativePath, expectedSnippets, rejectedSnippets]) => {
+        const content = readFile(relativePath);
+
+        expectedSnippets.forEach((snippet) => {
+          assert.ok(content.includes(snippet), `${relativePath} should include ${snippet}`);
+        });
+
+        rejectedSnippets.forEach((snippet) => {
+          assert.strictEqual(content.includes(snippet), false, `${relativePath} should not include ${snippet}`);
+        });
+      });
+    });
+
+    test('stateMachine should use only the basic fieldName and states template', () => {
+      const content = readFile('src/backend/workflows/issue-state.js');
+
+      assert.ok(content.includes('fieldName: \'\', // TODO: add field name'));
+      assert.ok(content.includes('states: { /* TODO: define states and transitions */ }'));
+      assert.strictEqual(content.includes('stateFieldName'), false);
+      assert.strictEqual(content.includes('defaultMachine'), false);
+      assert.strictEqual(content.includes('typeFieldName'), false);
+      assert.strictEqual(content.includes('alternativeMachines'), false);
+    });
+
+    test('sla should include the lifecycle handlers', () => {
+      const content = readFile('src/backend/workflows/first-reply-sla.js');
+
+      assert.ok(content.includes('guard: (ctx) => {'));
+      assert.ok(content.includes('onEnter: (ctx) => {'));
+      assert.ok(content.includes('action: (ctx) => {'));
+      assert.ok(content.includes('onBreach: (ctx) => {'));
+    });
+
+    test('should reject invalid rule type clearly', () => {
+      const result = runCLI('rule invalid notify-invalid', { silent: true });
+
+      assert.strictEqual(result.success, false, 'Command should fail');
+      assert.ok(result.output.includes('Invalid rule type'));
+      assert.ok(result.output.includes('onChange, onSchedule, action, stateMachine, sla'));
+    });
+
+    test('should reject kebab-case rule type aliases', () => {
+      const onChangeResult = runCLI('rule on-change notify-alias', { silent: true });
+      const stateMachineResult = runCLI('rule state-machine state-alias', { silent: true });
+
+      assert.strictEqual(onChangeResult.success, false, 'on-change alias should fail');
+      assert.strictEqual(stateMachineResult.success, false, 'state-machine alias should fail');
+      assert.ok(onChangeResult.output.includes('Invalid rule type'));
+      assert.ok(stateMachineResult.output.includes('Invalid rule type'));
+    });
+
+    test('should reject nested rule names', () => {
+      const result = runCLI('rule onChange nested/name', { silent: true });
+
+      assert.strictEqual(result.success, false, 'Command should fail');
+      assert.ok(result.output.includes('Nested paths are not supported'));
+      assert.strictEqual(fileExists('src/backend/workflows/nested/name.js'), false);
+    });
+
+    test('should reject rule names with file extensions', () => {
+      const result = runCLI('rule onChange notify-extension.js', { silent: true });
+
+      assert.strictEqual(result.success, false, 'Command should fail');
+      assert.ok(result.output.includes('Do not include a file extension'));
+    });
+
+    test('should reject rule names with empty dashed segments', () => {
+      const result = runCLI('rule onChange bad--rule', { silent: true });
+
+      assert.strictEqual(result.success, false, 'Command should fail');
+      assert.ok(result.output.includes('single hyphens'));
+    });
+
+    test('should fail when the target file already exists without overwriting it', () => {
+      const relativePath = 'src/backend/workflows/existing-rule.js';
+      const absolutePath = path.join(TEST_APP_DIR, relativePath);
+      const originalContent = 'const existing = true;\n';
+      fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+      fs.writeFileSync(absolutePath, originalContent);
+
+      const result = runCLI('rule onChange existing-rule', { silent: true });
+
+      assert.strictEqual(result.success, false, 'Command should fail');
+      assert.ok(result.output.includes('already exists'));
+      assert.strictEqual(readFile(relativePath), originalContent);
+    });
+
+    test('should work in a minimal app directory without enhancedDX and leave manifest unchanged', () => {
+      fs.rmSync(MINIMAL_APP_DIR, { recursive: true, force: true });
+      fs.mkdirSync(MINIMAL_APP_DIR, { recursive: true });
+      fs.writeFileSync(
+        path.join(MINIMAL_APP_DIR, 'package.json'),
+        JSON.stringify({ name: 'minimal-rule-app', version: '0.0.0' }, null, 2)
+      );
+
+      const result = runCLI('rule onChange minimal-rule', { cwd: MINIMAL_APP_DIR, silent: true });
+
+      assert.strictEqual(result.success, true, 'Command should succeed');
+      assert.strictEqual(
+        fs.existsSync(path.join(MINIMAL_APP_DIR, 'src', 'backend', 'workflows', 'minimal-rule.js')),
+        true
+      );
+      assert.strictEqual(fs.existsSync(path.join(MINIMAL_APP_DIR, 'manifest.json')), false);
+    });
+
+    test('should create only the rule scaffold in an empty directory', () => {
+      fs.rmSync(EMPTY_RULE_DIR, { recursive: true, force: true });
+      fs.mkdirSync(EMPTY_RULE_DIR, { recursive: true });
+
+      const result = runCLI('rule onChange standalone-rule', { cwd: EMPTY_RULE_DIR, silent: true });
+
+      assert.strictEqual(result.success, true, result.output);
+      assert.strictEqual(
+        fs.existsSync(path.join(EMPTY_RULE_DIR, 'src', 'backend', 'workflows', 'standalone-rule.js')),
+        true
+      );
+      assert.strictEqual(fs.existsSync(path.join(EMPTY_RULE_DIR, 'manifest.json')), false);
+      assert.strictEqual(fs.existsSync(path.join(EMPTY_RULE_DIR, 'package.json')), false);
+      assert.strictEqual(result.output.includes('This will generate the scaffolding for a new YouTrack app'), false);
+    });
+
+    test('initial JavaScript app template should not include feature samples', () => {
+      const viteManifest = readPackageFile('_templates/init/vite-app/manifest.json.t');
+      const packageJsonTemplate = readPackageFile('_templates/init/vite-app/package.json.t');
+      const viteConfigTemplate = readPackageFile('_templates/init/vite-app/vite.config.ts.t');
+
+      assert.strictEqual(viteManifest.includes('"widgets"'), false);
+      assert.strictEqual(fs.existsSync(path.join(PKG_DIR, '_templates', 'init', 'vite-app', 'src', 'backend.js.t')), false);
+      assert.strictEqual(fs.existsSync(path.join(PKG_DIR, '_templates', 'init', 'vite-app', 'scripts', 'build.cjs.t')), true);
+      assert.strictEqual(fs.existsSync(path.join(PKG_DIR, '_templates', 'widget', 'add', 'vite.config.ts.t')), false);
+      assert.ok(packageJsonTemplate.includes('"build": "node scripts/build.cjs && youtrack-app validate dist"'));
+      assert.ok(viteConfigTemplate.includes('getWidgetInputs()'));
+      assert.ok(viteConfigTemplate.includes('manifest.widgets'));
+      assert.ok(viteConfigTemplate.includes('getStaticCopyTargets()'));
+      assert.ok(viteConfigTemplate.includes('hasTopLevelFiles(resolve(__dirname, \'src\'))'));
+    });
+
+    test('no-widget build script should copy backend files and omit widgets from dist manifest', () => {
+      fs.rmSync(WORKFLOW_BUILD_DIR, { recursive: true, force: true });
+      fs.mkdirSync(path.join(WORKFLOW_BUILD_DIR, 'public'), { recursive: true });
+      fs.mkdirSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'backend', 'workflows'), { recursive: true });
+      fs.mkdirSync(path.join(WORKFLOW_BUILD_DIR, 'scripts'), { recursive: true });
+
+      fs.writeFileSync(
+        path.join(WORKFLOW_BUILD_DIR, 'package.json'),
+        JSON.stringify({ name: 'workflow-build-app', version: '0.0.0' }, null, 2)
+      );
+      fs.writeFileSync(
+        path.join(WORKFLOW_BUILD_DIR, 'manifest.json'),
+        JSON.stringify({
+          name: 'workflow-build-app',
+          icon: 'icon.svg',
+        }, null, 2)
+      );
+      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'public', 'icon.svg'), '<svg />\n');
+      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'backend.js'), 'exports.httpHandler = {};\n');
+      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'custom-handler.js'), 'exports.httpHandler = {};\n');
+      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'settings.json'), '{}\n');
+      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'entity-extensions.json'), '{"entityTypeExtensions":[]}\n');
+      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'backend', 'workflows', 'notify.js'), 'exports.rule = {};\n');
+
+      const scriptTemplate = readPackageFile('_templates/init/vite-app/scripts/build.cjs.t');
+      fs.writeFileSync(
+        path.join(WORKFLOW_BUILD_DIR, 'scripts', 'build.cjs'),
+        stripTemplateFrontmatter(scriptTemplate)
+      );
+
+      execSync('node scripts/build.cjs', { cwd: WORKFLOW_BUILD_DIR, encoding: 'utf8' });
+
+      const distManifest = JSON.parse(fs.readFileSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'manifest.json'), 'utf8'));
+      assert.strictEqual(Object.hasOwn(distManifest, 'widgets'), false);
+      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'notify.js')), true);
+      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'icon.svg')), true);
+      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'backend.js')), true);
+      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'custom-handler.js')), true);
+      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'settings.json')), true);
+      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'entity-extensions.json')), true);
+    });
+
+    test('bare command in a JavaScript app should show add-feature commands instead of scaffolding a new app', () => {
+      fs.rmSync(JS_APP_MENU_DIR, { recursive: true, force: true });
+      fs.mkdirSync(JS_APP_MENU_DIR, { recursive: true });
+      fs.writeFileSync(
+        path.join(JS_APP_MENU_DIR, 'package.json'),
+        JSON.stringify({ name: 'js-app-menu', version: '0.0.0' }, null, 2)
+      );
+      fs.writeFileSync(
+        path.join(JS_APP_MENU_DIR, 'manifest.json'),
+        JSON.stringify({ name: 'js-app-menu', title: 'JS App Menu' }, null, 2)
+      );
+
+      const result = runCLI('', { cwd: JS_APP_MENU_DIR, silent: true });
+
+      assert.strictEqual(result.success, true, result.output);
+      assert.ok(result.output.includes('existing YouTrack app'));
+      assert.ok(result.output.includes('create-youtrack-app widget add'));
+      assert.strictEqual(result.output.includes('This will generate the scaffolding for a new YouTrack app'), false);
+    });
+
+    test('unknown commands should fail instead of falling through to app scaffolding', () => {
+      fs.rmSync(EMPTY_RULE_DIR, { recursive: true, force: true });
+      fs.mkdirSync(EMPTY_RULE_DIR, { recursive: true });
+
+      const result = runCLI('unknown-command', { cwd: EMPTY_RULE_DIR, silent: true });
+
+      assert.strictEqual(result.success, false, 'Command should fail');
+      assert.ok(result.output.includes('Unknown command'));
+      assert.strictEqual(result.output.includes('This will generate the scaffolding for a new YouTrack app'), false);
     });
   });
 
