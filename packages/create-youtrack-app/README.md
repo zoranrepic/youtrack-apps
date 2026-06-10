@@ -28,6 +28,17 @@ After you have generated an app, you may want to add more features. Add new feat
 | Add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html)        | `npx @jetbrains/create-youtrack-app http-handler add` |
 | View a list of available commands                                                                                      | `npx @jetbrains/create-youtrack-app --help` |
 
+## App Skill Commands
+
+The skill gives supported AI coding agents YouTrack app development guidance.
+
+| Command | Description |
+| --- | --- |
+| `npx @jetbrains/create-youtrack-app skill install` | Detects supported agents and lets you choose agents plus global or project installation. |
+| `npx @jetbrains/create-youtrack-app skill status` | Shows global and project installation status. |
+
+Supported agents are Claude Code, Codex CLI and Junie. Global installs use symlinks in the agent home config. Project installs use hard copies under the current project root.
+
 ### Enhanced DX: NestJS-Style Code Generation
 
 Apps created with **Enhanced DX (TypeScript)** include a simplified, NestJS-inspired code generation workflow:
