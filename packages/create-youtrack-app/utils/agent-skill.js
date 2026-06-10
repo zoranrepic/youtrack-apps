@@ -27,6 +27,12 @@ const SUPPORTED_AGENTS = [
     configDir: '.codex',
     binary: 'codex',
   },
+  {
+    id: 'junie',
+    displayName: 'Junie',
+    configDir: '.junie',
+    binary: 'junie',
+  },
 ];
 
 const SUPPORTED_AGENT_BY_ID = Object.fromEntries(
