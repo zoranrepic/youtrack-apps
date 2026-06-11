@@ -24,7 +24,7 @@ Required authoring shape:
 - `title` - A human-readable title. The title is used as the label for the item in the list of available actions in the Show more menu of the issue.
 - `command` - The text that is used for the custom command. When this command is applied to one or more issues, the actions that are defined in this rule are executed. Each action rule must have it's unique command.
 - optional `guard` - The condition that determines when the action rule is enabled. If the guard condition is not met, the custom command cannot be applied to an issue. 
-- `action` - The changes that should be applied to each of the issues that are selected when the command is applied. 
+- `action` - The changes that should be applied to each of the issues that are selected when the command is applied. Accepts only one parameter `ctx`.
 - optional `userInput` - The input that this action rule requires from the user.
 - optional `requirements` - The list of entities that are required for the rule to execute without errors. This property ensures that rules can be attached to projects safely.
 
