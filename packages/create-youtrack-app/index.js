@@ -130,7 +130,7 @@ function buildScopeChoices(projectAvailable) {
     choices.push(
       {
         name: 'project',
-        message: 'Project - copy into this repository',
+        message: 'Project - copy into the current directory',
       },
       {
         name: 'all',
