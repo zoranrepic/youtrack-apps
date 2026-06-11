@@ -15,6 +15,19 @@ To learn more about app development for YouTrack, please refer to our [Developer
 2. Run `npm create @jetbrains/youtrack-app`.
 3. Follow the prompts in the generator. If you choose JavaScript, the initial project contains app metadata and build tooling only. Add rules, settings, entity extensions, widgets, and handlers when you need them.
 
+For non-interactive app creation, pass the metadata as flags. The default template is `js`, and dependencies are installed after scaffolding:
+
+```bash
+npx @jetbrains/create-youtrack-app \
+  --app-name my-youtrack-app \
+  --title "My YouTrack App" \
+  --description "Internal YouTrack app" \
+  --vendor "My Company" \
+  --vendor-url "https://example.com"
+```
+
+Use `--template enhanced-dx` or `--template ts` to create a TypeScript Enhanced DX app.
+
 ## Adding Features to a Generated App
 
 After you have generated an app, you may want to add more features. Add new features quickly with one of these commands:
