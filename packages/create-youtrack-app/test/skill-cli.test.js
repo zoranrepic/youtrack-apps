@@ -53,6 +53,10 @@ function targetDir(agent, scope = 'global') {
   return path.join(root, agentConfigDir(agent), 'skills', SKILL_NAME);
 }
 
+function targetDirFor(root, agent) {
+  return path.join(root, agentConfigDir(agent), 'skills', SKILL_NAME);
+}
+
 function metadata(agent, scope = 'global') {
   return JSON.parse(
     fs.readFileSync(path.join(path.dirname(targetDir(agent, scope)), METADATA_FILENAME), 'utf8')
@@ -103,6 +107,24 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(metadata('codex', 'project').scope, 'project');
   });
 
+  test('project-level install uses the current directory without searching parent project markers', () => {
+    const nestedProjectDir = path.join(TEST_PROJECT, 'examples', 'nested-app');
+    fs.mkdirSync(nestedProjectDir, { recursive: true });
+    fs.mkdirSync(path.join(TEST_PROJECT, '.git'));
+
+    const results = installSkill({
+      agent: 'codex',
+      scope: 'project',
+      cwd: nestedProjectDir,
+      homeDir: TEST_HOME,
+    });
+
+    assert.strictEqual(results.length, 1);
+    assert.strictEqual(results[0].targetDir, targetDirFor(nestedProjectDir, 'codex'));
+    assert.strictEqual(fs.existsSync(path.join(targetDirFor(nestedProjectDir, 'codex'), 'SKILL.md')), true);
+    assert.strictEqual(fs.existsSync(path.join(targetDir('codex', 'project'), 'SKILL.md')), false);
+  });
+
   test('status reports installed and not installed based on target directories', () => {
     installSkill({
       agent: 'codex',
@@ -136,6 +158,7 @@ describe('Agent skill CLI', () => {
 
     assert.deepStrictEqual(results.map(result => result.agent).sort(), ['claude', 'codex', 'junie']);
     assert.strictEqual(results.every(result => result.projectAvailable), true);
+    assert.strictEqual(results.every(result => result.projectRoot === TEST_PROJECT), true);
   });
 
   test('invalid skill command fails with a clear error', () => {

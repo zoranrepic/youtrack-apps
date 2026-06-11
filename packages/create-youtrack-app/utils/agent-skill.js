@@ -101,35 +101,8 @@ function expandScopes(scopeInput = DEFAULT_INSTALL_SCOPE) {
   return scope === ALL_SCOPES ? [...VALID_SCOPE_VALUES] : [scope];
 }
 
-function findProjectRoot(startDir = process.cwd()) {
-  let currentDir = path.resolve(startDir);
-
-  while (true) {
-    const looksLikeRepository = fs.existsSync(path.join(currentDir, '.git'));
-    const looksLikeNodeProject = fs.existsSync(path.join(currentDir, 'package.json'));
-
-    if (looksLikeRepository || looksLikeNodeProject) {
-      return currentDir;
-    }
-
-    const parentDir = path.dirname(currentDir);
-    if (parentDir === currentDir) {
-      return null;
-    }
-
-    currentDir = parentDir;
-  }
-}
-
 function resolveProjectRoot(options = {}) {
-  const startDir = options.cwd || process.cwd();
-  const projectRoot = options.projectRoot || findProjectRoot(startDir);
-
-  if (!projectRoot) {
-    throw new Error(`Cannot install project-level skill: ${path.resolve(startDir)} is not inside a project root with .git or package.json.`);
-  }
-
-  return projectRoot;
+  return path.resolve(options.projectRoot || options.cwd || process.cwd());
 }
 
 function getAgentSkillsDir(agentId, scope, options = {}) {
@@ -304,7 +277,7 @@ function findBinary(binary, options = {}) {
 
 function getAgentDiscovery(agent, options = {}) {
   const homeDir = options.homeDir || getHomeDir();
-  const projectRoot = options.projectRoot || findProjectRoot(options.cwd || process.cwd());
+  const projectRoot = resolveProjectRoot(options);
   const globalBaseDir = path.join(homeDir, agent.configDir);
   const binaryPath = findBinary(agent.binary, options);
 
@@ -320,8 +293,8 @@ function getAgentDiscovery(agent, options = {}) {
     globalConfigExists: fs.existsSync(globalBaseDir),
     detected: fs.existsSync(globalBaseDir) && Boolean(binaryPath),
     projectRoot,
-    projectAvailable: Boolean(projectRoot),
-    projectSkillsDir: projectRoot ? path.join(projectRoot, agent.configDir, 'skills') : null,
+    projectAvailable: true,
+    projectSkillsDir: path.join(projectRoot, agent.configDir, 'skills'),
   };
 }
 
