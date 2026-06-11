@@ -10,6 +10,12 @@ ${styleText("magenta", 'npm init @jetbrains/youtrack-app')}
 
 ... and follow the prompts. ${styleText("bold", 'Enhanced DX (experimental) features are described below.')}
 
+To generate a JavaScript app non-interactively (dependencies are installed after scaffolding):
+
+  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --app-name my-youtrack-app --title "My YouTrack App" --description "Internal YouTrack app" --vendor "My Company" --vendor-url "https://example.com"')}
+
+Use ${styleText("magenta", '--template enhanced-dx')} or ${styleText("magenta", '--template ts')} for a TypeScript Enhanced DX app.
+
 After you have generated an app, you may want to add more features. Add new features quickly with one of these commands:
 
 * ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to view a list of available commands

@@ -19,6 +19,22 @@ const {
   installSkill,
   runSystemAgentScan,
 } = require('./utils/agent-skill');
+
+const DEFAULT_CREATE_APP_NAME = 'my-youtrack-app';
+const DEFAULT_CREATE_APP_VENDOR = 'VendorName';
+const DEFAULT_CREATE_APP_VENDOR_URL = 'https://vendor.com';
+const CREATE_APP_FLAG_NAMES = [
+  'yes',
+  'y',
+  'template',
+  'app-name',
+  'appName',
+  'title',
+  'description',
+  'vendor',
+  'vendor-url',
+  'vendorUrl',
+];
 const { buildRuleScaffold } = require('./utils/rule-scaffold');
 
 function isCancelled(e) {
@@ -90,6 +106,228 @@ function runGeneratedFilesLintFix(files) {
 
 function isInteractive() {
   return Boolean(process.stdin.isTTY && process.stdout.isTTY);
+}
+
+function getArgValue(...names) {
+  for (const name of names) {
+    if (args[name] !== undefined) {
+      return args[name];
+    }
+  }
+
+  return undefined;
+}
+
+function isTruthyArg(value) {
+  return value === true || value === 'true' || value === '1' || value === 'yes';
+}
+
+function hasCreateAppFlags() {
+  return CREATE_APP_FLAG_NAMES.some(name => args[name] !== undefined);
+}
+
+function getDefaultCreateAppDescription(appType) {
+  return `A YouTrack app created with ${appType === 'ts' ? 'TypeScript' : 'JavaScript'}`;
+}
+
+function getDefaultCreateAppTitle(appName) {
+  return String(appName)
+    .split('-')
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function normalizeCreateAppTemplate(template = 'js') {
+  const normalized = String(template || 'js').toLowerCase();
+
+  if (normalized === 'js' || normalized === 'javascript' || normalized === 'vite-app') {
+    return { appType: 'js', templateName: 'vite-app' };
+  }
+
+  if (normalized === 'ts' || normalized === 'typescript' || normalized === 'enhanced-dx') {
+    return { appType: 'ts', templateName: 'enhanced-dx' };
+  }
+
+  throw new Error(`Invalid template: "${template}". Must be one of: js, ts, vite-app, enhanced-dx.`);
+}
+
+function resolveCreateAppOptionsFromFlags() {
+  const yes = isTruthyArg(getArgValue('yes', 'y'));
+  const { appType, templateName } = normalizeCreateAppTemplate(getArgValue('template') || 'js');
+  const appNameValue = getArgValue('app-name', 'appName');
+  const appName = appNameValue != null ? String(appNameValue).trim() : (yes ? DEFAULT_CREATE_APP_NAME : '');
+
+  if (!appName) {
+    throw new Error('--app-name is required for non-interactive app creation unless --yes is used.');
+  }
+
+  const title = getArgValue('title') || getDefaultCreateAppTitle(appName);
+  const description = getArgValue('description') || getDefaultCreateAppDescription(appType);
+  const vendor = getArgValue('vendor') || DEFAULT_CREATE_APP_VENDOR;
+  const vendorUrl = getArgValue('vendor-url', 'vendorUrl') || DEFAULT_CREATE_APP_VENDOR_URL;
+
+  return {
+    appType,
+    templateName,
+    appName,
+    title,
+    description,
+    vendor,
+    vendorUrl,
+  };
+}
+
+async function promptForCreateAppOptions() {
+  if (
+    !(await new Confirm({
+      initial: true,
+      message: `This will generate the scaffolding for a new YouTrack app in the following directory: ${styleText("bold", cwd)}\n\nContinue?`,
+    }).run())
+  ) {
+    return null;
+  }
+
+  const appType = await new Select({
+    name: 'appType',
+    message: 'Choose your development approach:',
+    choices: [
+      {
+        name: 'js',
+        message: 'JavaScript (minimal app shell)',
+        hint: 'Start with manifest, build tooling, and add features as needed'
+      },
+      {
+        name: 'ts',
+        message: 'TypeScript (Enhanced DX with file-based routing)',
+        hint: 'Advanced approach with type-safe APIs, file-based routing, and Zod validation'
+      }
+    ]
+  }).run();
+
+  const appName = await new Input({
+    name: 'appName',
+    message: 'Enter your app name:',
+    initial: DEFAULT_CREATE_APP_NAME
+  }).run();
+
+  const { templateName } = normalizeCreateAppTemplate(appType);
+
+  return {
+    appType,
+    templateName,
+    appName,
+    title: getDefaultCreateAppTitle(appName),
+    description: getDefaultCreateAppDescription(appType),
+    vendor: DEFAULT_CREATE_APP_VENDOR,
+    vendorUrl: DEFAULT_CREATE_APP_VENDOR_URL,
+  };
+}
+
+async function installCreateAppDependencies() {
+  if (process.env.YOUTRACK_CREATE_APP_TEST_SKIP_INSTALL === '1') {
+    console.log(styleText("yellow", 'Dependency installation skipped by test environment.'));
+    return;
+  }
+
+  const toolsPackageDir = path.join(__dirname, '..', 'apps-tools');
+  const isLocalWorkspace = fs.existsSync(toolsPackageDir);
+
+  if (isLocalWorkspace) {
+    // Running from a local monorepo clone - link the local builds instead of pulling from npm.
+    const installProcess = execa("npm", ["link", "@jetbrains/youtrack-apps-tools", "@jetbrains/youtrack-workflow-types"], {cwd});
+    installProcess.stdout.pipe(process.stdout);
+    await installProcess;
+    return;
+  }
+
+  const installProcess = execa("npm", ["install"], {cwd});
+  installProcess.stdout.pipe(process.stdout);
+  await installProcess;
+}
+
+async function createAppProject(createOptions) {
+  const {
+    appType,
+    templateName,
+    appName,
+    title,
+    description,
+    vendor,
+    vendorUrl,
+  } = createOptions;
+
+  const appRes = await runHygen([
+    "init",
+    templateName,
+    "--appName",
+    appName,
+    "--title",
+    title,
+    "--description",
+    description,
+    "--vendor",
+    vendor,
+    "--vendorUrl",
+    vendorUrl,
+  ]);
+
+  if (!appRes.success) {
+    return;
+  }
+
+  const createdMessage = appType === 'ts'
+    ? 'Your Enhanced DX app with sample code has been created!'
+    : 'Your JavaScript app project has been created!';
+
+  console.log(`
+====================================
+
+${createdMessage}
+To add more widgets later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')}
+To add app settings later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings init')}
+
+====================================
+  `);
+
+  console.log(`
+${styleText("bold", '======= Your app has been created! =======')}
+
+Please wait for just a moment. Dependencies are being installed:
+`);
+
+  await installCreateAppDependencies();
+
+  const buildCommand = 'npm run build';
+  const additionalInfo = appType === 'ts' ? `
+
+${styleText("bold", '🚀 Enhanced DX Features:')}
+- Type-safe API endpoints with automatic type generation
+- File-based routing in src/backend/router/
+- Zod schema validation in dev builds (tree-shaken from production)
+- Example endpoints: global/demo, global/echo (POST), issue/details, project/demo
+
+${styleText("bold", 'Development workflow:')}
+1. Add endpoints: Create {GET|POST}.ts files in src/backend/router/
+2. Use @zod-to-schema comments for automatic validation
+3. Import and use the type-safe API client in your widgets
+
+` : '';
+
+  console.log(`
+${styleText("bold", 'Done. All dependencies are now installed!')}
+${additionalInfo}
+If you want to upload and test the app in your YouTrack site, you'll need to generate a permanent access token first.
+
+For instructions, please visit https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html
+
+Once you have this token, open your development environment and use the following commands to compile and upload the app:
+
+1. ${styleText("magenta", buildCommand)}
+2. ${styleText("magenta", 'npm run upload -- --host http://your-youtrack.url --token perm:cm9...')}
+
+To add more features to your app, run the generator script again.
+Run ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to explore available options.`);
 }
 
 function getDefaultSkillInstallOptions() {
@@ -1072,121 +1310,20 @@ async function promptForAppFeature(projectContext) {
     process.exit(1);
   }
 
-  if (
-    !(await new Confirm({
-      initial: true,
-      message: `This will generate the scaffolding for a new YouTrack app in the following directory: ${styleText("bold", cwd)}\n\nContinue?`,
-    }).run())
-  ) {
+  const createOptions = hasCreateAppFlags() || !isInteractive()
+    ? resolveCreateAppOptionsFromFlags()
+    : await promptForCreateAppOptions();
+
+  if (!createOptions) {
     return;
   }
 
-  const appType = await new Select({
-    name: 'appType',
-    message: 'Choose your development approach:',
-    choices: [
-      {
-        name: 'js',
-        message: 'JavaScript (minimal app shell)',
-        hint: 'Start with manifest, build tooling, and add features as needed'
-      },
-      {
-        name: 'ts',
-        message: 'TypeScript (Enhanced DX with file-based routing)',
-        hint: 'Advanced approach with type-safe APIs, file-based routing, and Zod validation'
-      }
-    ]
-  }).run();
-
-  const appName = await new Input({
-    name: 'appName',
-    message: 'Enter your app name:',
-    initial: 'my-youtrack-app'
-  }).run();
-
-  const title = appName.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  const description = `A YouTrack app created with ${appType === 'ts' ? 'TypeScript' : 'JavaScript'}`;
-  const vendor = 'VendorName';
-  const vendorUrl = 'https://vendor.com';
-
-  const templateName = appType === 'js' ? 'vite-app' : 'enhanced-dx';
-  const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, ...argv]);
-  if (!appRes.success) {
-    return;
-  }
-
-  const createdMessage = appType === 'ts'
-    ? 'Your Enhanced DX app with sample code has been created!'
-    : 'Your JavaScript app project has been created!';
-
-  console.log(`
-====================================
-
-${createdMessage}
-To add more widgets later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')}
-To add app settings later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings init')}
-
-====================================
-  `);
-
-  const toolsPackageDir = path.join(__dirname, '..', 'apps-tools');
-  const isLocalWorkspace = fs.existsSync(toolsPackageDir);
-
-  console.log(`
-${styleText("bold", '======= Your app has been created! =======')}
-
-Please wait for just a moment. Dependencies are being installed:
-`);
-
-  if (isLocalWorkspace) {
-    // Running from a local monorepo clone — link the local builds instead of pulling from npm
-    const installProcess = execa("npm", ["link", "@jetbrains/youtrack-apps-tools", "@jetbrains/youtrack-workflow-types"], {cwd});
-    installProcess.stdout.pipe(process.stdout);
-    await installProcess;
-  } else {
-    const installProcess = execa("npm", ["install"], {cwd});
-    installProcess.stdout.pipe(process.stdout);
-    await installProcess;
-  }
-
-  // No explicit build of @jetbrains/youtrack-apps-tools here.
-  // The tools are consumed as Vite plugins and will be resolved/compiled by the app toolchain during dev/build.
-
-
-  const buildCommand = 'npm run build';
-  const additionalInfo = appType === 'ts' ? `
-
-${styleText("bold", '🚀 Enhanced DX Features:')}
-- Type-safe API endpoints with automatic type generation
-- File-based routing in src/backend/router/
-- Zod schema validation in dev builds (tree-shaken from production)
-- Example endpoints: global/demo, global/echo (POST), issue/details, project/demo
-
-${styleText("bold", 'Development workflow:')}
-1. Add endpoints: Create {GET|POST}.ts files in src/backend/router/
-2. Use @zod-to-schema comments for automatic validation
-3. Import and use the type-safe API client in your widgets
-
-` : '';
-
-  console.log(`
-${styleText("bold", 'Done. All dependencies are now installed!')}
-${additionalInfo}
-If you want to upload and test the app in your YouTrack site, you'll need to generate a permanent access token first.
-
-For instructions, please visit https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html
-
-Once you have this token, open your development environment and use the following commands to compile and upload the app:
-
-1. ${styleText("magenta", buildCommand)}
-2. ${styleText("magenta", 'npm run upload -- --host http://your-youtrack.url --token perm:cm9...')}
-
-To add more features to your app, run the generator script again.
-Run ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to explore available options.`);
+  await createAppProject(createOptions);
 })().catch((e) => {
   if (isCancelled(e)) {
     console.log(styleText("yellow", '\nCancelled.'));
     process.exit(0);
   }
-  throw e;
+  console.error(styleText("red", `Error: ${(e && e.message) || String(e)}`));
+  process.exit(1);
 });
