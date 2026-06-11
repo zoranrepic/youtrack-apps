@@ -75,7 +75,7 @@ any follow-up command needed.
 ## Create YouTrack App commands
 | Action                                                                                  | Command                                              |
 |-----------------------------------------------------------------------------------------|------------------------------------------------------|
-| Initialize a brand new buildable app                                                    | `create-youtrack-app`                                |
+| Initialize a brand new buildable app                                                    | `create-youtrack-app --app-name [name] --title [app title] --description [app description] --vendor [vendor company] --vendor-url [website-url]`                                |
 | Add a settings declaration                                                              | `create-youtrack-app settings init`                  |
 | Add one or more properties to the setting schema created using the command listed above | `create-youtrack-app settings add`                   |
 | Declare an extension property                                                           | `create-youtrack-app extension-property add`         |
@@ -84,8 +84,7 @@ any follow-up command needed.
 | View a list of available commands                                                       | `create-youtrack-app --help`                         |
 
 ## Creating inital app project
-- Run `create-youtrack-app`
-- Fill in the app name and description meaningfully, those will be featured in [manifest.json](#manifest)
+- Run `create-youtrack-app --app-name [name] --title [app title] --description [app description]`
 
 ## Workflow Rules
 Syntax: `create-youtrack-app rule <type> <name>`
