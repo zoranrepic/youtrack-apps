@@ -10,6 +10,8 @@ const MINIMAL_APP_DIR = path.join(PKG_DIR, 'tmp', 'test-rule-minimal-app');
 const EMPTY_RULE_DIR = path.join(PKG_DIR, 'tmp', 'test-rule-empty-dir');
 const WORKFLOW_BUILD_DIR = path.join(PKG_DIR, 'tmp', 'test-workflow-build-app');
 const JS_APP_MENU_DIR = path.join(PKG_DIR, 'tmp', 'test-js-app-menu');
+const NON_INTERACTIVE_CREATE_DIR = path.join(PKG_DIR, 'tmp', 'test-non-interactive-create');
+const NON_INTERACTIVE_INVALID_DIR = path.join(PKG_DIR, 'tmp', 'test-non-interactive-invalid');
 const CLI_PATH = path.join(PKG_DIR, 'index.js');
 
 /**
@@ -134,6 +136,12 @@ function cleanupTestApp() {
   }
   if (fs.existsSync(JS_APP_MENU_DIR)) {
     fs.rmSync(JS_APP_MENU_DIR, { recursive: true, force: true });
+  }
+  if (fs.existsSync(NON_INTERACTIVE_CREATE_DIR)) {
+    fs.rmSync(NON_INTERACTIVE_CREATE_DIR, { recursive: true, force: true });
+  }
+  if (fs.existsSync(NON_INTERACTIVE_INVALID_DIR)) {
+    fs.rmSync(NON_INTERACTIVE_INVALID_DIR, { recursive: true, force: true });
   }
 }
 
@@ -544,6 +552,59 @@ describe('NestJS-Style Code Generation', () => {
       assert.ok(result.output.includes('existing YouTrack app'));
       assert.ok(result.output.includes('create-youtrack-app widget add'));
       assert.strictEqual(result.output.includes('This will generate the scaffolding for a new YouTrack app'), false);
+    });
+
+    test('solo command should create a JavaScript app non-interactively from flags', () => {
+      fs.rmSync(NON_INTERACTIVE_CREATE_DIR, { recursive: true, force: true });
+      fs.mkdirSync(NON_INTERACTIVE_CREATE_DIR, { recursive: true });
+
+      const result = runCLI(
+        '--app-name ci-js-app --title "CI JS App" --description "Created from flags" --vendor Acme --vendor-url https://example.com',
+        {
+          cwd: NON_INTERACTIVE_CREATE_DIR,
+          silent: true,
+          env: {
+            ...process.env,
+            NO_COLOR: '1',
+            YOUTRACK_CREATE_APP_TEST_SKIP_INSTALL: '1',
+          },
+        }
+      );
+
+      assert.strictEqual(result.success, true, result.output);
+      assert.ok(result.output.includes('Dependencies are being installed'));
+
+      const pkg = JSON.parse(fs.readFileSync(path.join(NON_INTERACTIVE_CREATE_DIR, 'package.json'), 'utf8'));
+      const manifest = JSON.parse(fs.readFileSync(path.join(NON_INTERACTIVE_CREATE_DIR, 'manifest.json'), 'utf8'));
+
+      assert.strictEqual(pkg.name, 'ci-js-app');
+      assert.strictEqual(pkg.enhancedDX, undefined);
+      assert.strictEqual(manifest.name, 'ci-js-app');
+      assert.strictEqual(manifest.title, 'CI JS App');
+      assert.strictEqual(manifest.description, 'Created from flags');
+      assert.deepStrictEqual(manifest.vendor, {
+        name: 'Acme',
+        url: 'https://example.com',
+      });
+    });
+
+    test('solo command should reject non-interactive flags without app name unless yes is used', () => {
+      fs.rmSync(NON_INTERACTIVE_INVALID_DIR, { recursive: true, force: true });
+      fs.mkdirSync(NON_INTERACTIVE_INVALID_DIR, { recursive: true });
+
+      const result = runCLI('--template js', {
+        cwd: NON_INTERACTIVE_INVALID_DIR,
+        silent: true,
+        env: {
+          ...process.env,
+          NO_COLOR: '1',
+          YOUTRACK_CREATE_APP_TEST_SKIP_INSTALL: '1',
+        },
+      });
+
+      assert.strictEqual(result.success, false, 'Command should fail');
+      assert.ok(result.output.includes('--app-name is required'));
+      assert.strictEqual(fs.existsSync(path.join(NON_INTERACTIVE_INVALID_DIR, 'package.json')), false);
     });
 
     test('unknown commands should fail instead of falling through to app scaffolding', () => {
