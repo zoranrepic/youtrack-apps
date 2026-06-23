@@ -37,6 +37,13 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app detach <app> --project <project-short-name>`
 - `youtrack-app logs <app> [--top N] [--json]`
 - `youtrack-app requirement-errors <app> [--json]`
+- `youtrack-app project-list [--yaml]`
+- `youtrack-app project-info <project> [--yaml]`
+- `youtrack-app project-fields <project> [--yaml]`
+- `youtrack-app group-list [--yaml]`
+- `youtrack-app group-members <group> [--yaml]`
+- `youtrack-app user-list [--yaml]`
+- `youtrack-app user-info <user> [--yaml]`
 
 ### Using Environment Variables
 
@@ -137,6 +144,42 @@ This command prints app log entries. Use `--top` to limit the number of returned
 `youtrack-app requirement-errors <app> --host --token [--json]`
 
 This command prints requirement errors reported for an app from broken pluggable object usages.
+
+### Projects
+
+`youtrack-app project-list --host --token [--yaml]`
+
+This command lists projects in your YouTrack by short name and ID.
+
+`youtrack-app project-info <project> --host --token [--yaml]`
+
+This command shows project details. The project is resolved by exact project ID, short name, or name, ignoring case.
+
+`youtrack-app project-fields <project> --host --token [--yaml]`
+
+This command lists custom fields configured for a project. The project is resolved by exact project ID, short name, or name, ignoring case.
+
+### User Groups
+
+`youtrack-app group-list --host --token [--yaml]`
+
+This command lists user groups with their IDs and user counts.
+
+`youtrack-app group-members <group> --host --token [--yaml]`
+
+This command prints the IDs of users that are direct members of a user group. The group is resolved by exact group ID or name, ignoring case.
+
+### Users
+
+`youtrack-app user-list --host --token [--yaml]`
+
+This command lists users with login, ID, and display name.
+
+`youtrack-app user-info <user> --host --token [--yaml]`
+
+This command shows user details. The user is resolved by exact user ID, login, name, or full name, ignoring case.
+
+For these project, user group, and user commands, text output is used by default. Pass `--yaml` to print structured YAML output.
 
 ## Enhanced DX Support
 

@@ -73,6 +73,7 @@ describe('index', function () {
       output: null,
       open: null,
       json: false,
+      yaml: false,
       yes: false,
       project: null,
       top: null,
@@ -81,6 +82,32 @@ describe('index', function () {
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
     require('./index').run(['', '', 'list', '--host=foo', '--token=bar']);
+
+    expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should pass yaml flag to commands', function () {
+    const expectedCallArgs = {
+      cwd: process.cwd(),
+      host: 'foo',
+      token: 'bar',
+      manifest: null,
+      schema: null,
+      overwrite: null,
+      output: null,
+      open: null,
+      json: false,
+      yaml: true,
+      yes: false,
+      project: null,
+      top: null,
+    };
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    require('./index').run(['', '', 'list', '--host=foo', '--token=bar', '--yaml']);
 
     expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
     expect(console.error).not.toHaveBeenCalled();

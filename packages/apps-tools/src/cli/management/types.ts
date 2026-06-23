@@ -1,4 +1,5 @@
 import {QueryField} from '../../../lib/net/queryfields.js';
+import {stringify as stringifyYaml} from 'yaml';
 
 export interface AppRule {
   id?: string;
@@ -77,6 +78,64 @@ export interface ProjectDetails {
   shortName?: string;
 }
 
+export interface ProjectFieldType {
+  isBundleType?: boolean;
+  isMultiValue?: boolean;
+  valueType?: string;
+}
+
+export interface ProjectCustomField {
+  id: string;
+  field?: {
+    id?: string;
+    name?: string;
+    fieldType?: ProjectFieldType;
+  };
+  canBeEmpty?: boolean;
+}
+
+export interface UserGroup {
+  id: string;
+  name: string;
+  userCount?: number;
+}
+
+export interface UserGroupMember {
+  id: string;
+}
+
+export interface UserGroupMembers {
+  ownUsers?: UserGroupMember[];
+}
+
+export interface UserSummary {
+  banned?: boolean;
+  login?: string;
+  id: string;
+  name?: string;
+  fullName?: string;
+}
+
+export interface UserDetails {
+  userType?: {
+    id?: string;
+  };
+  email?: string;
+  guest?: boolean;
+}
+
+export interface ProjectFieldsResult {
+  project: ProjectDetails;
+  fields: ProjectCustomField[];
+}
+
+export interface GroupMembersResult {
+  group: UserGroup;
+  members: UserGroupMember[];
+}
+
+export interface UserInfoResult extends UserSummary, UserDetails {}
+
 export type LogEntry = string | Record<string, unknown>;
 
 export interface LogsResponse {
@@ -149,6 +208,22 @@ export const APP_PROBLEM_FIELDS: QueryField = [
 
 export const PROJECT_RESOLVE_FIELDS: QueryField = ['id', 'name', 'shortName'];
 
+export const PROJECT_SEARCH_FIELDS: QueryField = ['id', 'shortName'];
+
+export const PROJECT_FIELDS_FIELDS: QueryField = [
+  'id',
+  {field: ['name', 'id', {fieldType: ['isBundleType', 'isMultiValue', 'valueType']}]},
+  'canBeEmpty',
+];
+
+export const GROUP_SEARCH_FIELDS: QueryField = ['id', 'name', 'userCount'];
+
+export const GROUP_MEMBERS_FIELDS: QueryField = [{ownUsers: ['id']}];
+
+export const USER_SEARCH_FIELDS: QueryField = ['banned', 'login', 'id', 'name', 'fullName'];
+
+export const USER_DETAILS_FIELDS: QueryField = [{userType: ['id']}, 'email', 'guest'];
+
 export const APP_USAGE_UPDATE_FIELDS: QueryField = [
   'id',
   'canUpdate',
@@ -172,6 +247,10 @@ export function formatBoolean(value: boolean | undefined): string {
 
 export function printJson(data: unknown): void {
   console.log(JSON.stringify(data, null, 2));
+}
+
+export function printYaml(data: unknown): void {
+  console.log(stringifyYaml(data).trimEnd());
 }
 
 export function formatProjectLabel(project: AppProject | ProjectDetails): string {

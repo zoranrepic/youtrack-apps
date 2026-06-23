@@ -1,5 +1,15 @@
 import {describe, expect, it} from '@jest/globals';
-import {AppDetails, LogEntry, LogsResponse, ProjectDetails} from './types.js';
+import {
+  AppDetails,
+  LogEntry,
+  LogsResponse,
+  ProjectCustomField,
+  ProjectDetails,
+  UserDetails,
+  UserGroup,
+  UserGroupMembers,
+  UserSummary,
+} from './types.js';
 import {AppManagementOperations} from './app-management-operations.js';
 import {ProjectConfigurationPayload, YouTrackAppsGateway} from '../youtrack/youtrack-apps-client.js';
 
@@ -55,17 +65,95 @@ describe('AppManagementOperations', () => {
 
     await expect(operations.getLogs('some-app', null)).resolves.toEqual([]);
   });
+
+  it('getProjectInfo resolves exact project names and fetches details by short name', async () => {
+    const gateway = fakeGateway({projects: [projectDetails()]});
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.getProjectInfo('car-project');
+
+    expect(result.id).toBe('0-1');
+    expect(gateway.projectRequests).toEqual(['CP']);
+  });
+
+  it('getProjectFields resolves any project key and fetches fields by project id', async () => {
+    const gateway = fakeGateway({
+      projects: [projectDetails()],
+      projectFields: [{id: 'field-1', field: {id: 'field', name: 'Priority'}, canBeEmpty: false}],
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.getProjectFields('0-1');
+
+    expect(result.fields).toHaveLength(1);
+    expect(gateway.projectFieldsRequests).toEqual(['0-1']);
+  });
+
+  it('getGroupMembers resolves exact group names and fetches members by group id', async () => {
+    const gateway = fakeGateway({
+      groups: [{id: 'group-1', name: 'Developers', userCount: 2}],
+      groupMembers: {ownUsers: [{id: 'user-1'}, {id: 'user-2'}]},
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.getGroupMembers('developers');
+
+    expect(result.members).toEqual([{id: 'user-1'}, {id: 'user-2'}]);
+    expect(gateway.groupMembersRequests).toEqual(['group-1']);
+  });
+
+  it('getUserInfo resolves exact logins and fetches details by user id', async () => {
+    const gateway = fakeGateway({
+      users: [{id: 'user-1', login: 'root', name: 'root'}],
+      userDetails: {email: 'root@example.com', guest: false, userType: {id: 'standard'}},
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.getUserInfo('ROOT');
+
+    expect(result.email).toBe('root@example.com');
+    expect(gateway.userRequests).toEqual(['user-1']);
+  });
+
+  it('exact resource matching does not fall back to partial matches', async () => {
+    const operations = new AppManagementOperations(fakeGateway({
+      users: [{id: 'user-1', login: 'root'}],
+    }));
+
+    await expect(operations.getUserInfo('roo')).rejects.toThrow('User "roo" was not found');
+  });
+
+  it('exact resource matching rejects ambiguous matches', async () => {
+    const operations = new AppManagementOperations(fakeGateway({
+      projects: [
+        {id: '0-1', name: 'Car Project', shortName: 'CP'},
+        {id: '0-2', name: 'CP', shortName: 'OTHER'},
+      ],
+    }));
+
+    await expect(operations.getProjectInfo('cp')).rejects.toThrow('Project "cp" is ambiguous');
+  });
 });
 
 interface FakeGateway extends YouTrackAppsGateway {
   appUsageUpdates: {appId: string; projectIds: string[]}[];
   projectConfigurationUpdates: {projectId: string; usageId: string; payload: ProjectConfigurationPayload}[];
+  groupMembersRequests: string[];
+  projectFieldsRequests: string[];
+  projectRequests: string[];
+  userRequests: string[];
 }
 
 function fakeGateway(overrides: {
   app?: AppDetails;
   apps?: AppDetails[];
   project?: ProjectDetails;
+  projects?: ProjectDetails[];
+  projectFields?: ProjectCustomField[];
+  groups?: UserGroup[];
+  groupMembers?: UserGroupMembers;
+  users?: UserSummary[];
+  userDetails?: UserDetails;
   logs?: LogEntry[] | LogsResponse;
 } = {}): FakeGateway {
   const app = overrides.app ?? appDetails();
@@ -73,14 +161,40 @@ function fakeGateway(overrides: {
   const gateway: FakeGateway = {
     appUsageUpdates: [],
     projectConfigurationUpdates: [],
+    groupMembersRequests: [],
+    projectFieldsRequests: [],
+    projectRequests: [],
+    userRequests: [],
     async listApps(): Promise<AppDetails[]> {
       return overrides.apps ?? [app];
     },
     async getApp(): Promise<AppDetails | null> {
       return app;
     },
-    async getProject(): Promise<ProjectDetails | null> {
+    async listProjects(): Promise<ProjectDetails[]> {
+      return overrides.projects ?? [project];
+    },
+    async getProject(projectShortName: string): Promise<ProjectDetails | null> {
+      gateway.projectRequests.push(projectShortName);
       return project;
+    },
+    async getProjectFields(projectId: string): Promise<ProjectCustomField[]> {
+      gateway.projectFieldsRequests.push(projectId);
+      return overrides.projectFields ?? [];
+    },
+    async listGroups(): Promise<UserGroup[]> {
+      return overrides.groups ?? [];
+    },
+    async getGroupMembers(groupId: string): Promise<UserGroupMembers | null> {
+      gateway.groupMembersRequests.push(groupId);
+      return overrides.groupMembers ?? {ownUsers: []};
+    },
+    async listUsers(): Promise<UserSummary[]> {
+      return overrides.users ?? [];
+    },
+    async getUser(userId: string): Promise<UserDetails | null> {
+      gateway.userRequests.push(userId);
+      return overrides.userDetails ?? {email: 'user@example.com', guest: false};
     },
     async deleteWorkflow(): Promise<void> {},
     async updateGlobalConfig(): Promise<void> {},

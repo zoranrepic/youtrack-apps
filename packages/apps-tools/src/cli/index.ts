@@ -12,6 +12,9 @@ import {info, search} from './commands/discovery.js';
 import {deleteApp, disable, enable} from './commands/lifecycle.js';
 import {attach, detach} from './commands/project-scope.js';
 import {logs, requirementErrors} from './commands/diagnostics.js';
+import {projectFields, projectInfo, projectList} from './commands/projects.js';
+import {groupList, groupMembers} from './commands/groups.js';
+import {userInfo, userList} from './commands/users.js';
 
 const options = {
   list: list,
@@ -27,6 +30,13 @@ const options = {
   detach: detach,
   logs: logs,
   'requirement-errors': requirementErrors,
+  'project-list': projectList,
+  'project-info': projectInfo,
+  'project-fields': projectFields,
+  'group-list': groupList,
+  'group-members': groupMembers,
+  'user-list': userList,
+  'user-info': userInfo,
 } as const;
 
 export async function run(argv = process.argv) {
@@ -41,6 +51,7 @@ export async function run(argv = process.argv) {
     schema: args.schema || null,
     open: args.open || null,
     json: isFlagEnabled(args.json),
+    yaml: isFlagEnabled(args.yaml),
     yes: isFlagEnabled(args.yes),
     project: args.project || null,
     top: args.top ? args.top.toString() : null,
@@ -65,6 +76,13 @@ export async function run(argv = process.argv) {
     case 'detach':
     case 'logs':
     case 'requirement-errors':
+    case 'project-list':
+    case 'project-info':
+    case 'project-fields':
+    case 'group-list':
+    case 'group-members':
+    case 'user-list':
+    case 'user-info':
       await checkRequiredParams(['host', 'token'], args, async () => {
         const executable = options[option];
         const commandArg = option === 'search' ? args._.slice(1).join(' ') : args._.slice(1)[0];
@@ -97,6 +115,13 @@ export async function run(argv = process.argv) {
     printLine(i18n('detach   <app> --project <short-name>        '), i18n('Detach an app from a project'));
     printLine(i18n('logs     <app> [--top N, --json]             '), i18n('Show app logs'));
     printLine(i18n('requirement-errors <app> [--json]            '), i18n('Show app requirement errors'));
+    printLine(i18n('project-list [--yaml]                        '), i18n('View a list of projects'));
+    printLine(i18n('project-info <project> [--yaml]              '), i18n('Show project details'));
+    printLine(i18n('project-fields <project> [--yaml]            '), i18n('Show project custom fields'));
+    printLine(i18n('group-list [--yaml]                          '), i18n('View a list of user groups'));
+    printLine(i18n('group-members <group> [--yaml]               '), i18n('Show user group members'));
+    printLine(i18n('user-list [--yaml]                           '), i18n('View a list of users'));
+    printLine(i18n('user-info <user> [--yaml]                    '), i18n('Show user details'));
     br();
     console.log(
       i18n('One can also provide host and token via environment variables $YOUTRACK_HOST and $YOUTRACK_API_TOKEN.'),

@@ -7,11 +7,22 @@ import {
   APP_SEARCH_FIELDS,
   APP_USAGE_UPDATE_FIELDS,
   AppDetails,
+  GROUP_MEMBERS_FIELDS,
+  GROUP_SEARCH_FIELDS,
   LogEntry,
   LogsResponse,
   normalizeAppId,
+  PROJECT_FIELDS_FIELDS,
   PROJECT_RESOLVE_FIELDS,
+  PROJECT_SEARCH_FIELDS,
+  ProjectCustomField,
   ProjectDetails,
+  USER_DETAILS_FIELDS,
+  USER_SEARCH_FIELDS,
+  UserDetails,
+  UserGroup,
+  UserGroupMembers,
+  UserSummary,
 } from '../management/types.js';
 
 type JsonMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -32,7 +43,13 @@ export interface ProjectConfigurationPayload {
 export interface YouTrackAppsGateway {
   listApps(fields?: QueryField): Promise<AppDetails[]>;
   getApp(appName: string, fields?: QueryField): Promise<AppDetails | null>;
+  listProjects(fields?: QueryField): Promise<ProjectDetails[]>;
   getProject(projectShortName: string): Promise<ProjectDetails | null>;
+  getProjectFields(projectId: string): Promise<ProjectCustomField[]>;
+  listGroups(): Promise<UserGroup[]>;
+  getGroupMembers(groupId: string): Promise<UserGroupMembers | null>;
+  listUsers(): Promise<UserSummary[]>;
+  getUser(userId: string): Promise<UserDetails | null>;
   deleteWorkflow(appId: string): Promise<void>;
   updateGlobalConfig(appId: string, enabled: boolean): Promise<void>;
   updateProjectConfiguration(projectId: string, usageId: string, payload: ProjectConfigurationPayload): Promise<void>;
@@ -55,9 +72,39 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     return await this.jsonRequest<AppDetails>('GET', `/api/admin/apps/${app}`, {fields}) ?? null;
   }
 
+  async listProjects(fields: QueryField = PROJECT_SEARCH_FIELDS): Promise<ProjectDetails[]> {
+    return await this.jsonRequest<ProjectDetails[]>('GET', '/api/admin/projects', {fields}) ?? [];
+  }
+
   async getProject(projectShortName: string): Promise<ProjectDetails | null> {
     return await this.jsonRequest<ProjectDetails>('GET', `/api/admin/projects/${projectShortName}`, {
       fields: PROJECT_RESOLVE_FIELDS,
+    }) ?? null;
+  }
+
+  async getProjectFields(projectId: string): Promise<ProjectCustomField[]> {
+    return await this.jsonRequest<ProjectCustomField[]>('GET', `/api/admin/projects/${projectId}/fields`, {
+      fields: PROJECT_FIELDS_FIELDS,
+    }) ?? [];
+  }
+
+  async listGroups(): Promise<UserGroup[]> {
+    return await this.jsonRequest<UserGroup[]>('GET', '/api/groups', {fields: GROUP_SEARCH_FIELDS}) ?? [];
+  }
+
+  async getGroupMembers(groupId: string): Promise<UserGroupMembers | null> {
+    return await this.jsonRequest<UserGroupMembers>('GET', `/api/groups/${groupId}`, {
+      fields: GROUP_MEMBERS_FIELDS,
+    }) ?? null;
+  }
+
+  async listUsers(): Promise<UserSummary[]> {
+    return await this.jsonRequest<UserSummary[]>('GET', '/api/users', {fields: USER_SEARCH_FIELDS}) ?? [];
+  }
+
+  async getUser(userId: string): Promise<UserDetails | null> {
+    return await this.jsonRequest<UserDetails>('GET', `/api/users/${userId}`, {
+      fields: USER_DETAILS_FIELDS,
     }) ?? null;
   }
 

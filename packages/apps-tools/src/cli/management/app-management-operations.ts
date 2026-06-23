@@ -9,11 +9,17 @@ import {
   AppRule,
   EnabledResult,
   findUsageForProject,
+  GroupMembersResult,
   LogEntry,
   LogsResponse,
   ProjectDetails,
+  ProjectFieldsResult,
+  PROJECT_RESOLVE_FIELDS,
   ProjectScopeResult,
   SearchResult,
+  UserGroup,
+  UserInfoResult,
+  UserSummary,
 } from './types.js';
 import {YouTrackAppsClient, YouTrackAppsGateway} from '../youtrack/youtrack-apps-client.js';
 
@@ -92,6 +98,54 @@ export class AppManagementOperations {
     return collectProblems(app);
   }
 
+  async listProjects(): Promise<ProjectDetails[]> {
+    return await this.client.listProjects();
+  }
+
+  async getProjectInfo(projectKey?: string): Promise<ProjectDetails> {
+    const project = await this.requireProjectByKey(projectKey);
+    if (!project.shortName) {
+      throw new Error(i18n(`Project "${projectKey}" does not have a short name`));
+    }
+
+    const details = await this.client.getProject(project.shortName);
+    if (!details) {
+      throw new Error(i18n(`Project "${projectKey}" was not found`));
+    }
+
+    return details;
+  }
+
+  async getProjectFields(projectKey?: string): Promise<ProjectFieldsResult> {
+    const project = await this.requireProjectByKey(projectKey);
+    const fields = await this.client.getProjectFields(project.id);
+    return {project, fields};
+  }
+
+  async listGroups(): Promise<UserGroup[]> {
+    return await this.client.listGroups();
+  }
+
+  async getGroupMembers(groupKey?: string): Promise<GroupMembersResult> {
+    const group = await this.requireGroupByKey(groupKey);
+    const details = await this.client.getGroupMembers(group.id);
+    return {group, members: details?.ownUsers ?? []};
+  }
+
+  async listUsers(): Promise<UserSummary[]> {
+    return await this.client.listUsers();
+  }
+
+  async getUserInfo(userKey?: string): Promise<UserInfoResult> {
+    const user = await this.requireUserByKey(userKey);
+    const details = await this.client.getUser(user.id);
+    if (!details) {
+      throw new Error(i18n(`User "${userKey}" was not found`));
+    }
+
+    return {...user, ...details};
+  }
+
   private async requireApp(appName?: string, fields?: QueryField): Promise<AppDetails> {
     if (!appName) {
       throw new Error(i18n('App name should be defined'));
@@ -116,6 +170,45 @@ export class AppManagementOperations {
     }
 
     return project;
+  }
+
+  private async requireProjectByKey(projectKey?: string): Promise<ProjectDetails> {
+    if (!projectKey) {
+      throw new Error(i18n('Project key should be defined'));
+    }
+
+    return requireExactMatch(
+      await this.client.listProjects(PROJECT_RESOLVE_FIELDS),
+      projectKey,
+      project => [project.id, project.shortName, project.name],
+      'Project',
+    );
+  }
+
+  private async requireGroupByKey(groupKey?: string): Promise<UserGroup> {
+    if (!groupKey) {
+      throw new Error(i18n('Group key should be defined'));
+    }
+
+    return requireExactMatch(
+      await this.client.listGroups(),
+      groupKey,
+      group => [group.id, group.name],
+      'Group',
+    );
+  }
+
+  private async requireUserByKey(userKey?: string): Promise<UserSummary> {
+    if (!userKey) {
+      throw new Error(i18n('User key should be defined'));
+    }
+
+    return requireExactMatch(
+      await this.client.listUsers(),
+      userKey,
+      user => [user.id, user.login, user.name, user.fullName],
+      'User',
+    );
   }
 }
 
@@ -194,4 +287,28 @@ function addProject(projects: (AppProject & {id: string})[], project: ProjectDet
   }
 
   return projects.concat(project);
+}
+
+function requireExactMatch<T>(
+  values: T[],
+  query: string,
+  selectors: (value: T) => (string | undefined)[],
+  label: string,
+): T {
+  const normalizedQuery = normalizeLookupValue(query);
+  const matches = values.filter(value => selectors(value).some(candidate => normalizeLookupValue(candidate) === normalizedQuery));
+
+  if (!matches.length) {
+    throw new Error(i18n(`${label} "${query}" was not found`));
+  }
+
+  if (matches.length > 1) {
+    throw new Error(i18n(`${label} "${query}" is ambiguous`));
+  }
+
+  return matches[0];
+}
+
+function normalizeLookupValue(value: string | undefined): string {
+  return (value ?? '').toLowerCase();
 }
