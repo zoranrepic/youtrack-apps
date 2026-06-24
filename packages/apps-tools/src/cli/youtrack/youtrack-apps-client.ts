@@ -132,9 +132,10 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
   }
 
   async getLogs(appId: string, top?: string): Promise<LogEntry[] | LogsResponse | undefined> {
-    return await this.jsonRequest<LogEntry[] | LogsResponse>('GET', `/api/admin/apps/${appId}/logs`, {
+    const text = await this.textRequest('GET', `/api/admin/apps/${appId}/logs`, {
       searchParams: top ? {'$top': top} : undefined,
     });
+    return parseLogsResponse(text);
   }
 
   private async jsonRequest<T>(
@@ -142,6 +143,19 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     path: string,
     options: JsonRequestOptions = {},
   ): Promise<T | undefined> {
+    const text = await this.textRequest(method, path, options);
+    if (text === undefined) {
+      return undefined;
+    }
+
+    return JSON.parse(text) as T;
+  }
+
+  private async textRequest(
+    method: JsonMethod,
+    path: string,
+    options: JsonRequestOptions = {},
+  ): Promise<string | undefined> {
     const url = resolve(this.config.host, path);
 
     if (options.fields) {
@@ -176,6 +190,18 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
       return undefined;
     }
 
-    return JSON.parse(text) as T;
+    return text;
+  }
+}
+
+function parseLogsResponse(text: string | undefined): LogEntry[] | LogsResponse | undefined {
+  if (text === undefined) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(text) as LogEntry[] | LogsResponse;
+  } catch {
+    return text.split(/\r?\n/).map(line => line.trimEnd()).filter(Boolean);
   }
 }
