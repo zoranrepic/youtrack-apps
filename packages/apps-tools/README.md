@@ -30,6 +30,10 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app validate <directory>`
 - `youtrack-app search <query> [--json]`
 - `youtrack-app info <app> [--json]`
+- `youtrack-app scripts <app> [--json]`
+- `youtrack-app settings <app> [--project <project-short-name>] [--json]`
+- `youtrack-app settings-set <app> [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
+- `youtrack-app tag-search <query> [--project <project-short-name>] [--json] [--yaml]`
 - `youtrack-app delete <app> [--yes]`
 - `youtrack-app enable <app> [--project <project-short-name>]`
 - `youtrack-app disable <app> [--project <project-short-name>]`
@@ -102,13 +106,42 @@ When both `dir` and `--manifest` are provided, the manifest file is used.
 
 `youtrack-app search <query> --host --token [--json]`
 
-This command searches installed apps by app ID, app name, rule ID, rule name, and rule title.
+This command searches installed apps by app title or package name.
 
 ### Info
 
 `youtrack-app info <app> --host --token [--json]`
 
 This command shows app details, including enabled state, attached projects, rules, and requirement errors when available.
+
+### Scripts
+
+`youtrack-app scripts <app> --host --token [--json]`
+
+This command shows package metadata, manifest content, settings schema content, entity extension content, and app scripts.
+Use `--json` when another tool needs to inspect the raw response.
+
+### Settings
+
+`youtrack-app settings <app> --host --token [--project <project-short-name>] [--json]`
+
+This command reads app settings. The app argument is resolved by title or package name.
+Without `--project`, it reads the global app configuration.
+With `--project`, it reads the app configuration for the project identified by short name.
+
+`youtrack-app settings-set <app> --host --token [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
+
+This command updates app settings. The app argument is resolved by title or package name.
+Without `--project`, `--settings` is written as `globalSettings`.
+With `--project`, `--settings` is written as `projectSettings`.
+The settings value must be a JSON string, for example `--settings '{"apiUrl":"https://api.example.test"}'`.
+Pass secret masks such as `<***>` back unchanged to keep existing masked secret values.
+
+### Tag Search
+
+`youtrack-app tag-search <query> --host --token [--project <project-short-name>] [--json] [--yaml]`
+
+This command searches visible usable tags by query. With `--project`, it returns project-relevant tag suggestions for the project identified by short name.
 
 ### Delete
 
