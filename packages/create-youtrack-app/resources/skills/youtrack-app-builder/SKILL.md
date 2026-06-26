@@ -60,14 +60,14 @@ any follow-up command needed.
 | Add one or more properties to the setting schema created using the command listed above | `create-youtrack-app settings add`                   |
 | Declare an extension property                                                           | `create-youtrack-app extension-property add`         |
 | Add an HTTP handler                                                                     | `create-youtrack-app http-handler add`               |
-| Add a workflow rule                                                                     | `create-youtrack-app rule onChange notify-on-change` |
+| Add a workflow rule                                                                     | `create-youtrack-app rule add onChange notify-on-change` |
 | View a list of available commands                                                       | `create-youtrack-app --help`                         |
 
 ## Creating inital app project
 - Run `create-youtrack-app --app-name [name] --title [app title] --description [app description]`
 
 ## Workflow Rules
-Syntax: `create-youtrack-app rule <type> <name>`
+Syntax: `create-youtrack-app rule add <type> <name>`
 
 - `<type>`: `onChange`, `onSchedule`, `action`, `stateMachine`, or `sla`
 - `<name>`: lowercase dashed filename stem, for example `notify-on-change`
