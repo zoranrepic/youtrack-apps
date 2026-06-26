@@ -2,6 +2,7 @@ import {Config} from '../../../@types/types.js';
 import {queryfields, QueryField} from '../../../lib/net/queryfields.js';
 import {generateRequestParams, prepareErrorMessage} from '../../../lib/net/request.js';
 import {resolve} from '../../../lib/net/resolve.js';
+import {createPaginationPlan, PaginatedResult, PaginationOptions} from '../pagination.js';
 import {
   APP_RESOLVE_FIELDS,
   APP_SEARCH_FIELDS,
@@ -22,6 +23,8 @@ import {
   PROJECT_SEARCH_FIELDS,
   ProjectCustomField,
   ProjectDetails,
+  RULE_LOG_FIELDS,
+  RuleLogEntry,
   TAG_SEARCH_FIELDS,
   TagDetails,
   USER_DETAILS_FIELDS,
@@ -30,11 +33,11 @@ import {
   UserGroup,
   UserGroupMembers,
   UserSummary,
+  WORKFLOW_LOG_RESOLVE_FIELDS,
 } from '../management/types.js';
 
 type JsonMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
-const LIST_PAGE_SIZE = 100;
 const PROJECT_FIELDS_TOOL_CALL_FIELDS: QueryField = ['name', {content: ['text']}, 'isError'];
 
 interface JsonRequestOptions {
@@ -69,18 +72,18 @@ export interface ProjectConfigurationPayload {
 }
 
 export interface YouTrackAppsGateway {
-  listApps(fields?: QueryField): Promise<AppDetails[]>;
-  searchApps(query: string, fields?: QueryField): Promise<AppDetails[]>;
+  listApps(fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>>;
+  searchApps(query: string, fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>>;
   getApp(appName: string, fields?: QueryField): Promise<AppDetails | null>;
   getAppPackage(appName: string): Promise<AppDetails | null>;
-  listProjects(fields?: QueryField): Promise<ProjectDetails[]>;
+  listProjects(fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<ProjectDetails>>;
   getProject(projectShortName: string): Promise<ProjectDetails | null>;
   getProjectFields(projectKey: string): Promise<ProjectCustomField[]>;
-  searchTags(query: string): Promise<TagDetails[]>;
-  searchProjectTags(projectId: string, query: string): Promise<TagDetails[]>;
-  listGroups(): Promise<UserGroup[]>;
+  searchTags(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
+  searchProjectTags(projectId: string, query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
+  listGroups(pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>>;
   getGroupMembers(groupId: string): Promise<UserGroupMembers | null>;
-  listUsers(): Promise<UserSummary[]>;
+  listUsers(pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>>;
   getUser(userId: string): Promise<UserDetails | null>;
   deleteWorkflow(appId: string): Promise<void>;
   getGlobalConfig(appId: string): Promise<AppConfiguration | null>;
@@ -89,20 +92,27 @@ export interface YouTrackAppsGateway {
   updateProjectConfiguration(projectId: string, usageId: string, payload: ProjectConfigurationPayload | AppSettingsUpdate): Promise<AppConfiguration | null>;
   updateAppUsages(appId: string, projectIds: string[]): Promise<void>;
   getLogs(appId: string, top?: string): Promise<LogEntry[] | LogsResponse | undefined>;
+  getWorkflow(appName: string): Promise<AppDetails | null>;
+  searchWorkflows(query: string): Promise<AppDetails[]>;
+  getRuleLogs(workflowId: string, ruleId: string, pagination?: PaginationOptions): Promise<PaginatedResult<RuleLogEntry>>;
 }
 
 export class YouTrackAppsClient implements YouTrackAppsGateway {
   constructor(private readonly config: Config) {}
 
-  async listApps(fields: QueryField = APP_SEARCH_FIELDS): Promise<AppDetails[]> {
-    return await this.listRequest<AppDetails>('/api/admin/apps', fields);
+  async listApps(fields: QueryField = APP_SEARCH_FIELDS, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>> {
+    return await this.listRequest<AppDetails>('/api/admin/apps', fields, {}, pagination);
   }
 
-  async searchApps(query: string, fields: QueryField = APP_SEARCH_FIELDS): Promise<AppDetails[]> {
+  async searchApps(
+    query: string,
+    fields: QueryField = APP_SEARCH_FIELDS,
+    pagination?: PaginationOptions,
+  ): Promise<PaginatedResult<AppDetails>> {
     return await this.listRequest<AppDetails>('/api/admin/apps', fields, {
       title: query,
       sort: 'asc',
-    });
+    }, pagination);
   }
 
   async getApp(appName: string, fields: QueryField = APP_RESOLVE_FIELDS): Promise<AppDetails | null> {
@@ -115,8 +125,8 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     return await this.jsonRequest<AppDetails>('GET', `/api/admin/apps/${app}`, {fields: APP_PACKAGE_FIELDS}) ?? null;
   }
 
-  async listProjects(fields: QueryField = PROJECT_SEARCH_FIELDS): Promise<ProjectDetails[]> {
-    return await this.listRequest<ProjectDetails>('/api/admin/projects', fields);
+  async listProjects(fields: QueryField = PROJECT_SEARCH_FIELDS, pagination?: PaginationOptions): Promise<PaginatedResult<ProjectDetails>> {
+    return await this.listRequest<ProjectDetails>('/api/admin/projects', fields, {}, pagination);
   }
 
   async getProject(projectShortName: string): Promise<ProjectDetails | null> {
@@ -137,21 +147,21 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     return parseProjectFieldsToolResponse(response);
   }
 
-  async searchTags(query: string): Promise<TagDetails[]> {
+  async searchTags(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>> {
     return await this.listRequest<TagDetails>('/api/tags', TAG_SEARCH_FIELDS, {
       query,
       isUsable: 'true',
-    });
+    }, pagination);
   }
 
-  async searchProjectTags(projectId: string, query: string): Promise<TagDetails[]> {
+  async searchProjectTags(projectId: string, query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>> {
     return await this.listRequest<TagDetails>(`/api/admin/projects/${projectId}/relevantTags`, TAG_SEARCH_FIELDS, {
       query,
-    });
+    }, pagination);
   }
 
-  async listGroups(): Promise<UserGroup[]> {
-    return await this.listRequest<UserGroup>('/api/groups', GROUP_SEARCH_FIELDS);
+  async listGroups(pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {
+    return await this.listRequest<UserGroup>('/api/groups', GROUP_SEARCH_FIELDS, {}, pagination);
   }
 
   async getGroupMembers(groupId: string): Promise<UserGroupMembers | null> {
@@ -160,8 +170,8 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     }) ?? null;
   }
 
-  async listUsers(): Promise<UserSummary[]> {
-    return await this.listRequest<UserSummary>('/api/users', USER_SEARCH_FIELDS);
+  async listUsers(pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>> {
+    return await this.listRequest<UserSummary>('/api/users', USER_SEARCH_FIELDS, {}, pagination);
   }
 
   async getUser(userId: string): Promise<UserDetails | null> {
@@ -218,6 +228,40 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     return parseLogsResponse(text);
   }
 
+  async getWorkflow(appName: string): Promise<AppDetails | null> {
+    const app = normalizeAppId(appName);
+    try {
+      return await this.jsonRequest<AppDetails>('GET', `/api/admin/workflows/${app}`, {
+        fields: WORKFLOW_LOG_RESOLVE_FIELDS,
+      }) ?? null;
+    } catch (error) {
+      if (isNotFoundError(error)) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  async searchWorkflows(query: string): Promise<AppDetails[]> {
+    return await this.jsonRequest<AppDetails[]>('GET', '/api/admin/workflows', {
+      fields: WORKFLOW_LOG_RESOLVE_FIELDS,
+      searchParams: {query},
+    }) ?? [];
+  }
+
+  async getRuleLogs(
+    workflowId: string,
+    ruleId: string,
+    pagination?: PaginationOptions,
+  ): Promise<PaginatedResult<RuleLogEntry>> {
+    return await this.listRequest<RuleLogEntry>(
+      `/api/admin/workflows/${normalizeAppId(workflowId)}/rules/${ruleId}/logs`,
+      RULE_LOG_FIELDS,
+      {},
+      pagination,
+    );
+  }
+
   private async jsonRequest<T>(
     method: JsonMethod,
     path: string,
@@ -231,25 +275,60 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     return JSON.parse(text) as T;
   }
 
-  private async listRequest<T>(path: string, fields: QueryField, searchParams: Record<string, string> = {}): Promise<T[]> {
+  private async listRequest<T>(
+    path: string,
+    fields: QueryField,
+    searchParams: Record<string, string> = {},
+    pagination: PaginationOptions = {},
+  ): Promise<PaginatedResult<T>> {
+    const plan = createPaginationPlan(pagination);
     const result: T[] = [];
+    let nextSkip = plan.offset;
+    let remaining = plan.limit;
+    let hasMore = false;
 
-    for (let skip = 0; ; skip += LIST_PAGE_SIZE) {
+    while (remaining === null || remaining > 0) {
+      const top = remaining === null ? plan.pageSize : Math.min(plan.pageSize, remaining);
       const page = await this.jsonRequest<T[]>('GET', path, {
         fields,
         searchParams: {
           ...searchParams,
-          '$skip': skip.toString(),
-          '$top': LIST_PAGE_SIZE.toString(),
+          '$skip': nextSkip.toString(),
+          '$top': top.toString(),
         },
       }) ?? [];
 
       result.push(...page);
+      nextSkip += top;
 
-      if (page.length < LIST_PAGE_SIZE) {
-        return result;
+      if (page.length < top) {
+        hasMore = false;
+        break;
+      }
+
+      if (remaining !== null) {
+        remaining -= page.length;
+        if (remaining <= 0) {
+          hasMore = true;
+          break;
+        }
+      }
+
+      if (remaining === null) {
+        continue;
       }
     }
+
+    return {
+      items: result,
+      pagination: {
+        offset: plan.offset,
+        limit: plan.limit,
+        returned: result.length,
+        nextOffset: hasMore ? plan.offset + result.length : null,
+        hasMore,
+      },
+    };
   }
 
   private async textRequest(
@@ -305,6 +384,10 @@ function parseLogsResponse(text: string | undefined): LogEntry[] | LogsResponse 
   } catch {
     return text.split(/\r?\n/).map(line => line.trimEnd()).filter(Boolean);
   }
+}
+
+function isNotFoundError(error: unknown): boolean {
+  return error instanceof Error && error.message.startsWith('[404]');
 }
 
 function parseProjectFieldsToolResponse(response: ToolCallResponse | undefined): ProjectCustomField[] {

@@ -7,6 +7,7 @@ import {
   AppSettingsUpdate,
   ProjectCustomField,
   ProjectDetails,
+  RuleLogEntry,
   TagDetails,
   UserDetails,
   UserGroup,
@@ -15,6 +16,7 @@ import {
 } from './types.js';
 import {AppManagementOperations} from './app-management-operations.js';
 import {ProjectConfigurationPayload, YouTrackAppsGateway} from '../youtrack/youtrack-apps-client.js';
+import {PaginatedResult, PaginationOptions} from '../pagination.js';
 
 describe('AppManagementOperations', () => {
   it('search delegates to the app search endpoint', async () => {
@@ -24,10 +26,10 @@ describe('AppManagementOperations', () => {
       ],
     }));
 
-    const results = await operations.search('workflow');
+    const result = await operations.search('workflow');
 
-    expect(results).toHaveLength(1);
-    expect(results[0].id).toBe('148-1');
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].id).toBe('148-1');
   });
 
   it('setEnabled builds a project configuration update payload', async () => {
@@ -89,7 +91,7 @@ describe('AppManagementOperations', () => {
 
     const result = await operations.searchTags('release', 'CP');
 
-    expect(result).toEqual([{id: '6-4', name: 'release'}]);
+    expect(result.items).toEqual([{id: '6-4', name: 'release'}]);
     expect(gateway.projectRequests).toEqual(['CP']);
     expect(gateway.projectTagRequests).toEqual([{projectId: '0-1', query: 'release'}]);
   });
@@ -108,6 +110,74 @@ describe('AppManagementOperations', () => {
     const operations = new AppManagementOperations(fakeGateway({logs: undefined}));
 
     await expect(operations.getLogs('some-app', null)).resolves.toEqual([]);
+  });
+
+  it('getScriptLogs resolves app and script before fetching logs', async () => {
+    const gateway = fakeGateway({
+      workflowPackages: [
+        {
+          id: 'workflow-1',
+          name: 'my-app',
+          title: 'My App',
+          rules: [
+            {id: 'rule-1', name: 'action', title: 'Action', type: 'action'},
+          ],
+        },
+      ],
+      ruleLogs: [{id: 'log-1', message: 'warning'}],
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.getScriptLogs('my-app', 'action', {all: true, offset: 0});
+
+    expect(result.items).toEqual([{id: 'log-1', message: 'warning'}]);
+    expect(gateway.workflowGetRequests).toEqual(['my-app']);
+    expect(gateway.workflowSearchRequests).toEqual([]);
+    expect(gateway.ruleLogRequests).toEqual([
+      {workflowId: 'workflow-1', ruleId: 'rule-1', options: {all: true, offset: 0}},
+    ]);
+  });
+
+  it('getScriptLogs falls back to search when exact workflow lookup misses', async () => {
+    const gateway = fakeGateway({
+      workflow: null,
+      workflowPackages: [
+        {
+          id: 'workflow-1',
+          name: '@acme/effort-level-monitor',
+          title: 'Effort Level Monitor',
+          rules: [{id: 'rule-1', name: 'action'}],
+        },
+        {
+          id: 'workflow-2',
+          name: 'effort-level-monitor-dev',
+          title: 'Effort Level Monitor Dev',
+          rules: [{id: 'rule-2', name: 'action'}],
+        },
+      ],
+      ruleLogs: [{id: 'log-1', message: 'warning'}],
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    await operations.getScriptLogs('effort-level-monitor', 'action');
+
+    expect(gateway.workflowGetRequests).toEqual(['effort-level-monitor']);
+    expect(gateway.workflowSearchRequests).toEqual(['effort-level-monitor']);
+    expect(gateway.ruleLogRequests).toEqual([
+      {workflowId: 'workflow-1', ruleId: 'rule-1', options: undefined},
+    ]);
+  });
+
+  it('getScriptLogs keeps duplicate unscoped package names ambiguous', async () => {
+    const operations = new AppManagementOperations(fakeGateway({
+      workflow: null,
+      workflowPackages: [
+        {id: 'workflow-1', name: '@acme/effort-level-monitor', rules: [{id: 'rule-1', name: 'action'}]},
+        {id: 'workflow-2', name: '@other/effort-level-monitor', rules: [{id: 'rule-2', name: 'action'}]},
+      ],
+    }));
+
+    await expect(operations.getScriptLogs('effort-level-monitor', 'action')).rejects.toThrow('App "effort-level-monitor" is ambiguous');
   });
 
   it('getProjectInfo resolves exact project names and fetches details by short name', async () => {
@@ -186,11 +256,15 @@ interface FakeGateway extends YouTrackAppsGateway {
   globalConfigUpdates: {appId: string; payload: AppSettingsUpdate}[];
   searchRequests: string[];
   appRequests: string[];
+  appPackageRequests: string[];
   groupMembersRequests: string[];
   projectFieldsRequests: string[];
   projectRequests: string[];
   tagRequests: string[];
   projectTagRequests: {projectId: string; query: string}[];
+  ruleLogRequests: {workflowId: string; ruleId: string; options?: PaginationOptions}[];
+  workflowGetRequests: string[];
+  workflowSearchRequests: string[];
   userRequests: string[];
 }
 
@@ -205,6 +279,9 @@ function fakeGateway(overrides: {
   users?: UserSummary[];
   userDetails?: UserDetails;
   logs?: LogEntry[] | LogsResponse;
+  ruleLogs?: RuleLogEntry[];
+  workflow?: AppDetails | null;
+  workflowPackages?: AppDetails[];
   tags?: TagDetails[];
   globalConfig?: AppConfiguration;
   projectConfig?: AppConfiguration;
@@ -218,28 +295,33 @@ function fakeGateway(overrides: {
     globalConfigUpdates: [],
     searchRequests: [],
     appRequests: [],
+    appPackageRequests: [],
     groupMembersRequests: [],
     projectFieldsRequests: [],
     projectRequests: [],
     tagRequests: [],
     projectTagRequests: [],
+    ruleLogRequests: [],
+    workflowGetRequests: [],
+    workflowSearchRequests: [],
     userRequests: [],
-    async listApps(): Promise<AppDetails[]> {
-      return overrides.apps ?? [app];
+    async listApps(): Promise<PaginatedResult<AppDetails>> {
+      return page(overrides.apps ?? [app]);
     },
-    async searchApps(query: string): Promise<AppDetails[]> {
+    async searchApps(query: string): Promise<PaginatedResult<AppDetails>> {
       gateway.searchRequests.push(query);
-      return overrides.apps ?? [app];
+      return page(overrides.apps ?? [app]);
     },
     async getApp(appName: string): Promise<AppDetails | null> {
       gateway.appRequests.push(appName);
-      return app;
+      return findApp(overrides.apps ?? [app], appName) ?? app;
     },
-    async getAppPackage(): Promise<AppDetails | null> {
-      return app;
+    async getAppPackage(appName: string): Promise<AppDetails | null> {
+      gateway.appPackageRequests.push(appName);
+      return findApp(overrides.apps ?? [app], appName) ?? app;
     },
-    async listProjects(): Promise<ProjectDetails[]> {
-      return overrides.projects ?? [project];
+    async listProjects(): Promise<PaginatedResult<ProjectDetails>> {
+      return page(overrides.projects ?? [project]);
     },
     async getProject(projectShortName: string): Promise<ProjectDetails | null> {
       gateway.projectRequests.push(projectShortName);
@@ -249,23 +331,23 @@ function fakeGateway(overrides: {
       gateway.projectFieldsRequests.push(projectId);
       return overrides.projectFields ?? [];
     },
-    async searchTags(query: string): Promise<TagDetails[]> {
+    async searchTags(query: string): Promise<PaginatedResult<TagDetails>> {
       gateway.tagRequests.push(query);
-      return overrides.tags ?? [];
+      return page(overrides.tags ?? []);
     },
-    async searchProjectTags(projectId: string, query: string): Promise<TagDetails[]> {
+    async searchProjectTags(projectId: string, query: string): Promise<PaginatedResult<TagDetails>> {
       gateway.projectTagRequests.push({projectId, query});
-      return overrides.tags ?? [];
+      return page(overrides.tags ?? []);
     },
-    async listGroups(): Promise<UserGroup[]> {
-      return overrides.groups ?? [];
+    async listGroups(): Promise<PaginatedResult<UserGroup>> {
+      return page(overrides.groups ?? []);
     },
     async getGroupMembers(groupId: string): Promise<UserGroupMembers | null> {
       gateway.groupMembersRequests.push(groupId);
       return overrides.groupMembers ?? {ownUsers: []};
     },
-    async listUsers(): Promise<UserSummary[]> {
-      return overrides.users ?? [];
+    async listUsers(): Promise<PaginatedResult<UserSummary>> {
+      return page(overrides.users ?? []);
     },
     async getUser(userId: string): Promise<UserDetails | null> {
       gateway.userRequests.push(userId);
@@ -297,9 +379,42 @@ function fakeGateway(overrides: {
     async getLogs(): Promise<LogEntry[] | LogsResponse | undefined> {
       return overrides.logs;
     },
+    async getWorkflow(appName: string): Promise<AppDetails | null> {
+      gateway.workflowGetRequests.push(appName);
+      return overrides.workflow === undefined ? overrides.workflowPackages?.[0] ?? app : overrides.workflow;
+    },
+    async searchWorkflows(query: string): Promise<AppDetails[]> {
+      gateway.workflowSearchRequests.push(query);
+      return overrides.workflowPackages ?? [app];
+    },
+    async getRuleLogs(
+      workflowId: string,
+      ruleId: string,
+      options?: PaginationOptions,
+    ): Promise<PaginatedResult<RuleLogEntry>> {
+      gateway.ruleLogRequests.push({workflowId, ruleId, options});
+      return page(overrides.ruleLogs ?? []);
+    },
   };
 
   return gateway;
+}
+
+function findApp(apps: AppDetails[], appName: string): AppDetails | undefined {
+  return apps.find(candidate => candidate.id === appName || candidate.name === appName);
+}
+
+function page<T>(items: T[]): PaginatedResult<T> {
+  return {
+    items,
+    pagination: {
+      offset: 0,
+      limit: 50,
+      returned: items.length,
+      nextOffset: null,
+      hasMore: false,
+    },
+  };
 }
 
 function appDetails(overrides: Partial<AppDetails> = {}): AppDetails {

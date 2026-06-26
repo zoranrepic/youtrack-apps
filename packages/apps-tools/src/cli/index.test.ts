@@ -2,10 +2,12 @@ import {jest, describe, it, expect, beforeEach, afterEach} from '@jest/globals';
 import nock from 'nock';
 import {list} from './commands/list.js';
 import {settings} from './commands/settings.js';
+import {scriptLogs} from './commands/diagnostics.js';
 
 nock.back.setMode('record');
 jest.mock('./commands/list');
 jest.mock('./commands/settings');
+jest.mock('./commands/diagnostics');
 
 describe('index', function () {
   beforeEach(function () {
@@ -79,6 +81,12 @@ describe('index', function () {
       yes: false,
       project: null,
       top: null,
+      skip: null,
+      limit: null,
+      pageSize: null,
+      page: null,
+      offset: null,
+      all: false,
       settings: null,
       enabled: null,
     };
@@ -107,6 +115,12 @@ describe('index', function () {
       yes: false,
       project: null,
       top: null,
+      skip: null,
+      limit: null,
+      pageSize: null,
+      page: null,
+      offset: null,
+      all: false,
       settings: null,
       enabled: null,
     };
@@ -127,6 +141,20 @@ describe('index', function () {
     require('./index').run(['', '', 'settings', 'My', 'App', '--host=foo', '--token=bar']);
 
     expect(settings).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar'}), 'My App');
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should pass app and script args to script logs', function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    require('./index').run(['', '', 'script-logs', 'my-app', 'action', '--skip=0', '--top=100', '--host=foo', '--token=bar']);
+
+    expect(scriptLogs).toHaveBeenCalledWith(
+      expect.objectContaining({host: 'foo', token: 'bar', skip: '0', top: '100'}),
+      'my-app action',
+    );
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });

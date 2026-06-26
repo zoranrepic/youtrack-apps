@@ -2,25 +2,33 @@ import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
-import {printYaml, UserGroup} from '../management/types.js';
+import {printJson, printYaml, UserGroup} from '../management/types.js';
+import {paginationFromConfig, printPaginationNotice} from '../pagination.js';
 
 export async function groupList(config: Config): Promise<void> {
   try {
-    const groups = await createAppManagementOperations(config).listGroups();
+    const pagination = paginationFromConfig(config);
+    const result = await createAppManagementOperations(config).listGroups(pagination);
 
-    if (config.yaml) {
-      printYaml(groups);
+    if (config.json) {
+      printJson(result);
       return;
     }
 
-    if (!groups.length) {
+    if (config.yaml) {
+      printYaml(result);
+      return;
+    }
+
+    if (!result.items.length) {
       console.log(i18n('No user groups found'));
       return;
     }
 
-    for (const group of groups) {
+    for (const group of result.items) {
       console.log(formatGroup(group));
     }
+    printPaginationNotice('user groups', result, pagination);
   } catch (error) {
     exit(error);
   }

@@ -5,6 +5,7 @@ export interface AppRule {
   id?: string;
   name?: string;
   title?: string;
+  type?: string;
 }
 
 export interface AppTag {
@@ -222,6 +223,15 @@ export interface LogsResponse {
   entries?: LogEntry[];
 }
 
+export interface RuleLogEntry {
+  id?: string;
+  level?: string;
+  timestamp?: string;
+  username?: string;
+  message?: string;
+  stacktrace?: string;
+}
+
 export interface AppProblem extends RuleProblem {
   appId: string;
   appName: string;
@@ -376,6 +386,15 @@ export const TAG_SEARCH_FIELDS: QueryField = [
       {permittedUsers: ['id', 'login']},
     ],
   },
+];
+
+export const RULE_LOG_FIELDS: QueryField = ['id', 'level', 'timestamp', 'username', 'message', 'stacktrace'];
+
+export const WORKFLOW_LOG_RESOLVE_FIELDS: QueryField = [
+  'id',
+  'name',
+  'title',
+  {rules: ['id', 'name', 'title', 'type']},
 ];
 
 export const APP_USAGE_UPDATE_FIELDS: QueryField = [

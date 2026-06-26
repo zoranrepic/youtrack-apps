@@ -11,7 +11,7 @@ import {validate} from './validate.js';
 import {info, search} from './commands/discovery.js';
 import {deleteApp, disable, enable} from './commands/lifecycle.js';
 import {attach, detach} from './commands/project-scope.js';
-import {logs, requirementErrors} from './commands/diagnostics.js';
+import {logs, requirementErrors, scriptLogs} from './commands/diagnostics.js';
 import {projectFields, projectInfo, projectList} from './commands/projects.js';
 import {groupList, groupMembers} from './commands/groups.js';
 import {userInfo, userList} from './commands/users.js';
@@ -36,6 +36,7 @@ const options = {
   attach: attach,
   detach: detach,
   logs: logs,
+  'script-logs': scriptLogs,
   'requirement-errors': requirementErrors,
   'project-list': projectList,
   'project-info': projectInfo,
@@ -61,9 +62,15 @@ export async function run(argv = process.argv) {
     yaml: isFlagEnabled(args.yaml),
     yes: isFlagEnabled(args.yes),
     project: args.project || null,
-    top: args.top ? args.top.toString() : null,
-    settings: args.settings ? args.settings.toString() : null,
-    enabled: args.enabled ? args.enabled.toString() : null,
+    top: optionalArgString(args.top),
+    skip: optionalArgString(args.skip),
+    limit: optionalArgString(args.limit),
+    pageSize: optionalArgString(args['page-size']),
+    page: optionalArgString(args.page),
+    offset: optionalArgString(args.offset),
+    all: isFlagEnabled(args.all),
+    settings: optionalArgString(args.settings),
+    enabled: optionalArgString(args.enabled),
     cwd: process.cwd(),
   };
 
@@ -88,6 +95,7 @@ export async function run(argv = process.argv) {
     case 'attach':
     case 'detach':
     case 'logs':
+    case 'script-logs':
     case 'requirement-errors':
     case 'project-list':
     case 'project-info':
@@ -115,29 +123,30 @@ export async function run(argv = process.argv) {
 
   function printHelp() {
     br();
-    printLine(i18n('list     --host --token                      '), i18n('View a list of installed apps'));
+    printLine(i18n('list     [--limit N, --page-size N, --page N, --offset N, --all, --json]'), i18n('View a list of installed apps'));
     printLine(i18n('download <app> [--output, --overwrite]       '), i18n('Download an app'));
     printLine(i18n('upload   <directory>                         '), i18n('Upload app to server'));
     printLine(i18n('validate <directory> [--manifest, --schema]  '), i18n('Validate manifest'));
-    printLine(i18n('search   <query> [--json]                    '), i18n('Search apps by title or package name'));
+    printLine(i18n('search   <query> [--limit N, --page-size N, --page N, --offset N, --all, --json]'), i18n('Search apps by title or package name'));
     printLine(i18n('info     <app> [--json]                      '), i18n('Show app details'));
     printLine(i18n('scripts  <app> [--json]                      '), i18n('Show app files and scripts'));
     printLine(i18n('settings <app> [--project, --json]           '), i18n('Read app settings'));
     printLine(i18n('settings-set <app> [--project, --settings, --enabled]'), i18n('Update app settings'));
-    printLine(i18n('tag-search <query> [--project, --json, --yaml]'), i18n('Search tags'));
+    printLine(i18n('tag-search <query> [--project, --limit N, --page-size N, --page N, --offset N, --all, --json, --yaml]'), i18n('Search tags'));
     printLine(i18n('delete   <app> [--yes]                       '), i18n('Delete an app'));
     printLine(i18n('enable   <app> [--project <short-name>]      '), i18n('Enable an app'));
     printLine(i18n('disable  <app> [--project <short-name>]      '), i18n('Disable an app'));
     printLine(i18n('attach   <app> --project <short-name>        '), i18n('Attach an app to a project'));
     printLine(i18n('detach   <app> --project <short-name>        '), i18n('Detach an app from a project'));
     printLine(i18n('logs     <app> [--top N, --json]             '), i18n('Show app logs'));
+    printLine(i18n('script-logs <app> <script> [--limit N, --page-size N, --page N, --offset N, --all, --json]'), i18n('Show script logs'));
     printLine(i18n('requirement-errors <app> [--json]            '), i18n('Show app requirement errors'));
-    printLine(i18n('project-list [--yaml]                        '), i18n('View a list of projects'));
+    printLine(i18n('project-list [--limit N, --page-size N, --page N, --offset N, --all, --json, --yaml]'), i18n('View a list of projects'));
     printLine(i18n('project-info <project> [--yaml]              '), i18n('Show project details'));
     printLine(i18n('project-fields <project> [--yaml]            '), i18n('Show project custom fields'));
-    printLine(i18n('group-list [--yaml]                          '), i18n('View a list of user groups'));
+    printLine(i18n('group-list [--limit N, --page-size N, --page N, --offset N, --all, --json, --yaml]'), i18n('View a list of user groups'));
     printLine(i18n('group-members <group> [--yaml]               '), i18n('Show user group members'));
-    printLine(i18n('user-list [--yaml]                           '), i18n('View a list of users'));
+    printLine(i18n('user-list [--limit N, --page-size N, --page N, --offset N, --all, --json, --yaml]'), i18n('View a list of users'));
     printLine(i18n('user-info <user> [--yaml]                    '), i18n('Show user details'));
     br();
     console.log(
@@ -185,7 +194,11 @@ export async function run(argv = process.argv) {
     return value !== undefined && value !== false && value !== 'false';
   }
 
+  function optionalArgString(value: unknown): string | null {
+    return value === undefined || value === null || value === false ? null : value.toString();
+  }
+
   function shouldJoinCommandArg(option: string | number): boolean {
-    return option === 'search' || option === 'settings' || option === 'settings-set' || option === 'tag-search';
+    return option === 'search' || option === 'settings' || option === 'settings-set' || option === 'tag-search' || option === 'script-logs';
   }
 }

@@ -2,25 +2,33 @@ import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
-import {formatBoolean, printYaml, UserSummary} from '../management/types.js';
+import {formatBoolean, printJson, printYaml, UserSummary} from '../management/types.js';
+import {paginationFromConfig, printPaginationNotice} from '../pagination.js';
 
 export async function userList(config: Config): Promise<void> {
   try {
-    const users = await createAppManagementOperations(config).listUsers();
+    const pagination = paginationFromConfig(config);
+    const result = await createAppManagementOperations(config).listUsers(pagination);
 
-    if (config.yaml) {
-      printYaml(users);
+    if (config.json) {
+      printJson(result);
       return;
     }
 
-    if (!users.length) {
+    if (config.yaml) {
+      printYaml(result);
+      return;
+    }
+
+    if (!result.items.length) {
       console.log(i18n('No users found'));
       return;
     }
 
-    for (const user of users) {
+    for (const user of result.items) {
       console.log(formatUser(user));
     }
+    printPaginationNotice('users', result, pagination);
   } catch (error) {
     exit(error);
   }

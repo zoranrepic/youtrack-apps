@@ -1,6 +1,7 @@
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {Config} from '../../../@types/types.js';
 import {QueryField} from '../../../lib/net/queryfields.js';
+import {PaginatedResult, PaginationOptions} from '../pagination.js';
 import {
   APP_PROBLEM_FIELDS,
   AppConfiguration,
@@ -13,10 +14,12 @@ import {
   GroupMembersResult,
   LogEntry,
   LogsResponse,
+  AppRule,
   ProjectDetails,
   ProjectFieldsResult,
   PROJECT_RESOLVE_FIELDS,
   ProjectScopeResult,
+  RuleLogEntry,
   SearchResult,
   TagDetails,
   UserGroup,
@@ -28,12 +31,12 @@ import {YouTrackAppsClient, YouTrackAppsGateway} from '../youtrack/youtrack-apps
 export class AppManagementOperations {
   constructor(private readonly client: YouTrackAppsGateway) {}
 
-  async search(query?: string): Promise<SearchResult[]> {
+  async search(query?: string, pagination?: PaginationOptions): Promise<PaginatedResult<SearchResult>> {
     if (!query) {
       throw new Error(i18n('Search query should be defined'));
     }
 
-    return await this.client.searchApps(query);
+    return await this.client.searchApps(query, undefined, pagination);
   }
 
   async getInfo(appName?: string): Promise<AppDetails> {
@@ -41,11 +44,8 @@ export class AppManagementOperations {
   }
 
   async getPackage(appName?: string): Promise<AppDetails> {
-    if (!appName) {
-      throw new Error(i18n('App name should be defined'));
-    }
-
-    const app = await this.client.getAppPackage(appName);
+    const resolvedApp = await this.requireAppFromSearch(appName);
+    const app = await this.client.getAppPackage(resolvedApp.id);
     if (!app) {
       throw new Error(i18n(`App "${appName}" was not found`));
     }
@@ -107,22 +107,54 @@ export class AppManagementOperations {
     return normalizeLogs(await this.client.getLogs(app.id, normalizedTop ?? undefined));
   }
 
+  async getScriptLogs(
+    appName: string | undefined,
+    scriptName: string | undefined,
+    pagination?: PaginationOptions,
+  ): Promise<PaginatedResult<RuleLogEntry>> {
+    if (!appName) {
+      throw new Error(i18n('App name should be defined'));
+    }
+
+    if (!scriptName) {
+      throw new Error(i18n('Script name should be defined'));
+    }
+
+    const app = await this.requireWorkflowPackage(appName);
+    const rule = requireExactMatch(
+      app.rules ?? [],
+      scriptName,
+      rule => [rule.id, rule.name, rule.title],
+      'Script',
+    );
+
+    if (!rule.id) {
+      throw new Error(i18n(`Script "${scriptName}" does not have an ID`));
+    }
+
+    return await this.client.getRuleLogs(app.id, rule.id, pagination);
+  }
+
   async getRequirementErrors(appName?: string): Promise<AppProblem[]> {
     const app = await this.requireApp(appName, APP_PROBLEM_FIELDS);
     return collectProblems(app);
   }
 
-  async searchTags(query: string | undefined, projectShortName?: string | null): Promise<TagDetails[]> {
+  async searchTags(
+    query: string | undefined,
+    projectShortName?: string | null,
+    pagination?: PaginationOptions,
+  ): Promise<PaginatedResult<TagDetails>> {
     if (!query) {
       throw new Error(i18n('Tag query should be defined'));
     }
 
     if (!projectShortName) {
-      return await this.client.searchTags(query);
+      return await this.client.searchTags(query, pagination);
     }
 
     const project = await this.requireProject(projectShortName);
-    return await this.client.searchProjectTags(project.id, query);
+    return await this.client.searchProjectTags(project.id, query, pagination);
   }
 
   async getSettings(appName: string | undefined, projectShortName?: string | null): Promise<AppConfiguration> {
@@ -171,8 +203,8 @@ export class AppManagementOperations {
     return config;
   }
 
-  async listProjects(): Promise<ProjectDetails[]> {
-    return await this.client.listProjects();
+  async listProjects(pagination?: PaginationOptions): Promise<PaginatedResult<ProjectDetails>> {
+    return await this.client.listProjects(undefined, pagination);
   }
 
   async getProjectInfo(projectKey?: string): Promise<ProjectDetails> {
@@ -195,8 +227,8 @@ export class AppManagementOperations {
     return {project, fields};
   }
 
-  async listGroups(): Promise<UserGroup[]> {
-    return await this.client.listGroups();
+  async listGroups(pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {
+    return await this.client.listGroups(pagination);
   }
 
   async getGroupMembers(groupKey?: string): Promise<GroupMembersResult> {
@@ -205,8 +237,8 @@ export class AppManagementOperations {
     return {group, members: details?.ownUsers ?? []};
   }
 
-  async listUsers(): Promise<UserSummary[]> {
-    return await this.client.listUsers();
+  async listUsers(pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>> {
+    return await this.client.listUsers(pagination);
   }
 
   async getUserInfo(userKey?: string): Promise<UserInfoResult> {
@@ -237,10 +269,8 @@ export class AppManagementOperations {
       throw new Error(i18n('App name should be defined'));
     }
 
-    const matches = await this.client.searchApps(appQuery);
-    const exactMatches = matches.filter(app => {
-      return [app.id, app.name, app.title].some(value => normalizeLookupValue(value) === normalizeLookupValue(appQuery));
-    });
+    const matches = (await this.client.searchApps(appQuery, undefined, {limit: 2})).items;
+    const exactMatches = findExactAppMatches(matches, appQuery);
     const candidates = exactMatches.length ? exactMatches : matches;
 
     if (candidates.length > 1) {
@@ -292,7 +322,7 @@ export class AppManagementOperations {
     }
 
     return requireExactMatch(
-      await this.client.listProjects(PROJECT_RESOLVE_FIELDS),
+      (await this.client.listProjects(PROJECT_RESOLVE_FIELDS, {all: true})).items,
       projectKey,
       project => [project.id, project.shortName, project.name],
       'Project',
@@ -305,7 +335,7 @@ export class AppManagementOperations {
     }
 
     return requireExactMatch(
-      await this.client.listGroups(),
+      (await this.client.listGroups({all: true})).items,
       groupKey,
       group => [group.id, group.name],
       'Group',
@@ -318,12 +348,34 @@ export class AppManagementOperations {
     }
 
     return requireExactMatch(
-      await this.client.listUsers(),
+      (await this.client.listUsers({all: true})).items,
       userKey,
       user => [user.id, user.login, user.name, user.fullName],
       'User',
     );
   }
+
+  private async requireWorkflowPackage(appQuery: string): Promise<AppDetails & {id: string; rules?: AppRule[]}> {
+    const exact = await this.client.getWorkflow(appQuery);
+    if (exact) {
+      return exact;
+    }
+
+    const matches = await this.client.searchWorkflows(appQuery);
+    const exactMatches = findExactAppMatches(matches, appQuery);
+    const candidates = exactMatches.length ? exactMatches : matches;
+
+    if (!candidates.length) {
+      throw new Error(i18n(`App "${appQuery}" was not found`));
+    }
+
+    if (candidates.length > 1) {
+      throw new Error(i18n(`App "${appQuery}" is ambiguous`));
+    }
+
+    return candidates[0];
+  }
+
 }
 
 export function createAppManagementOperations(config: Config): AppManagementOperations {
@@ -405,5 +457,40 @@ function requireExactMatch<T>(
 }
 
 function normalizeLookupValue(value: string | undefined): string {
-  return (value ?? '').toLowerCase();
+  return (value ?? '').trim().toLowerCase();
+}
+
+function findExactAppMatches<T extends Pick<AppDetails, 'id' | 'name' | 'title'>>(apps: T[], query: string): T[] {
+  const normalizedQuery = normalizeLookupValue(query);
+  const packageQueryValues = packageLookupValues(query);
+  const slugQuery = slugifyLookupValue(query);
+  const idOrNameMatches = apps.filter(app => {
+    return [app.id, app.name].some(value => packageLookupValues(value).some(candidate => packageQueryValues.includes(candidate)));
+  });
+
+  if (idOrNameMatches.length) {
+    return idOrNameMatches;
+  }
+
+  return apps.filter(app => {
+    const title = normalizeLookupValue(app.title);
+    return title === normalizedQuery || slugifyLookupValue(app.title) === slugQuery;
+  });
+}
+
+function packageLookupValues(value: string | undefined): string[] {
+  const normalized = normalizeLookupValue(value);
+  if (!normalized) {
+    return [];
+  }
+
+  const unscoped = normalized.replace(/^@/, '');
+  const packageName = unscoped.includes('/') ? unscoped.slice(unscoped.lastIndexOf('/') + 1) : unscoped;
+  return Array.from(new Set([normalized, unscoped, packageName]));
+}
+
+function slugifyLookupValue(value: string | undefined): string {
+  return normalizeLookupValue(value)
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }

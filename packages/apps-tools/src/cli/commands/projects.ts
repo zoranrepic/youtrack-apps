@@ -2,25 +2,33 @@ import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
-import {formatBoolean, formatProjectLabel, printYaml, ProjectCustomField} from '../management/types.js';
+import {formatBoolean, formatProjectLabel, printJson, printYaml, ProjectCustomField} from '../management/types.js';
+import {paginationFromConfig, printPaginationNotice} from '../pagination.js';
 
 export async function projectList(config: Config): Promise<void> {
   try {
-    const projects = await createAppManagementOperations(config).listProjects();
+    const pagination = paginationFromConfig(config);
+    const result = await createAppManagementOperations(config).listProjects(pagination);
 
-    if (config.yaml) {
-      printYaml(projects);
+    if (config.json) {
+      printJson(result);
       return;
     }
 
-    if (!projects.length) {
+    if (config.yaml) {
+      printYaml(result);
+      return;
+    }
+
+    if (!result.items.length) {
       console.log(i18n('No projects found'));
       return;
     }
 
-    for (const project of projects) {
+    for (const project of result.items) {
       console.log(formatProject(project));
     }
+    printPaginationNotice('projects', result, pagination);
   } catch (error) {
     exit(error);
   }

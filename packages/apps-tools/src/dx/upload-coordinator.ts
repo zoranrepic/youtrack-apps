@@ -232,6 +232,12 @@ export class UploadCoordinator {
       yes: false,
       project: null,
       top: null,
+      skip: null,
+      limit: null,
+      pageSize: null,
+      page: null,
+      offset: null,
+      all: false,
       settings: null,
       enabled: null,
       cwd: this.cwd
