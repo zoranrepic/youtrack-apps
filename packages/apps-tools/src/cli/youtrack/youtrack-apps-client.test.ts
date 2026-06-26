@@ -10,7 +10,6 @@ describe('YouTrackAppsClient', () => {
   describe.each([
     ['apps', '/api/admin/apps', (client: YouTrackAppsClient) => client.listApps(['id'])],
     ['projects', '/api/admin/projects', (client: YouTrackAppsClient) => client.listProjects(['id'])],
-    ['project fields', '/api/admin/projects/project-id/fields', (client: YouTrackAppsClient) => client.getProjectFields('project-id')],
     ['groups', '/api/groups', (client: YouTrackAppsClient) => client.listGroups()],
     ['users', '/api/users', (client: YouTrackAppsClient) => client.listUsers()],
   ])('list %s', (_name, path, requestList) => {
@@ -35,6 +34,83 @@ describe('YouTrackAppsClient', () => {
       expect(new URL(requests[1].url).pathname).toBe(path);
       expect(new URL(requests[1].url).searchParams.get('$skip')).toBe('100');
       expect(new URL(requests[1].url).searchParams.get('$top')).toBe('100');
+    });
+  });
+
+  it('getProjectFields calls the issue fields schema AI tool', async () => {
+    const requests: Request[] = [];
+    const bodies: unknown[] = [];
+    const schema = {
+      type: 'object',
+      properties: {
+        Priority: {type: 'string', enum: ['Critical', 'Normal']},
+        'Fix versions': {description: 'Array of versions', type: 'array', items: {type: 'string'}},
+        'Planned for': {description: 'Array of versions', type: 'array', items: {type: 'string', enum: ['2026.1']}},
+      },
+      required: ['Priority'],
+    };
+
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      const req = request as Request;
+      requests.push(req);
+      bodies.push(await req.clone().json());
+      return new Response(JSON.stringify({
+        name: 'get_issue_fields_schema',
+        content: [{text: JSON.stringify(schema), $type: 'ToolTextContent'}],
+        isError: false,
+        $type: 'AiToolCallResponse',
+      }), {status: 200});
+    });
+
+    await expect(new YouTrackAppsClient(config()).getProjectFields('DEMO')).resolves.toEqual([
+      {
+        id: 'Priority',
+        field: {
+          id: 'Priority',
+          name: 'Priority',
+          fieldType: {
+            isBundleType: true,
+            isMultiValue: false,
+            valueType: 'string',
+          },
+        },
+        canBeEmpty: false,
+      },
+      {
+        id: 'Fix versions',
+        field: {
+          id: 'Fix versions',
+          name: 'Fix versions',
+          fieldType: {
+            isBundleType: false,
+            isMultiValue: true,
+            valueType: 'string',
+          },
+        },
+        canBeEmpty: true,
+      },
+      {
+        id: 'Planned for',
+        field: {
+          id: 'Planned for',
+          name: 'Planned for',
+          fieldType: {
+            isBundleType: true,
+            isMultiValue: true,
+            valueType: 'string',
+          },
+        },
+        canBeEmpty: true,
+      },
+    ]);
+
+    const url = new URL(requests[0].url);
+    expect(requests[0].method).toBe('POST');
+    expect(url.pathname).toBe('/api/ai/tools/call');
+    expect(url.searchParams.get('fields')).toBe('name,content(text),isError');
+    expect(bodies[0]).toEqual({
+      name: 'get_issue_fields_schema',
+      arguments: {projectKey: 'DEMO'},
     });
   });
 

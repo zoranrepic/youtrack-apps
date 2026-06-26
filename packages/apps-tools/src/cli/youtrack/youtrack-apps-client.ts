@@ -12,7 +12,6 @@ import {
   LogEntry,
   LogsResponse,
   normalizeAppId,
-  PROJECT_FIELDS_FIELDS,
   PROJECT_RESOLVE_FIELDS,
   PROJECT_SEARCH_FIELDS,
   ProjectCustomField,
@@ -28,11 +27,30 @@ import {
 type JsonMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 const LIST_PAGE_SIZE = 100;
+const PROJECT_FIELDS_TOOL_CALL_FIELDS: QueryField = ['name', {content: ['text']}, 'isError'];
 
 interface JsonRequestOptions {
   fields?: QueryField;
   searchParams?: Record<string, string>;
   body?: unknown;
+}
+
+interface ToolCallResponse {
+  name?: string;
+  content?: {text?: string}[];
+  isError?: boolean;
+}
+
+interface IssueFieldsSchema {
+  type?: string;
+  properties?: Record<string, IssueFieldSchema>;
+  required?: unknown[];
+}
+
+interface IssueFieldSchema {
+  type?: unknown;
+  enum?: unknown[];
+  items?: IssueFieldSchema;
 }
 
 export interface ProjectConfigurationPayload {
@@ -47,7 +65,7 @@ export interface YouTrackAppsGateway {
   getApp(appName: string, fields?: QueryField): Promise<AppDetails | null>;
   listProjects(fields?: QueryField): Promise<ProjectDetails[]>;
   getProject(projectShortName: string): Promise<ProjectDetails | null>;
-  getProjectFields(projectId: string): Promise<ProjectCustomField[]>;
+  getProjectFields(projectKey: string): Promise<ProjectCustomField[]>;
   listGroups(): Promise<UserGroup[]>;
   getGroupMembers(groupId: string): Promise<UserGroupMembers | null>;
   listUsers(): Promise<UserSummary[]>;
@@ -81,8 +99,16 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     }) ?? null;
   }
 
-  async getProjectFields(projectId: string): Promise<ProjectCustomField[]> {
-    return await this.listRequest<ProjectCustomField>(`/api/admin/projects/${projectId}/fields`, PROJECT_FIELDS_FIELDS);
+  async getProjectFields(projectKey: string): Promise<ProjectCustomField[]> {
+    const response = await this.jsonRequest<ToolCallResponse>('POST', '/api/ai/tools/call', {
+      fields: PROJECT_FIELDS_TOOL_CALL_FIELDS,
+      body: {
+        name: 'get_issue_fields_schema',
+        arguments: {projectKey},
+      },
+    });
+
+    return parseProjectFieldsToolResponse(response);
   }
 
   async listGroups(): Promise<UserGroup[]> {
@@ -221,4 +247,93 @@ function parseLogsResponse(text: string | undefined): LogEntry[] | LogsResponse 
   } catch {
     return text.split(/\r?\n/).map(line => line.trimEnd()).filter(Boolean);
   }
+}
+
+function parseProjectFieldsToolResponse(response: ToolCallResponse | undefined): ProjectCustomField[] {
+  const text = response?.content
+    ?.map(item => item.text)
+    .filter((item): item is string => typeof item === 'string')
+    .join('\n')
+    .trim();
+
+  if (response?.isError) {
+    throw new Error(text || 'Failed to fetch project fields schema');
+  }
+
+  if (!text) {
+    return [];
+  }
+
+  const data = parseJsonText(text);
+  if (Array.isArray(data)) {
+    return data as ProjectCustomField[];
+  }
+
+  if (isRecord(data) && Array.isArray(data.fields)) {
+    return data.fields as ProjectCustomField[];
+  }
+
+  if (isIssueFieldsSchema(data)) {
+    return projectFieldsFromSchema(data);
+  }
+
+  return [];
+}
+
+function projectFieldsFromSchema(schema: IssueFieldsSchema): ProjectCustomField[] {
+  const requiredFields = new Set(schema.required?.filter((item): item is string => typeof item === 'string'));
+  return Object.entries(schema.properties ?? {}).map(([name, property]) => {
+    return {
+      id: name,
+      field: {
+        id: name,
+        name,
+        fieldType: {
+          isBundleType: hasEnum(property),
+          isMultiValue: property.type === 'array',
+          valueType: valueType(property),
+        },
+      },
+      canBeEmpty: !requiredFields.has(name),
+    };
+  });
+}
+
+function hasEnum(property: IssueFieldSchema): boolean {
+  return Array.isArray(property.enum) || Array.isArray(property.items?.enum);
+}
+
+function valueType(property: IssueFieldSchema): string {
+  if (property.type === 'array') {
+    return typeof property.items?.type === 'string' ? property.items.type : 'array';
+  }
+
+  return typeof property.type === 'string' ? property.type : 'unknown';
+}
+
+function parseJsonText(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const fencedJson = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (fencedJson) {
+      return JSON.parse(fencedJson[1]);
+    }
+
+    const firstJsonStart = Math.min(...[text.indexOf('{'), text.indexOf('[')].filter(index => index >= 0));
+    const lastJsonEnd = Math.max(text.lastIndexOf('}'), text.lastIndexOf(']'));
+    if (Number.isFinite(firstJsonStart) && lastJsonEnd > firstJsonStart) {
+      return JSON.parse(text.slice(firstJsonStart, lastJsonEnd + 1));
+    }
+
+    throw new Error('Project fields schema response is not valid JSON');
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isIssueFieldsSchema(value: unknown): value is IssueFieldsSchema {
+  return isRecord(value) && isRecord(value.properties);
 }

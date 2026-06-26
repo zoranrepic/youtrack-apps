@@ -76,7 +76,7 @@ describe('AppManagementOperations', () => {
     expect(gateway.projectRequests).toEqual(['CP']);
   });
 
-  it('getProjectFields resolves any project key and fetches fields by project id', async () => {
+  it('getProjectFields resolves any project key and fetches fields by project short name', async () => {
     const gateway = fakeGateway({
       projects: [projectDetails()],
       projectFields: [{id: 'field-1', field: {id: 'field', name: 'Priority'}, canBeEmpty: false}],
@@ -86,7 +86,7 @@ describe('AppManagementOperations', () => {
     const result = await operations.getProjectFields('0-1');
 
     expect(result.fields).toHaveLength(1);
-    expect(gateway.projectFieldsRequests).toEqual(['0-1']);
+    expect(gateway.projectFieldsRequests).toEqual(['CP']);
   });
 
   it('getGroupMembers resolves exact group names and fetches members by group id', async () => {

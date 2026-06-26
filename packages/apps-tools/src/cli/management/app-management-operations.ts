@@ -118,7 +118,7 @@ export class AppManagementOperations {
 
   async getProjectFields(projectKey?: string): Promise<ProjectFieldsResult> {
     const project = await this.requireProjectByKey(projectKey);
-    const fields = await this.client.getProjectFields(project.id);
+    const fields = await this.client.getProjectFields(project.shortName ?? project.id);
     return {project, fields};
   }
 
