@@ -7,6 +7,35 @@ export interface AppRule {
   title?: string;
 }
 
+export interface AppTag {
+  name?: string;
+}
+
+export interface UserReference {
+  id?: string;
+  login?: string;
+  name?: string;
+}
+
+export interface GroupReference {
+  id?: string;
+  name?: string;
+}
+
+export interface TagSharingSettings {
+  permissionBasedTagAccess?: boolean;
+  permittedGroups?: GroupReference[];
+  permittedUsers?: UserReference[];
+}
+
+export interface TagDetails {
+  id: string;
+  name: string;
+  owner?: UserReference;
+  isUsable?: boolean;
+  tagSharingSettings?: TagSharingSettings;
+}
+
 export interface AppProject {
   id?: string;
   name?: string;
@@ -44,8 +73,24 @@ export interface PluggableObject {
   id?: string;
   name?: string;
   title?: string;
+  typeAlias?: string;
   isGlobal?: boolean;
+  script?: AppScript;
   usages?: PluggableObjectUsage[];
+}
+
+export interface AppScript {
+  id?: string;
+  name?: string;
+  script?: string;
+  updated?: number;
+  updatedBy?: {
+    login?: string;
+  };
+}
+
+export interface AppFileContent {
+  content?: string;
 }
 
 export interface RequirementError {
@@ -58,10 +103,21 @@ export interface AppDetails {
   id: string;
   name: string;
   title?: string;
+  version?: string;
+  description?: string;
+  tags?: AppTag[];
+  canBeAttached?: boolean;
+  hasWidgetOrHttp?: boolean;
+  fromMarketplace?: boolean;
+  manifestFile?: AppFileContent | null;
+  settingsFile?: AppFileContent | null;
+  entityExtensionsFile?: AppFileContent | null;
   enabled?: boolean;
   globalConfig?: {
+    id?: string;
     enabled?: boolean;
     missingRequiredSettings?: boolean;
+    globalSettings?: string;
   };
   attachedProjects?: AppProject[];
   requirements?: {
@@ -76,6 +132,29 @@ export interface ProjectDetails {
   id: string;
   name?: string;
   shortName?: string;
+}
+
+export interface VisibilitySettings {
+  permittedUsers?: {id?: string; login?: string}[];
+  permittedGroups?: {id?: string; name?: string}[];
+}
+
+export interface AppConfiguration {
+  id: string;
+  app?: Pick<AppDetails, 'id' | 'name' | 'title'>;
+  project?: ProjectDetails;
+  enabled?: boolean;
+  isActive?: boolean;
+  missingRequiredSettings?: boolean;
+  globalSettings?: string;
+  projectSettings?: string;
+  visibilitySettings?: VisibilitySettings;
+}
+
+export interface AppSettingsUpdate {
+  enabled?: boolean;
+  globalSettings?: string;
+  projectSettings?: string;
 }
 
 export interface ProjectFieldType {
@@ -154,7 +233,7 @@ export interface AppProblem extends RuleProblem {
 }
 
 export interface SearchResult extends AppDetails {
-  matchedRules: AppRule[];
+  matchedRules?: AppRule[];
 }
 
 export interface ProjectScopeResult {
@@ -169,7 +248,18 @@ export interface EnabledResult {
   project?: ProjectDetails;
 }
 
-export const APP_SEARCH_FIELDS: QueryField = ['id', 'name', 'enabled', {rules: ['id', 'name', 'title']}];
+export const APP_SEARCH_FIELDS: QueryField = [
+  'id',
+  'name',
+  'title',
+  'version',
+  'description',
+  {tags: ['name']},
+  'canBeAttached',
+  'hasWidgetOrHttp',
+  'fromMarketplace',
+  {globalConfig: ['id', 'enabled', 'missingRequiredSettings']},
+];
 
 export const APP_RESOLVE_FIELDS: QueryField = [
   'id',
@@ -177,6 +267,56 @@ export const APP_RESOLVE_FIELDS: QueryField = [
   'title',
   {globalConfig: ['enabled']},
   {usages: ['id', 'enabled', 'isBroken', 'isActive', 'missingRequiredSettings', {project: ['id', 'name', 'shortName']}]},
+];
+
+export const APP_PACKAGE_FIELDS: QueryField = [
+  'id',
+  'name',
+  'title',
+  'version',
+  {manifestFile: ['content']},
+  {settingsFile: ['content']},
+  {entityExtensionsFile: ['content']},
+  {
+    pluggableObjects: [
+      'id',
+      'name',
+      'title',
+      'typeAlias',
+      'isGlobal',
+      {script: ['id', 'name', 'script', 'updated', {updatedBy: ['login']}]},
+    ],
+  },
+];
+
+export const GLOBAL_CONFIG_FIELDS: QueryField = [
+  'id',
+  {app: ['id', 'name', 'title']},
+  'enabled',
+  'missingRequiredSettings',
+  'globalSettings',
+  {visibilitySettings: [{permittedUsers: ['id', 'login']}, {permittedGroups: ['id', 'name']}]},
+];
+
+export const PROJECT_APP_CONFIG_FIELDS: QueryField = [
+  'id',
+  {app: ['id', 'name', 'title']},
+  {project: ['id', 'shortName', 'name']},
+  'enabled',
+  'isActive',
+  'missingRequiredSettings',
+  'globalSettings',
+  'projectSettings',
+  {visibilitySettings: [{permittedUsers: ['id', 'login']}, {permittedGroups: ['id', 'name']}]},
+];
+
+export const APP_SETTINGS_UPDATE_FIELDS: QueryField = [
+  'id',
+  'enabled',
+  'isActive',
+  'missingRequiredSettings',
+  'globalSettings',
+  'projectSettings',
 ];
 
 export const APP_PROBLEM_FIELDS: QueryField = [
@@ -223,6 +363,20 @@ export const GROUP_MEMBERS_FIELDS: QueryField = [{ownUsers: ['id']}];
 export const USER_SEARCH_FIELDS: QueryField = ['banned', 'login', 'id', 'name', 'fullName'];
 
 export const USER_DETAILS_FIELDS: QueryField = [{userType: ['id']}, 'email', 'guest'];
+
+export const TAG_SEARCH_FIELDS: QueryField = [
+  'id',
+  'name',
+  {owner: ['id', 'login', 'name']},
+  'isUsable',
+  {
+    tagSharingSettings: [
+      'permissionBasedTagAccess',
+      {permittedGroups: ['id', 'name']},
+      {permittedUsers: ['id', 'login']},
+    ],
+  },
+];
 
 export const APP_USAGE_UPDATE_FIELDS: QueryField = [
   'id',

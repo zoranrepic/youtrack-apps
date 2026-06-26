@@ -3,10 +3,11 @@ import {Config} from '../../../@types/types.js';
 import {QueryField} from '../../../lib/net/queryfields.js';
 import {
   APP_PROBLEM_FIELDS,
+  AppConfiguration,
   AppDetails,
   AppProblem,
   AppProject,
-  AppRule,
+  AppSettingsUpdate,
   EnabledResult,
   findUsageForProject,
   GroupMembersResult,
@@ -17,6 +18,7 @@ import {
   PROJECT_RESOLVE_FIELDS,
   ProjectScopeResult,
   SearchResult,
+  TagDetails,
   UserGroup,
   UserInfoResult,
   UserSummary,
@@ -31,12 +33,24 @@ export class AppManagementOperations {
       throw new Error(i18n('Search query should be defined'));
     }
 
-    const apps = await this.client.listApps();
-    return findMatches(apps, query);
+    return await this.client.searchApps(query);
   }
 
   async getInfo(appName?: string): Promise<AppDetails> {
     return await this.requireApp(appName, APP_PROBLEM_FIELDS);
+  }
+
+  async getPackage(appName?: string): Promise<AppDetails> {
+    if (!appName) {
+      throw new Error(i18n('App name should be defined'));
+    }
+
+    const app = await this.client.getAppPackage(appName);
+    if (!app) {
+      throw new Error(i18n(`App "${appName}" was not found`));
+    }
+
+    return app;
   }
 
   async deleteApp(appName?: string): Promise<AppDetails> {
@@ -49,7 +63,7 @@ export class AppManagementOperations {
     const app = await this.requireApp(appName);
 
     if (!projectShortName) {
-      await this.client.updateGlobalConfig(app.id, enabled);
+      await this.client.updateGlobalConfig(app.id, {enabled});
       return {app, enabled};
     }
 
@@ -96,6 +110,65 @@ export class AppManagementOperations {
   async getRequirementErrors(appName?: string): Promise<AppProblem[]> {
     const app = await this.requireApp(appName, APP_PROBLEM_FIELDS);
     return collectProblems(app);
+  }
+
+  async searchTags(query: string | undefined, projectShortName?: string | null): Promise<TagDetails[]> {
+    if (!query) {
+      throw new Error(i18n('Tag query should be defined'));
+    }
+
+    if (!projectShortName) {
+      return await this.client.searchTags(query);
+    }
+
+    const project = await this.requireProject(projectShortName);
+    return await this.client.searchProjectTags(project.id, query);
+  }
+
+  async getSettings(appName: string | undefined, projectShortName?: string | null): Promise<AppConfiguration> {
+    const app = await this.requireAppFromSearch(appName);
+
+    if (!projectShortName) {
+      const config = await this.client.getGlobalConfig(app.id);
+      if (!config) {
+        throw new Error(i18n(`Global settings for app "${app.name}" were not found`));
+      }
+      return config;
+    }
+
+    const {project, usage} = await this.requireProjectUsage(app, projectShortName);
+    const config = await this.client.getProjectConfiguration(project.id, usage.id);
+    if (!config) {
+      throw new Error(i18n(`Project settings for app "${app.name}" and project "${projectShortName}" were not found`));
+    }
+    return config;
+  }
+
+  async updateSettings(
+    appName: string | undefined,
+    payload: AppSettingsUpdate,
+    projectShortName?: string | null,
+  ): Promise<AppConfiguration> {
+    if (payload.enabled === undefined && payload.globalSettings === undefined && payload.projectSettings === undefined) {
+      throw new Error(i18n('No settings update was provided'));
+    }
+
+    const app = await this.requireAppFromSearch(appName);
+
+    if (!projectShortName) {
+      const config = await this.client.updateGlobalConfig(app.id, payload);
+      if (!config) {
+        throw new Error(i18n(`Global settings for app "${app.name}" were not updated`));
+      }
+      return config;
+    }
+
+    const {project, usage} = await this.requireProjectUsage(app, projectShortName);
+    const config = await this.client.updateProjectConfiguration(project.id, usage.id, payload);
+    if (!config) {
+      throw new Error(i18n(`Project settings for app "${app.name}" and project "${projectShortName}" were not updated`));
+    }
+    return config;
   }
 
   async listProjects(): Promise<ProjectDetails[]> {
@@ -159,6 +232,36 @@ export class AppManagementOperations {
     return app;
   }
 
+  private async requireAppFromSearch(appQuery?: string): Promise<AppDetails> {
+    if (!appQuery) {
+      throw new Error(i18n('App name should be defined'));
+    }
+
+    const matches = await this.client.searchApps(appQuery);
+    const exactMatches = matches.filter(app => {
+      return [app.id, app.name, app.title].some(value => normalizeLookupValue(value) === normalizeLookupValue(appQuery));
+    });
+    const candidates = exactMatches.length ? exactMatches : matches;
+
+    if (candidates.length > 1) {
+      throw new Error(i18n(`App "${appQuery}" is ambiguous`));
+    }
+
+    if (candidates.length === 1) {
+      const app = await this.client.getApp(candidates[0].id);
+      if (app) {
+        return app;
+      }
+    }
+
+    const app = await this.client.getApp(appQuery);
+    if (!app) {
+      throw new Error(i18n(`App "${appQuery}" was not found`));
+    }
+
+    return app;
+  }
+
   private async requireProject(projectShortName?: string | null): Promise<ProjectDetails> {
     if (!projectShortName) {
       throw new Error(i18n('Option "--project" is required'));
@@ -170,6 +273,17 @@ export class AppManagementOperations {
     }
 
     return project;
+  }
+
+  private async requireProjectUsage(app: AppDetails, projectShortName: string): Promise<{project: ProjectDetails; usage: {id: string}}> {
+    const project = await this.requireProject(projectShortName);
+    const usage = findUsageForProject(app, project);
+
+    if (!usage) {
+      throw new Error(i18n(`App "${app.name}" is not attached to project "${projectShortName}"`));
+    }
+
+    return {project, usage};
   }
 
   private async requireProjectByKey(projectKey?: string): Promise<ProjectDetails> {
@@ -214,25 +328,6 @@ export class AppManagementOperations {
 
 export function createAppManagementOperations(config: Config): AppManagementOperations {
   return new AppManagementOperations(new YouTrackAppsClient(config));
-}
-
-function findMatches(apps: AppDetails[], query: string): SearchResult[] {
-  const normalizedQuery = query.toLowerCase();
-
-  return apps.reduce<SearchResult[]>((results, app) => {
-    const matchedRules = (app.rules ?? []).filter(rule => ruleMatches(rule, normalizedQuery));
-    const appMatches = [app.id, app.name].some(value => value.toLowerCase().includes(normalizedQuery));
-
-    if (appMatches || matchedRules.length) {
-      results.push({...app, matchedRules});
-    }
-
-    return results;
-  }, []);
-}
-
-function ruleMatches(rule: AppRule, query: string): boolean {
-  return [rule.id, rule.name, rule.title].some(value => value?.toLowerCase().includes(query));
 }
 
 function validateTop(top: string | null): string | null {

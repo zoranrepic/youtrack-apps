@@ -1,9 +1,11 @@
 import {jest, describe, it, expect, beforeEach, afterEach} from '@jest/globals';
 import nock from 'nock';
 import {list} from './commands/list.js';
+import {settings} from './commands/settings.js';
 
 nock.back.setMode('record');
 jest.mock('./commands/list');
+jest.mock('./commands/settings');
 
 describe('index', function () {
   beforeEach(function () {
@@ -77,6 +79,8 @@ describe('index', function () {
       yes: false,
       project: null,
       top: null,
+      settings: null,
+      enabled: null,
     };
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
@@ -103,6 +107,8 @@ describe('index', function () {
       yes: false,
       project: null,
       top: null,
+      settings: null,
+      enabled: null,
     };
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
@@ -110,6 +116,17 @@ describe('index', function () {
     require('./index').run(['', '', 'list', '--host=foo', '--token=bar', '--yaml']);
 
     expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should join settings app title arguments', function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    require('./index').run(['', '', 'settings', 'My', 'App', '--host=foo', '--token=bar']);
+
+    expect(settings).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar'}), 'My App');
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });

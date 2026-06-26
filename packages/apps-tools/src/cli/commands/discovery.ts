@@ -19,8 +19,8 @@ export async function search(config: Config, query?: string): Promise<void> {
     }
 
     for (const app of results) {
-      console.log(`${app.name} (${app.id})`);
-      for (const rule of app.matchedRules) {
+      console.log(formatApp(app));
+      for (const rule of app.matchedRules ?? []) {
         console.log(`  rule: ${formatRule(rule)}`);
       }
     }
@@ -59,6 +59,14 @@ export async function info(config: Config, appName?: string): Promise<void> {
   } catch (error) {
     exit(error);
   }
+}
+
+function formatApp(app: {id: string; name: string; title?: string}): string {
+  if (app.title && app.title !== app.name) {
+    return `${app.title} (${app.name}, ${app.id})`;
+  }
+
+  return `${app.name} (${app.id})`;
 }
 
 function formatRule(rule: AppRule): string {

@@ -15,6 +15,9 @@ import {logs, requirementErrors} from './commands/diagnostics.js';
 import {projectFields, projectInfo, projectList} from './commands/projects.js';
 import {groupList, groupMembers} from './commands/groups.js';
 import {userInfo, userList} from './commands/users.js';
+import {scripts} from './commands/scripts.js';
+import {settings, settingsSet} from './commands/settings.js';
+import {tagSearch} from './commands/tags.js';
 
 const options = {
   list: list,
@@ -23,6 +26,10 @@ const options = {
   validate: validate,
   search: search,
   info: info,
+  scripts: scripts,
+  settings: settings,
+  'settings-set': settingsSet,
+  'tag-search': tagSearch,
   delete: deleteApp,
   enable: enable,
   disable: disable,
@@ -55,6 +62,8 @@ export async function run(argv = process.argv) {
     yes: isFlagEnabled(args.yes),
     project: args.project || null,
     top: args.top ? args.top.toString() : null,
+    settings: args.settings ? args.settings.toString() : null,
+    enabled: args.enabled ? args.enabled.toString() : null,
     cwd: process.cwd(),
   };
 
@@ -69,6 +78,10 @@ export async function run(argv = process.argv) {
     case 'upload':
     case 'search':
     case 'info':
+    case 'scripts':
+    case 'settings':
+    case 'settings-set':
+    case 'tag-search':
     case 'delete':
     case 'enable':
     case 'disable':
@@ -85,7 +98,7 @@ export async function run(argv = process.argv) {
     case 'user-info':
       await checkRequiredParams(['host', 'token'], args, async () => {
         const executable = options[option];
-        const commandArg = option === 'search' ? args._.slice(1).join(' ') : args._.slice(1)[0];
+        const commandArg = shouldJoinCommandArg(option) ? args._.slice(1).join(' ') : args._.slice(1)[0];
         await executable(config, commandArg);
       });
       return;
@@ -106,8 +119,12 @@ export async function run(argv = process.argv) {
     printLine(i18n('download <app> [--output, --overwrite]       '), i18n('Download an app'));
     printLine(i18n('upload   <directory>                         '), i18n('Upload app to server'));
     printLine(i18n('validate <directory> [--manifest, --schema]  '), i18n('Validate manifest'));
-    printLine(i18n('search   <query> [--json]                    '), i18n('Search apps and rules'));
+    printLine(i18n('search   <query> [--json]                    '), i18n('Search apps by title or package name'));
     printLine(i18n('info     <app> [--json]                      '), i18n('Show app details'));
+    printLine(i18n('scripts  <app> [--json]                      '), i18n('Show app files and scripts'));
+    printLine(i18n('settings <app> [--project, --json]           '), i18n('Read app settings'));
+    printLine(i18n('settings-set <app> [--project, --settings, --enabled]'), i18n('Update app settings'));
+    printLine(i18n('tag-search <query> [--project, --json, --yaml]'), i18n('Search tags'));
     printLine(i18n('delete   <app> [--yes]                       '), i18n('Delete an app'));
     printLine(i18n('enable   <app> [--project <short-name>]      '), i18n('Enable an app'));
     printLine(i18n('disable  <app> [--project <short-name>]      '), i18n('Disable an app'));
@@ -166,5 +183,9 @@ export async function run(argv = process.argv) {
 
   function isFlagEnabled(value: unknown): boolean {
     return value !== undefined && value !== false && value !== 'false';
+  }
+
+  function shouldJoinCommandArg(option: string | number): boolean {
+    return option === 'search' || option === 'settings' || option === 'settings-set' || option === 'tag-search';
   }
 }

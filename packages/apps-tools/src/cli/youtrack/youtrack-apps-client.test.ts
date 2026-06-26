@@ -37,6 +37,114 @@ describe('YouTrackAppsClient', () => {
     });
   });
 
+  it('searchApps sends title query and sorting params', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([{id: '93-1', name: 'my-app', title: 'My App'}]), {status: 200});
+    });
+
+    await expect(new YouTrackAppsClient(config()).searchApps('My App')).resolves.toEqual([
+      {id: '93-1', name: 'my-app', title: 'My App'},
+    ]);
+
+    const url = new URL(requests[0].url);
+    expect(url.pathname).toBe('/api/admin/apps');
+    expect(url.searchParams.get('title')).toBe('My App');
+    expect(url.searchParams.get('sort')).toBe('asc');
+    expect(url.searchParams.get('fields')).toContain('title');
+  });
+
+  it('getAppPackage requests package files and scripts', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify({
+        id: '93-1',
+        name: 'my-app',
+        manifestFile: {content: '{}'},
+        pluggableObjects: [{id: '93-2', script: {id: '93-2', script: 'exports.httpHandler = {};'}}],
+      }), {status: 200});
+    });
+
+    await expect(new YouTrackAppsClient(config()).getAppPackage('my-app')).resolves.toMatchObject({
+      id: '93-1',
+      manifestFile: {content: '{}'},
+    });
+
+    const url = new URL(requests[0].url);
+    expect(url.pathname).toBe('/api/admin/apps/my-app');
+    expect(url.searchParams.get('fields')).toContain('manifestFile(content)');
+    expect(url.searchParams.get('fields')).toContain('script(id,name,script,updated,updatedBy(login))');
+  });
+
+  it('searchTags requests usable tags by query', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([{id: '6-4', name: 'release', isUsable: true}]), {status: 200});
+    });
+
+    await expect(new YouTrackAppsClient(config()).searchTags('release')).resolves.toEqual([
+      {id: '6-4', name: 'release', isUsable: true},
+    ]);
+
+    const url = new URL(requests[0].url);
+    expect(url.pathname).toBe('/api/tags');
+    expect(url.searchParams.get('query')).toBe('release');
+    expect(url.searchParams.get('isUsable')).toBe('true');
+    expect(url.searchParams.get('fields')).toContain('tagSharingSettings');
+  });
+
+  it('searchProjectTags requests project relevant tags by query', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([{id: '6-4', name: 'release'}]), {status: 200});
+    });
+
+    await expect(new YouTrackAppsClient(config()).searchProjectTags('0-0', 'release')).resolves.toEqual([
+      {id: '6-4', name: 'release'},
+    ]);
+
+    const url = new URL(requests[0].url);
+    expect(url.pathname).toBe('/api/admin/projects/0-0/relevantTags');
+    expect(url.searchParams.get('query')).toBe('release');
+    expect(url.searchParams.get('fields')).toContain('owner(id,login,name)');
+  });
+
+  it('reads and updates app settings endpoints', async () => {
+    const requests: Request[] = [];
+    const bodies: unknown[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      const req = request as Request;
+      requests.push(req);
+      if (req.method === 'POST') {
+        bodies.push(await req.clone().json());
+      }
+      return new Response(JSON.stringify({id: '94-1', enabled: true, globalSettings: '{"apiUrl":"https://example.test"}'}), {
+        status: 200,
+      });
+    });
+
+    const client = new YouTrackAppsClient(config());
+    await client.getGlobalConfig('93-1');
+    await client.updateGlobalConfig('93-1', {enabled: true, globalSettings: '{"apiUrl":"https://example.test"}'});
+    await client.getProjectConfiguration('0-0', '95-1');
+    await client.updateProjectConfiguration('0-0', '95-1', {projectSettings: '{"projectKey":"PRJ"}'});
+
+    expect(requests.map(request => `${request.method} ${new URL(request.url).pathname}`)).toEqual([
+      'GET /api/admin/apps/93-1/globalConfig',
+      'POST /api/admin/apps/93-1/globalConfig',
+      'GET /api/admin/projects/0-0/appConfigurations/95-1',
+      'POST /api/admin/projects/0-0/appConfigurations/95-1',
+    ]);
+    expect(bodies).toEqual([
+      {enabled: true, globalSettings: '{"apiUrl":"https://example.test"}'},
+      {projectSettings: '{"projectKey":"PRJ"}'},
+    ]);
+  });
+
   it('getProjectFields calls the issue fields schema AI tool', async () => {
     const requests: Request[] = [];
     const bodies: unknown[] = [];
@@ -156,6 +264,8 @@ function config(): Config {
     yes: false,
     project: null,
     top: null,
+    settings: null,
+    enabled: null,
     cwd: process.cwd(),
   };
 }

@@ -5,17 +5,25 @@ import {resolve} from '../../../lib/net/resolve.js';
 import {
   APP_RESOLVE_FIELDS,
   APP_SEARCH_FIELDS,
+  APP_PACKAGE_FIELDS,
+  APP_SETTINGS_UPDATE_FIELDS,
   APP_USAGE_UPDATE_FIELDS,
+  AppConfiguration,
   AppDetails,
+  AppSettingsUpdate,
+  GLOBAL_CONFIG_FIELDS,
   GROUP_MEMBERS_FIELDS,
   GROUP_SEARCH_FIELDS,
   LogEntry,
   LogsResponse,
   normalizeAppId,
+  PROJECT_APP_CONFIG_FIELDS,
   PROJECT_RESOLVE_FIELDS,
   PROJECT_SEARCH_FIELDS,
   ProjectCustomField,
   ProjectDetails,
+  TAG_SEARCH_FIELDS,
+  TagDetails,
   USER_DETAILS_FIELDS,
   USER_SEARCH_FIELDS,
   UserDetails,
@@ -62,17 +70,23 @@ export interface ProjectConfigurationPayload {
 
 export interface YouTrackAppsGateway {
   listApps(fields?: QueryField): Promise<AppDetails[]>;
+  searchApps(query: string, fields?: QueryField): Promise<AppDetails[]>;
   getApp(appName: string, fields?: QueryField): Promise<AppDetails | null>;
+  getAppPackage(appName: string): Promise<AppDetails | null>;
   listProjects(fields?: QueryField): Promise<ProjectDetails[]>;
   getProject(projectShortName: string): Promise<ProjectDetails | null>;
   getProjectFields(projectKey: string): Promise<ProjectCustomField[]>;
+  searchTags(query: string): Promise<TagDetails[]>;
+  searchProjectTags(projectId: string, query: string): Promise<TagDetails[]>;
   listGroups(): Promise<UserGroup[]>;
   getGroupMembers(groupId: string): Promise<UserGroupMembers | null>;
   listUsers(): Promise<UserSummary[]>;
   getUser(userId: string): Promise<UserDetails | null>;
   deleteWorkflow(appId: string): Promise<void>;
-  updateGlobalConfig(appId: string, enabled: boolean): Promise<void>;
-  updateProjectConfiguration(projectId: string, usageId: string, payload: ProjectConfigurationPayload): Promise<void>;
+  getGlobalConfig(appId: string): Promise<AppConfiguration | null>;
+  updateGlobalConfig(appId: string, payload: AppSettingsUpdate): Promise<AppConfiguration | null>;
+  getProjectConfiguration(projectId: string, usageId: string): Promise<AppConfiguration | null>;
+  updateProjectConfiguration(projectId: string, usageId: string, payload: ProjectConfigurationPayload | AppSettingsUpdate): Promise<AppConfiguration | null>;
   updateAppUsages(appId: string, projectIds: string[]): Promise<void>;
   getLogs(appId: string, top?: string): Promise<LogEntry[] | LogsResponse | undefined>;
 }
@@ -84,9 +98,21 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     return await this.listRequest<AppDetails>('/api/admin/apps', fields);
   }
 
+  async searchApps(query: string, fields: QueryField = APP_SEARCH_FIELDS): Promise<AppDetails[]> {
+    return await this.listRequest<AppDetails>('/api/admin/apps', fields, {
+      title: query,
+      sort: 'asc',
+    });
+  }
+
   async getApp(appName: string, fields: QueryField = APP_RESOLVE_FIELDS): Promise<AppDetails | null> {
     const app = normalizeAppId(appName);
     return await this.jsonRequest<AppDetails>('GET', `/api/admin/apps/${app}`, {fields}) ?? null;
+  }
+
+  async getAppPackage(appName: string): Promise<AppDetails | null> {
+    const app = normalizeAppId(appName);
+    return await this.jsonRequest<AppDetails>('GET', `/api/admin/apps/${app}`, {fields: APP_PACKAGE_FIELDS}) ?? null;
   }
 
   async listProjects(fields: QueryField = PROJECT_SEARCH_FIELDS): Promise<ProjectDetails[]> {
@@ -109,6 +135,19 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     });
 
     return parseProjectFieldsToolResponse(response);
+  }
+
+  async searchTags(query: string): Promise<TagDetails[]> {
+    return await this.listRequest<TagDetails>('/api/tags', TAG_SEARCH_FIELDS, {
+      query,
+      isUsable: 'true',
+    });
+  }
+
+  async searchProjectTags(projectId: string, query: string): Promise<TagDetails[]> {
+    return await this.listRequest<TagDetails>(`/api/admin/projects/${projectId}/relevantTags`, TAG_SEARCH_FIELDS, {
+      query,
+    });
   }
 
   async listGroups(): Promise<UserGroup[]> {
@@ -135,16 +174,34 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     await this.jsonRequest<void>('DELETE', `/api/admin/workflows/${appId}`);
   }
 
-  async updateGlobalConfig(appId: string, enabled: boolean): Promise<void> {
-    await this.jsonRequest<void>('PUT', `/api/admin/apps/${appId}/globalConfig`, {
-      body: {enabled},
-    });
+  async getGlobalConfig(appId: string): Promise<AppConfiguration | null> {
+    return await this.jsonRequest<AppConfiguration>('GET', `/api/admin/apps/${appId}/globalConfig`, {
+      fields: GLOBAL_CONFIG_FIELDS,
+    }) ?? null;
   }
 
-  async updateProjectConfiguration(projectId: string, usageId: string, payload: ProjectConfigurationPayload): Promise<void> {
-    await this.jsonRequest<void>('PUT', `/api/admin/projects/${projectId}/appConfigurations/${usageId}`, {
+  async updateGlobalConfig(appId: string, payload: AppSettingsUpdate): Promise<AppConfiguration | null> {
+    return await this.jsonRequest<AppConfiguration>('POST', `/api/admin/apps/${appId}/globalConfig`, {
+      fields: APP_SETTINGS_UPDATE_FIELDS,
       body: payload,
-    });
+    }) ?? null;
+  }
+
+  async getProjectConfiguration(projectId: string, usageId: string): Promise<AppConfiguration | null> {
+    return await this.jsonRequest<AppConfiguration>('GET', `/api/admin/projects/${projectId}/appConfigurations/${usageId}`, {
+      fields: PROJECT_APP_CONFIG_FIELDS,
+    }) ?? null;
+  }
+
+  async updateProjectConfiguration(
+    projectId: string,
+    usageId: string,
+    payload: ProjectConfigurationPayload | AppSettingsUpdate,
+  ): Promise<AppConfiguration | null> {
+    return await this.jsonRequest<AppConfiguration>('POST', `/api/admin/projects/${projectId}/appConfigurations/${usageId}`, {
+      fields: APP_SETTINGS_UPDATE_FIELDS,
+      body: payload,
+    }) ?? null;
   }
 
   async updateAppUsages(appId: string, projectIds: string[]): Promise<void> {
@@ -174,13 +231,14 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     return JSON.parse(text) as T;
   }
 
-  private async listRequest<T>(path: string, fields: QueryField): Promise<T[]> {
+  private async listRequest<T>(path: string, fields: QueryField, searchParams: Record<string, string> = {}): Promise<T[]> {
     const result: T[] = [];
 
     for (let skip = 0; ; skip += LIST_PAGE_SIZE) {
       const page = await this.jsonRequest<T[]>('GET', path, {
         fields,
         searchParams: {
+          ...searchParams,
           '$skip': skip.toString(),
           '$top': LIST_PAGE_SIZE.toString(),
         },

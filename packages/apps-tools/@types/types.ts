@@ -13,6 +13,8 @@ export interface Config {
   yes: boolean;
   project: string | null;
   top: string | null;
+  settings: string | null;
+  enabled: string | null;
   cwd: string;
 }
 
