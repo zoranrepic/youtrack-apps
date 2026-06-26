@@ -7,6 +7,37 @@ describe('YouTrackAppsClient', () => {
     jest.restoreAllMocks();
   });
 
+  describe.each([
+    ['apps', '/api/admin/apps', (client: YouTrackAppsClient) => client.listApps(['id'])],
+    ['projects', '/api/admin/projects', (client: YouTrackAppsClient) => client.listProjects(['id'])],
+    ['project fields', '/api/admin/projects/project-id/fields', (client: YouTrackAppsClient) => client.getProjectFields('project-id')],
+    ['groups', '/api/groups', (client: YouTrackAppsClient) => client.listGroups()],
+    ['users', '/api/users', (client: YouTrackAppsClient) => client.listUsers()],
+  ])('list %s', (_name, path, requestList) => {
+    it('uses skip/top pagination', async () => {
+      const firstPage = Array.from({length: 100}, (_value, index) => ({id: `item-${index}`}));
+      const secondPage = [{id: 'item-100'}];
+      const requests: Request[] = [];
+
+      jest.spyOn(global, 'fetch').mockImplementation(async request => {
+        requests.push(request as Request);
+        const url = new URL((request as Request).url);
+        const skip = Number(url.searchParams.get('$skip') ?? '0');
+        return new Response(JSON.stringify(skip === 0 ? firstPage : secondPage), {status: 200});
+      });
+
+      await expect(requestList(new YouTrackAppsClient(config()))).resolves.toHaveLength(101);
+
+      expect(requests).toHaveLength(2);
+      expect(new URL(requests[0].url).pathname).toBe(path);
+      expect(new URL(requests[0].url).searchParams.get('$skip')).toBe('0');
+      expect(new URL(requests[0].url).searchParams.get('$top')).toBe('100');
+      expect(new URL(requests[1].url).pathname).toBe(path);
+      expect(new URL(requests[1].url).searchParams.get('$skip')).toBe('100');
+      expect(new URL(requests[1].url).searchParams.get('$top')).toBe('100');
+    });
+  });
+
   it('getLogs parses JSON log responses', async () => {
     jest.spyOn(global, 'fetch').mockImplementation(async () => {
       return new Response(JSON.stringify({logs: ['first', 'second']}), {status: 200});

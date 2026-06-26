@@ -27,6 +27,8 @@ import {
 
 type JsonMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
+const LIST_PAGE_SIZE = 100;
+
 interface JsonRequestOptions {
   fields?: QueryField;
   searchParams?: Record<string, string>;
@@ -61,10 +63,7 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
   constructor(private readonly config: Config) {}
 
   async listApps(fields: QueryField = APP_SEARCH_FIELDS): Promise<AppDetails[]> {
-    return await this.jsonRequest<AppDetails[]>('GET', '/api/admin/apps', {
-      fields,
-      searchParams: {'$top': '-1'},
-    }) ?? [];
+    return await this.listRequest<AppDetails>('/api/admin/apps', fields);
   }
 
   async getApp(appName: string, fields: QueryField = APP_RESOLVE_FIELDS): Promise<AppDetails | null> {
@@ -73,7 +72,7 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
   }
 
   async listProjects(fields: QueryField = PROJECT_SEARCH_FIELDS): Promise<ProjectDetails[]> {
-    return await this.jsonRequest<ProjectDetails[]>('GET', '/api/admin/projects', {fields}) ?? [];
+    return await this.listRequest<ProjectDetails>('/api/admin/projects', fields);
   }
 
   async getProject(projectShortName: string): Promise<ProjectDetails | null> {
@@ -83,13 +82,11 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
   }
 
   async getProjectFields(projectId: string): Promise<ProjectCustomField[]> {
-    return await this.jsonRequest<ProjectCustomField[]>('GET', `/api/admin/projects/${projectId}/fields`, {
-      fields: PROJECT_FIELDS_FIELDS,
-    }) ?? [];
+    return await this.listRequest<ProjectCustomField>(`/api/admin/projects/${projectId}/fields`, PROJECT_FIELDS_FIELDS);
   }
 
   async listGroups(): Promise<UserGroup[]> {
-    return await this.jsonRequest<UserGroup[]>('GET', '/api/groups', {fields: GROUP_SEARCH_FIELDS}) ?? [];
+    return await this.listRequest<UserGroup>('/api/groups', GROUP_SEARCH_FIELDS);
   }
 
   async getGroupMembers(groupId: string): Promise<UserGroupMembers | null> {
@@ -99,7 +96,7 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
   }
 
   async listUsers(): Promise<UserSummary[]> {
-    return await this.jsonRequest<UserSummary[]>('GET', '/api/users', {fields: USER_SEARCH_FIELDS}) ?? [];
+    return await this.listRequest<UserSummary>('/api/users', USER_SEARCH_FIELDS);
   }
 
   async getUser(userId: string): Promise<UserDetails | null> {
@@ -149,6 +146,26 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     }
 
     return JSON.parse(text) as T;
+  }
+
+  private async listRequest<T>(path: string, fields: QueryField): Promise<T[]> {
+    const result: T[] = [];
+
+    for (let skip = 0; ; skip += LIST_PAGE_SIZE) {
+      const page = await this.jsonRequest<T[]>('GET', path, {
+        fields,
+        searchParams: {
+          '$skip': skip.toString(),
+          '$top': LIST_PAGE_SIZE.toString(),
+        },
+      }) ?? [];
+
+      result.push(...page);
+
+      if (page.length < LIST_PAGE_SIZE) {
+        return result;
+      }
+    }
   }
 
   private async textRequest(
