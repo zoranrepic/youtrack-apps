@@ -83,10 +83,6 @@ describe('index', function () {
       top: null,
       skip: null,
       limit: null,
-      pageSize: null,
-      page: null,
-      offset: null,
-      all: false,
       settings: null,
       enabled: null,
     };
@@ -117,10 +113,6 @@ describe('index', function () {
       top: null,
       skip: null,
       limit: null,
-      pageSize: null,
-      page: null,
-      offset: null,
-      all: false,
       settings: null,
       enabled: null,
     };
@@ -149,10 +141,10 @@ describe('index', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    require('./index').run(['', '', 'script-logs', 'my-app', 'action', '--skip=0', '--top=100', '--host=foo', '--token=bar']);
+    require('./index').run(['', '', 'script-logs', 'my-app', 'action', '--skip=0', '--limit=100', '--host=foo', '--token=bar']);
 
     expect(scriptLogs).toHaveBeenCalledWith(
-      expect.objectContaining({host: 'foo', token: 'bar', skip: '0', top: '100'}),
+      expect.objectContaining({host: 'foo', token: 'bar', skip: '0', limit: '100'}),
       'my-app action',
     );
     expect(console.error).not.toHaveBeenCalled();

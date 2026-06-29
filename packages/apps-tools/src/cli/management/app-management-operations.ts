@@ -28,6 +28,8 @@ import {
 } from './types.js';
 import {YouTrackAppsClient, YouTrackAppsGateway} from '../youtrack/youtrack-apps-client.js';
 
+const RESOURCE_RESOLVE_LIMIT = 100;
+
 export class AppManagementOperations {
   constructor(private readonly client: YouTrackAppsGateway) {}
 
@@ -322,7 +324,7 @@ export class AppManagementOperations {
     }
 
     return requireExactMatch(
-      (await this.client.listProjects(PROJECT_RESOLVE_FIELDS, {all: true})).items,
+      (await this.client.listProjects(PROJECT_RESOLVE_FIELDS, {limit: RESOURCE_RESOLVE_LIMIT})).items,
       projectKey,
       project => [project.id, project.shortName, project.name],
       'Project',
@@ -335,7 +337,7 @@ export class AppManagementOperations {
     }
 
     return requireExactMatch(
-      (await this.client.listGroups({all: true})).items,
+      (await this.client.listGroups({limit: RESOURCE_RESOLVE_LIMIT})).items,
       groupKey,
       group => [group.id, group.name],
       'Group',
@@ -348,7 +350,7 @@ export class AppManagementOperations {
     }
 
     return requireExactMatch(
-      (await this.client.listUsers({all: true})).items,
+      (await this.client.listUsers({limit: RESOURCE_RESOLVE_LIMIT})).items,
       userKey,
       user => [user.id, user.login, user.name, user.fullName],
       'User',

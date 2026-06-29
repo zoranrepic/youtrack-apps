@@ -8,34 +8,27 @@ describe('YouTrackAppsClient', () => {
   });
 
   describe.each([
-    ['apps', '/api/admin/apps', (client: YouTrackAppsClient) => client.listApps(['id'], {all: true})],
-    ['projects', '/api/admin/projects', (client: YouTrackAppsClient) => client.listProjects(['id'], {all: true})],
-    ['groups', '/api/groups', (client: YouTrackAppsClient) => client.listGroups({all: true})],
-    ['users', '/api/users', (client: YouTrackAppsClient) => client.listUsers({all: true})],
+    ['apps', '/api/admin/apps', (client: YouTrackAppsClient) => client.listApps(['id'], {skip: 100, limit: 25})],
+    ['projects', '/api/admin/projects', (client: YouTrackAppsClient) => client.listProjects(['id'], {skip: 100, limit: 25})],
+    ['groups', '/api/groups', (client: YouTrackAppsClient) => client.listGroups({skip: 100, limit: 25})],
+    ['users', '/api/users', (client: YouTrackAppsClient) => client.listUsers({skip: 100, limit: 25})],
   ])('list %s', (_name, path, requestList) => {
-    it('uses repeated skip/top pagination for all results', async () => {
-      const firstPage = Array.from({length: 100}, (_value, index) => ({id: `item-${index}`}));
-      const secondPage = [{id: 'item-100'}];
+    it('uses skip and limit pagination', async () => {
       const requests: Request[] = [];
 
       jest.spyOn(global, 'fetch').mockImplementation(async request => {
         requests.push(request as Request);
-        const url = new URL((request as Request).url);
-        const skip = Number(url.searchParams.get('$skip') ?? '0');
-        return new Response(JSON.stringify(skip === 0 ? firstPage : secondPage), {status: 200});
+        return new Response(JSON.stringify(Array.from({length: 25}, (_value, index) => ({id: `item-${index}`}))), {status: 200});
       });
 
       const result = await requestList(new YouTrackAppsClient(config()));
 
-      expect(result.items).toHaveLength(101);
-      expect(result.pagination.hasMore).toBe(false);
-      expect(requests).toHaveLength(2);
+      expect(result.items).toHaveLength(25);
+      expect(result.pagination.hasMore).toBe(true);
+      expect(requests).toHaveLength(1);
       expect(new URL(requests[0].url).pathname).toBe(path);
-      expect(new URL(requests[0].url).searchParams.get('$skip')).toBe('0');
-      expect(new URL(requests[0].url).searchParams.get('$top')).toBe('100');
-      expect(new URL(requests[1].url).pathname).toBe(path);
-      expect(new URL(requests[1].url).searchParams.get('$skip')).toBe('100');
-      expect(new URL(requests[1].url).searchParams.get('$top')).toBe('100');
+      expect(new URL(requests[0].url).searchParams.get('$skip')).toBe('100');
+      expect(new URL(requests[0].url).searchParams.get('$top')).toBe('25');
     });
   });
 
@@ -50,10 +43,10 @@ describe('YouTrackAppsClient', () => {
 
     expect(result.items).toHaveLength(50);
     expect(result.pagination).toEqual({
-      offset: 0,
+      skip: 0,
       limit: 50,
       returned: 50,
-      nextOffset: 50,
+      nextSkip: 50,
       hasMore: true,
     });
     expect(requests).toHaveLength(1);
@@ -61,37 +54,32 @@ describe('YouTrackAppsClient', () => {
     expect(new URL(requests[0].url).searchParams.get('$top')).toBe('50');
   });
 
-  it('uses limit as total result count across pages', async () => {
+  it('uses skip and limit for one bounded page', async () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
       requests.push(request as Request);
-      const url = new URL((request as Request).url);
-      const top = Number(url.searchParams.get('$top'));
-      return new Response(JSON.stringify(Array.from({length: top}, (_value, index) => ({id: `item-${requests.length}-${index}`}))), {status: 200});
+      return new Response(JSON.stringify(Array.from({length: 25}, (_value, index) => ({id: `item-${index}`}))), {status: 200});
     });
 
     const result = await new YouTrackAppsClient(config()).listApps(['id'], {
-      limit: 120,
-      offset: 100,
-      pageSize: 50,
+      skip: 100,
+      limit: 25,
     });
 
-    expect(result.items).toHaveLength(120);
+    expect(result.items).toHaveLength(25);
     expect(result.pagination).toEqual({
-      offset: 100,
-      limit: 120,
-      returned: 120,
-      nextOffset: 220,
+      skip: 100,
+      limit: 25,
+      returned: 25,
+      nextSkip: 125,
       hasMore: true,
     });
-    expect(requests).toHaveLength(3);
+    expect(requests).toHaveLength(1);
     expect(requests.map(request => {
       const url = new URL(request.url);
       return [url.searchParams.get('$skip'), url.searchParams.get('$top')];
     })).toEqual([
-      ['100', '50'],
-      ['150', '50'],
-      ['200', '20'],
+      ['100', '25'],
     ]);
   });
 
@@ -231,7 +219,7 @@ describe('YouTrackAppsClient', () => {
     expect(url.searchParams.get('fields')).toContain('owner(id,login,name)');
   });
 
-  it('getRuleLogs requests workflow rule logs with optional offset and page size', async () => {
+  it('getRuleLogs requests workflow rule logs with optional skip and limit', async () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
       requests.push(request as Request);
@@ -248,8 +236,8 @@ describe('YouTrackAppsClient', () => {
     });
 
     const result = await new YouTrackAppsClient(config()).getRuleLogs('workflow-id', 'rule-id', {
-      offset: 0,
-      pageSize: 100,
+      skip: 0,
+      limit: 100,
     });
 
     expect(result.items).toHaveLength(1);
@@ -430,10 +418,6 @@ function config(): Config {
     top: null,
     skip: null,
     limit: null,
-    pageSize: null,
-    page: null,
-    offset: null,
-    all: false,
     settings: null,
     enabled: null,
     cwd: process.cwd(),

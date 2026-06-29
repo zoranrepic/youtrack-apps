@@ -30,7 +30,7 @@ export async function logs(config: Config, appName?: string): Promise<void> {
 export async function scriptLogs(config: Config, args?: string): Promise<void> {
   try {
     const [appName, scriptName] = splitScriptLogArgs(args);
-    const pagination = paginationFromConfig(config, {topAlias: true});
+    const pagination = paginationFromConfig(config);
     const result = await createAppManagementOperations(config).getScriptLogs(appName, scriptName, pagination);
 
     if (config.json) {

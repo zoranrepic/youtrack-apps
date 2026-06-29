@@ -15,10 +15,6 @@ export interface Config {
   top: string | null;
   skip: string | null;
   limit: string | null;
-  pageSize: string | null;
-  page: string | null;
-  offset: string | null;
-  all: boolean;
   settings: string | null;
   enabled: string | null;
   cwd: string;

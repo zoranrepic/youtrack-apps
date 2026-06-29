@@ -7,85 +7,42 @@ describe('pagination', () => {
     jest.restoreAllMocks();
   });
 
-  it('maps page and page size to an offset plan', () => {
-    expect(createPaginationPlan({pageSize: 100, page: 3})).toEqual({
-      all: false,
-      limit: 100,
-      offset: 200,
-      pageSize: 100,
+  it('uses skip and limit for the pagination plan', () => {
+    expect(createPaginationPlan({skip: 100, limit: 25})).toEqual({
+      limit: 25,
+      skip: 100,
     });
   });
 
-  it('uses limit as total result count and offset as start position', () => {
-    expect(createPaginationPlan({limit: 200, offset: 100})).toEqual({
-      all: false,
-      limit: 200,
-      offset: 100,
-      pageSize: 50,
+  it('defaults to the first 50 results', () => {
+    expect(createPaginationPlan()).toEqual({
+      limit: 50,
+      skip: 0,
     });
   });
 
-  it('fetches all results in 100 item chunks', () => {
-    expect(createPaginationPlan({all: true})).toEqual({
-      all: true,
-      limit: null,
-      offset: 0,
-      pageSize: 100,
+  it('maps config skip and limit to pagination options', () => {
+    expect(paginationFromConfig(config({skip: '100', limit: '25'}))).toEqual({
+      limit: 25,
+      skip: 100,
     });
   });
 
-  it('keeps script log top as a compatibility page size alias', () => {
-    expect(paginationFromConfig(config({skip: '0', top: '100'}), {topAlias: true})).toEqual({
-      all: false,
-      limit: 100,
-      offset: 0,
-      page: undefined,
-      pageSize: 100,
-    });
-  });
-
-  it('keeps script log top -1 as a compatibility all alias', () => {
-    expect(paginationFromConfig(config({top: '-1'}), {topAlias: true})).toEqual({
-      all: true,
-      limit: undefined,
-      offset: undefined,
-      page: undefined,
-      pageSize: undefined,
-    });
-  });
-
-  it('prints page notice when the next offset aligns with page size', () => {
+  it('prints skip notice for the next page', () => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
 
     printPaginationNotice('apps', {
       items: [],
       pagination: {
-        offset: 0,
+        skip: 0,
         limit: 50,
         returned: 50,
-        nextOffset: 50,
+        nextSkip: 50,
         hasMore: true,
       },
     });
 
-    expect(console.log).toHaveBeenCalledWith('Showing 50 apps. Use --page 2 or --all for more.');
-  });
-
-  it('prints offset notice when the next offset does not align with page size', () => {
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    printPaginationNotice('apps', {
-      items: [],
-      pagination: {
-        offset: 100,
-        limit: 120,
-        returned: 120,
-        nextOffset: 220,
-        hasMore: true,
-      },
-    });
-
-    expect(console.log).toHaveBeenCalledWith('Showing 120 apps. Use --offset 220 or --all for more.');
+    expect(console.log).toHaveBeenCalledWith('Showing 50 apps. Use --skip 50 --limit 50 for more.');
   });
 });
 
@@ -105,10 +62,6 @@ function config(overrides: Partial<Config> = {}): Config {
     top: null,
     skip: null,
     limit: null,
-    pageSize: null,
-    page: null,
-    offset: null,
-    all: false,
     settings: null,
     enabled: null,
     cwd: process.cwd(),

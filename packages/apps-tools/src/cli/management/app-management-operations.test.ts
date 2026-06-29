@@ -128,13 +128,13 @@ describe('AppManagementOperations', () => {
     });
     const operations = new AppManagementOperations(gateway);
 
-    const result = await operations.getScriptLogs('my-app', 'action', {all: true, offset: 0});
+    const result = await operations.getScriptLogs('my-app', 'action', {skip: 0, limit: 100});
 
     expect(result.items).toEqual([{id: 'log-1', message: 'warning'}]);
     expect(gateway.workflowGetRequests).toEqual(['my-app']);
     expect(gateway.workflowSearchRequests).toEqual([]);
     expect(gateway.ruleLogRequests).toEqual([
-      {workflowId: 'workflow-1', ruleId: 'rule-1', options: {all: true, offset: 0}},
+      {workflowId: 'workflow-1', ruleId: 'rule-1', options: {skip: 0, limit: 100}},
     ]);
   });
 
@@ -408,10 +408,10 @@ function page<T>(items: T[]): PaginatedResult<T> {
   return {
     items,
     pagination: {
-      offset: 0,
+      skip: 0,
       limit: 50,
       returned: items.length,
-      nextOffset: null,
+      nextSkip: null,
       hasMore: false,
     },
   };

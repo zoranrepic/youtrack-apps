@@ -282,50 +282,24 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     pagination: PaginationOptions = {},
   ): Promise<PaginatedResult<T>> {
     const plan = createPaginationPlan(pagination);
-    const result: T[] = [];
-    let nextSkip = plan.offset;
-    let remaining = plan.limit;
-    let hasMore = false;
+    const page = await this.jsonRequest<T[]>('GET', path, {
+      fields,
+      searchParams: {
+        ...searchParams,
+        '$skip': plan.skip.toString(),
+        '$top': plan.limit.toString(),
+      },
+    }) ?? [];
 
-    while (remaining === null || remaining > 0) {
-      const top = remaining === null ? plan.pageSize : Math.min(plan.pageSize, remaining);
-      const page = await this.jsonRequest<T[]>('GET', path, {
-        fields,
-        searchParams: {
-          ...searchParams,
-          '$skip': nextSkip.toString(),
-          '$top': top.toString(),
-        },
-      }) ?? [];
-
-      result.push(...page);
-      nextSkip += top;
-
-      if (page.length < top) {
-        hasMore = false;
-        break;
-      }
-
-      if (remaining !== null) {
-        remaining -= page.length;
-        if (remaining <= 0) {
-          hasMore = true;
-          break;
-        }
-      }
-
-      if (remaining === null) {
-        continue;
-      }
-    }
+    const hasMore = page.length >= plan.limit;
 
     return {
-      items: result,
+      items: page,
       pagination: {
-        offset: plan.offset,
+        skip: plan.skip,
         limit: plan.limit,
-        returned: result.length,
-        nextOffset: hasMore ? plan.offset + result.length : null,
+        returned: page.length,
+        nextSkip: hasMore ? plan.skip + page.length : null,
         hasMore,
       },
     };
