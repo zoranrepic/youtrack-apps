@@ -24,30 +24,30 @@ If you prefer to install it as a dependency in your development environment, run
 
 The package includes scripts for synchronizing local changes with your YouTrack. The following commands are available:
 
-- `youtrack-app list [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json]`
+- `youtrack-app list [--skip N] [--limit N] [--json]`
 - `youtrack-app upload <directory>`
 - `youtrack-app download <app>`
 - `youtrack-app validate <directory>`
-- `youtrack-app search <query> [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json]`
+- `youtrack-app search <query> [--skip N] [--limit N] [--json]`
 - `youtrack-app info <app> [--json]`
 - `youtrack-app scripts <app> [--json]`
 - `youtrack-app settings <app> [--project <project-short-name>] [--json]`
 - `youtrack-app settings-set <app> [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
-- `youtrack-app tag-search <query> [--project <project-short-name>] [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json] [--yaml]`
+- `youtrack-app tag-search <query> [--project <project-short-name>] [--skip N] [--limit N] [--json] [--yaml]`
 - `youtrack-app delete <app> [--yes]`
 - `youtrack-app enable <app> [--project <project-short-name>]`
 - `youtrack-app disable <app> [--project <project-short-name>]`
 - `youtrack-app attach <app> --project <project-short-name>`
 - `youtrack-app detach <app> --project <project-short-name>`
 - `youtrack-app logs <app> [--top N] [--json]`
-- `youtrack-app script-logs <app> <script> [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json]`
+- `youtrack-app script-logs <app> <script> [--skip N] [--limit N] [--json]`
 - `youtrack-app requirement-errors <app> [--json]`
-- `youtrack-app project-list [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json] [--yaml]`
+- `youtrack-app project-list [--skip N] [--limit N] [--json] [--yaml]`
 - `youtrack-app project-info <project> [--yaml]`
 - `youtrack-app project-fields <project> [--yaml]`
-- `youtrack-app group-list [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json] [--yaml]`
+- `youtrack-app group-list [--skip N] [--limit N] [--json] [--yaml]`
 - `youtrack-app group-members <group> [--yaml]`
-- `youtrack-app user-list [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json] [--yaml]`
+- `youtrack-app user-list [--skip N] [--limit N] [--json] [--yaml]`
 - `youtrack-app user-info <user> [--yaml]`
 
 ### Using Environment Variables
@@ -67,37 +67,32 @@ Use these flags to page through results:
 
 | Option | Description |
 | ------ | :---------- |
-| `--limit N` | Fetch up to `N` total results. The command may make multiple paged requests when `N` is larger than the page size. |
-| `--page-size N` | Request `N` results per page. |
-| `--page N` | Request page `N`, where page 1 starts at offset 0. |
-| `--offset N` | Start at result offset `N`. This is mainly useful for scripts. |
-| `--all` | Fetch every page in chunks of 100 until a short page is returned. |
+| `--skip N` | Start at result offset `N`. |
+| `--limit N` | Request up to `N` results. |
 
-For example, `youtrack-app list --page-size 100 --page 3` requests results starting at offset 200.
-`youtrack-app list --limit 200 --offset 100` fetches up to 200 results starting at offset 100.
-`--all` uses repeated paged requests instead of requesting an unlimited page from the server.
+For example, `youtrack-app list --skip 100 --limit 50` requests up to 50 results starting at offset 100.
 
-When text output is truncated, the CLI prints a hint such as `Showing 50 apps. Use --page 2 or --all for more.`
+When text output is truncated, the CLI prints a hint such as `Showing 50 apps. Use --skip 50 --limit 50 for more.`
 For JSON and YAML output, list-style commands return an object with `items` and `pagination` metadata:
 
 ```json
 {
   "items": [],
   "pagination": {
-    "offset": 0,
+    "skip": 0,
     "limit": 50,
     "returned": 50,
-    "nextOffset": 50,
+    "nextSkip": 50,
     "hasMore": true
   }
 }
 ```
 
-Page and offset pagination is intended for browsing. For synchronization against changing datasets, resource-specific cursor, timestamp, or ID filters are more stable when available.
+Skip and limit pagination is intended for browsing. For synchronization against changing datasets, resource-specific cursor, timestamp, or ID filters are more stable when available.
 
 ### List
 
-`youtrack-app list --host --token [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json]`
+`youtrack-app list --host --token [--skip N] [--limit N] [--json]`
 
 This command lists all apps available in your YouTrack. To use it, specify the following parameters:
 
@@ -141,7 +136,7 @@ When both `dir` and `--manifest` are provided, the manifest file is used.
 
 ### Search
 
-`youtrack-app search <query> --host --token [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json]`
+`youtrack-app search <query> --host --token [--skip N] [--limit N] [--json]`
 
 This command searches installed apps by app title or package name.
 
@@ -176,7 +171,7 @@ Pass secret masks such as `<***>` back unchanged to keep existing masked secret 
 
 ### Tag Search
 
-`youtrack-app tag-search <query> --host --token [--project <project-short-name>] [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json] [--yaml]`
+`youtrack-app tag-search <query> --host --token [--project <project-short-name>] [--skip N] [--limit N] [--json] [--yaml]`
 
 This command searches visible usable tags by query. With `--project`, it returns project-relevant tag suggestions for the project identified by short name.
 
@@ -209,7 +204,7 @@ These commands attach an app to a project or detach it from a project. The proje
 
 This command prints app log entries. Use `--top` to limit the number of returned entries.
 
-`youtrack-app script-logs <app> <script> --host --token [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json]`
+`youtrack-app script-logs <app> <script> --host --token [--skip N] [--limit N] [--json]`
 
 This command prints log entries for a script. The app argument is a package name or ID. The script argument is a script, module, or rule name or ID.
 
@@ -221,7 +216,7 @@ This command prints requirement errors reported for an app from broken pluggable
 
 ### Projects
 
-`youtrack-app project-list --host --token [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json] [--yaml]`
+`youtrack-app project-list --host --token [--skip N] [--limit N] [--json] [--yaml]`
 
 This command lists projects in your YouTrack by short name and ID.
 
@@ -235,7 +230,7 @@ This command lists custom fields configured for a project. The project is resolv
 
 ### User Groups
 
-`youtrack-app group-list --host --token [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json] [--yaml]`
+`youtrack-app group-list --host --token [--skip N] [--limit N] [--json] [--yaml]`
 
 This command lists user groups with their IDs and user counts.
 
@@ -245,7 +240,7 @@ This command prints the IDs of users that are direct members of a user group. Th
 
 ### Users
 
-`youtrack-app user-list --host --token [--limit N] [--page-size N] [--page N] [--offset N] [--all] [--json] [--yaml]`
+`youtrack-app user-list --host --token [--skip N] [--limit N] [--json] [--yaml]`
 
 This command lists users with login, ID, and display name.
 
