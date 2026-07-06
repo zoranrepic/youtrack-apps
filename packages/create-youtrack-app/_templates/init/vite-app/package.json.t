@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build.cjs && youtrack-app validate dist",
+    "build": "tsc -p tsconfig.app.json && vite build && youtrack-app validate dist",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
     "pack": "rm -rf <%= appName %>.zip && cd dist/ && bestzip ../<%= appName %>.zip *",
@@ -25,7 +25,7 @@
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.13.0",
     "@jetbrains/eslint-config": "^6.0.2",
-    "@jetbrains/youtrack-apps-tools": "^0.0.1",
+    "@jetbrains/youtrack-apps-tools": "^0.1.1",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.4",
