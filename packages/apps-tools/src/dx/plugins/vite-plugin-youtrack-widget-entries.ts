@@ -34,13 +34,6 @@ export function discoverWidgetEntries(widgetsDir: string): Record<string, string
   return entries;
 }
 
-/**
- * Vite plugin that automatically discovers widget entry points from src/widgets/\*\/index.html.
- *
- * Replaces the need for a hardcoded rollupOptions.input list. In watch mode, it also
- * watches the widgets directory so that newly generated widgets trigger a rebuild
- * and get included automatically.
- */
 export default function youtrackWidgetEntries(options: WidgetEntriesOptions = {}): Plugin {
   const { widgetsDir: widgetsDirOption = 'widgets', allowEmpty = false } = options;
   let resolvedWidgetsDir: string;
@@ -63,6 +56,9 @@ export default function youtrackWidgetEntries(options: WidgetEntriesOptions = {}
 
       if (names.length === 0) {
         if (allowEmpty) {
+          // Vite falls back to <root>/index.html when input is missing.
+          // Backend-only apps do not have that file, so provide a virtual entry
+          // and remove its chunk before writing dist.
           console.log(`[widget-entries] No widgets found in ${resolvedWidgetsDir}; building backend-only app.`);
           return { ...opts, input: { [EMPTY_ENTRY_ID]: EMPTY_ENTRY_ID } };
         }
