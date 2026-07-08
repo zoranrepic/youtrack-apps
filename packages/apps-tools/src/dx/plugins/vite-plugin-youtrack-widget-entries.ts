@@ -9,6 +9,9 @@ export interface WidgetEntriesOptions {
   allowEmpty?: boolean;
 }
 
+const EMPTY_ENTRY_ID = 'youtrack-widget-entries-empty-entry';
+const RESOLVED_EMPTY_ENTRY_ID = `\0${EMPTY_ENTRY_ID}`;
+
 /**
  * Discover all widget entry points by scanning for index.html in widget subdirectories.
  */
@@ -53,8 +56,11 @@ export default function youtrackWidgetEntries(options: WidgetEntriesOptions = {}
 
       if (names.length === 0) {
         if (allowEmpty) {
-          console.log(`[widget-entries] No widgets found in ${resolvedWidgetsDir}; leaving Rollup input unchanged.`);
-          return opts;
+          // Vite falls back to <root>/index.html when input is missing.
+          // Backend-only apps do not have that file, so provide a virtual entry
+          // and remove its chunk before writing dist.
+          console.log(`[widget-entries] No widgets found in ${resolvedWidgetsDir}; building backend-only app.`);
+          return { ...opts, input: { [EMPTY_ENTRY_ID]: EMPTY_ENTRY_ID } };
         }
 
         throw new Error(
@@ -65,6 +71,30 @@ export default function youtrackWidgetEntries(options: WidgetEntriesOptions = {}
 
       console.log(`[widget-entries] Discovered widgets: ${names.join(', ')}`);
       return { ...opts, input: entries };
+    },
+
+    resolveId(id) {
+      if (id === EMPTY_ENTRY_ID) {
+        return RESOLVED_EMPTY_ENTRY_ID;
+      }
+
+      return null;
+    },
+
+    load(id) {
+      if (id === RESOLVED_EMPTY_ENTRY_ID) {
+        return 'export default null;';
+      }
+
+      return null;
+    },
+
+    generateBundle(_, bundle) {
+      for (const [fileName, item] of Object.entries(bundle)) {
+        if (item.type === 'chunk' && item.facadeModuleId === RESOLVED_EMPTY_ENTRY_ID) {
+          delete bundle[fileName];
+        }
+      }
     },
 
     buildStart() {

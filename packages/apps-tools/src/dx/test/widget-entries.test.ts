@@ -9,6 +9,9 @@ import youtrackWidgetEntries from '../plugins/vite-plugin-youtrack-widget-entrie
 type WidgetEntriesTestPlugin = {
   configResolved: (config: { root: string }) => void;
   options: (options: Record<string, unknown>) => { input?: Record<string, string> };
+  resolveId?: (id: string) => string | null;
+  load?: (id: string) => string | null;
+  generateBundle?: (_: unknown, bundle: Record<string, { type: string; facadeModuleId?: string }>) => void;
 };
 
 describe('discoverWidgetEntries', () => {
@@ -146,17 +149,34 @@ describe('youtrackWidgetEntries plugin default directory', () => {
     );
   });
 
-  it('leaves Rollup input unchanged when allowEmpty is true and no widgets exist', () => {
+  it('uses a removable placeholder entry when allowEmpty is true and no widgets exist', () => {
     const viteRoot = path.join(tmpDir, 'src');
     fs.mkdirSync(viteRoot, { recursive: true });
-    const options = {};
 
     const plugin = youtrackWidgetEntries({ allowEmpty: true }) as unknown as WidgetEntriesTestPlugin;
     plugin.configResolved({ root: viteRoot });
-    const result = plugin.options(options);
+    const result = plugin.options({});
 
-    assert.strictEqual(result, options);
-    assert.strictEqual(result.input, undefined);
+    assert.deepStrictEqual(result.input, {
+      'youtrack-widget-entries-empty-entry': 'youtrack-widget-entries-empty-entry',
+    });
+    assert.strictEqual(
+      plugin.resolveId?.('youtrack-widget-entries-empty-entry'),
+      '\0youtrack-widget-entries-empty-entry'
+    );
+    assert.strictEqual(plugin.load?.('\0youtrack-widget-entries-empty-entry'), 'export default null;');
+
+    const bundle = {
+      'youtrack-widget-entries-empty-entry.js': {
+        type: 'chunk',
+        facadeModuleId: '\0youtrack-widget-entries-empty-entry',
+      },
+      'manifest.json': { type: 'asset' },
+    };
+    plugin.generateBundle?.({}, bundle);
+
+    assert.strictEqual(bundle['youtrack-widget-entries-empty-entry.js'], undefined);
+    assert.ok(bundle['manifest.json']);
   });
 
   it('still fails on empty widget directories by default', () => {
