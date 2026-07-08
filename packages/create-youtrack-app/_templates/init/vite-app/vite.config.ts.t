@@ -6,7 +6,7 @@ import {resolve} from 'node:path';
 import {defineConfig} from 'vite';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
 import react from '@vitejs/plugin-react';
-import {youtrackWidgetEntries} from '@jetbrains/youtrack-apps-tools/dx';
+import youtrackWidgetEntries from '@jetbrains/youtrack-apps-tools/dx/plugins/widget-entries';
 
 /*
       See https://vitejs.dev/config/

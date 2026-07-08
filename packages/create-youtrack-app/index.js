@@ -35,7 +35,12 @@ const CREATE_APP_FLAG_NAMES = [
   'vendor-url',
   'vendorUrl',
 ];
-const { buildRuleScaffold } = require('./utils/rule-scaffold');
+const {
+  VALID_RULE_TYPES,
+  resolveRuleTarget,
+  validateRuleName,
+  validateRuleType,
+} = require('./utils/rule-scaffold');
 
 function isCancelled(e) {
   return e === '' || (e && e.code === 'ERR_USE_AFTER_CLOSE');
@@ -464,20 +469,7 @@ function getCommandArgs(commandName, normalizedArgv, positionalArgs) {
   return commandArgs;
 }
 
-function createWorkflowRule(ruleType, name) {
-  const scaffold = buildRuleScaffold(cwd, ruleType, name);
-
-  if (fs.existsSync(scaffold.absolutePath)) {
-    throw new Error(`Workflow rule already exists at ${scaffold.relativePath}`);
-  }
-
-  fs.mkdirSync(path.dirname(scaffold.absolutePath), { recursive: true });
-  fs.writeFileSync(scaffold.absolutePath, scaffold.content);
-
-  return scaffold.relativePath;
-}
-
-function handleRuleCommand(ruleArgs) {
+async function handleRuleCommand(ruleArgs) {
   if (!ruleArgs) {
     return false;
   }
@@ -505,7 +497,29 @@ function handleRuleCommand(ruleArgs) {
     process.exit(1);
   }
 
-  const relativePath = createWorkflowRule(ruleType, name);
+  validateRuleType(ruleType);
+  validateRuleName(name);
+
+  const { relativePath, absolutePath } = resolveRuleTarget(cwd, name);
+
+  if (fs.existsSync(absolutePath)) {
+    throw new Error(`Workflow rule already exists at ${relativePath}`);
+  }
+
+  const result = await runHygen([
+    'rule',
+    'add',
+    '--ruleType',
+    ruleType,
+    '--name',
+    name,
+    '--cwd',
+    cwd,
+  ]);
+
+  if (!result.success) {
+    process.exit(1);
+  }
 
   console.log(styleText("green", `\n✓ Workflow rule created at ${relativePath}\n`));
   return true;
@@ -525,6 +539,7 @@ const hygenCommands = new Set([
   'init',
   'enhanced-dx',
   'extension-property',
+  'rule',
   'widget',
   'settings',
   'http-handler',
@@ -615,13 +630,7 @@ async function promptForRule() {
   const ruleType = await new Select({
     name: 'ruleType',
     message: 'Which workflow rule type do you want to create?',
-    choices: [
-      { name: 'onChange', message: 'onChange' },
-      { name: 'onSchedule', message: 'onSchedule' },
-      { name: 'action', message: 'action' },
-      { name: 'stateMachine', message: 'stateMachine' },
-      { name: 'sla', message: 'sla' },
-    ],
+    choices: VALID_RULE_TYPES.map(ruleType => ({ name: ruleType, message: ruleType })),
   }).run();
 
   const name = await new Input({
@@ -630,7 +639,7 @@ async function promptForRule() {
     initial: 'notify-on-change',
   }).run();
 
-  handleRuleCommand(['rule', 'add', ruleType, name]);
+  await handleRuleCommand(['rule', 'add', ruleType, name]);
 }
 
 async function promptForSettingsAction() {
@@ -909,7 +918,7 @@ async function promptForAppFeature(projectContext) {
   }
 
   try {
-    if (handleRuleCommand(getCommandArgs('rule', normalizedArgv, positionalArgs))) {
+    if (await handleRuleCommand(getCommandArgs('rule', normalizedArgv, positionalArgs))) {
       return;
     }
   } catch (error) {

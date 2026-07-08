@@ -8,7 +8,6 @@ const PKG_DIR = path.join(__dirname, '..');
 const TEST_APP_DIR = path.join(PKG_DIR, 'tmp', 'test-generator-app');
 const MINIMAL_APP_DIR = path.join(PKG_DIR, 'tmp', 'test-rule-minimal-app');
 const EMPTY_RULE_DIR = path.join(PKG_DIR, 'tmp', 'test-rule-empty-dir');
-const WORKFLOW_BUILD_DIR = path.join(PKG_DIR, 'tmp', 'test-workflow-build-app');
 const JS_APP_MENU_DIR = path.join(PKG_DIR, 'tmp', 'test-js-app-menu');
 const NON_INTERACTIVE_CREATE_DIR = path.join(PKG_DIR, 'tmp', 'test-non-interactive-create');
 const NON_INTERACTIVE_INVALID_DIR = path.join(PKG_DIR, 'tmp', 'test-non-interactive-invalid');
@@ -49,10 +48,6 @@ function readFile(relativePath) {
 
 function readPackageFile(relativePath) {
   return fs.readFileSync(path.join(PKG_DIR, relativePath), 'utf8');
-}
-
-function stripTemplateFrontmatter(content) {
-  return content.replace(/^---\n[\s\S]*?\n---\n/, '');
 }
 
 function createLintFixScript(argsPath) {
@@ -130,9 +125,6 @@ function cleanupTestApp() {
   }
   if (fs.existsSync(EMPTY_RULE_DIR)) {
     fs.rmSync(EMPTY_RULE_DIR, { recursive: true, force: true });
-  }
-  if (fs.existsSync(WORKFLOW_BUILD_DIR)) {
-    fs.rmSync(WORKFLOW_BUILD_DIR, { recursive: true, force: true });
   }
   if (fs.existsSync(JS_APP_MENU_DIR)) {
     fs.rmSync(JS_APP_MENU_DIR, { recursive: true, force: true });
@@ -491,55 +483,15 @@ describe('NestJS-Style Code Generation', () => {
 
       assert.strictEqual(viteManifest.includes('"widgets"'), false);
       assert.strictEqual(fs.existsSync(path.join(PKG_DIR, '_templates', 'init', 'vite-app', 'src', 'backend.js.t')), false);
-      assert.strictEqual(fs.existsSync(path.join(PKG_DIR, '_templates', 'init', 'vite-app', 'scripts', 'build.cjs.t')), true);
+      assert.strictEqual(fs.existsSync(path.join(PKG_DIR, '_templates', 'init', 'vite-app', 'scripts', 'build.cjs.t')), false);
       assert.strictEqual(fs.existsSync(path.join(PKG_DIR, '_templates', 'widget', 'add', 'vite.config.ts.t')), false);
-      assert.ok(packageJsonTemplate.includes('"build": "node scripts/build.cjs && youtrack-app validate dist"'));
-      assert.ok(viteConfigTemplate.includes('getWidgetInputs()'));
-      assert.ok(viteConfigTemplate.includes('manifest.widgets'));
+      assert.ok(packageJsonTemplate.includes('"build": "tsc -p tsconfig.app.json && vite build && youtrack-app validate dist"'));
+      assert.ok(viteConfigTemplate.includes('youtrackWidgetEntries({allowEmpty: true})'));
+      assert.ok(viteConfigTemplate.includes("src: 'backend/workflows/*.js'"));
+      assert.strictEqual(viteConfigTemplate.includes('getWidgetInputs()'), false);
+      assert.strictEqual(viteConfigTemplate.includes('manifest.widgets'), false);
       assert.ok(viteConfigTemplate.includes('getStaticCopyTargets()'));
       assert.ok(viteConfigTemplate.includes('hasTopLevelFiles(resolve(__dirname, \'src\'))'));
-    });
-
-    test('no-widget build script should copy backend files and omit widgets from dist manifest', () => {
-      fs.rmSync(WORKFLOW_BUILD_DIR, { recursive: true, force: true });
-      fs.mkdirSync(path.join(WORKFLOW_BUILD_DIR, 'public'), { recursive: true });
-      fs.mkdirSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'backend', 'workflows'), { recursive: true });
-      fs.mkdirSync(path.join(WORKFLOW_BUILD_DIR, 'scripts'), { recursive: true });
-
-      fs.writeFileSync(
-        path.join(WORKFLOW_BUILD_DIR, 'package.json'),
-        JSON.stringify({ name: 'workflow-build-app', version: '0.0.0' }, null, 2)
-      );
-      fs.writeFileSync(
-        path.join(WORKFLOW_BUILD_DIR, 'manifest.json'),
-        JSON.stringify({
-          name: 'workflow-build-app',
-          icon: 'icon.svg',
-        }, null, 2)
-      );
-      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'public', 'icon.svg'), '<svg />\n');
-      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'backend.js'), 'exports.httpHandler = {};\n');
-      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'custom-handler.js'), 'exports.httpHandler = {};\n');
-      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'settings.json'), '{}\n');
-      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'entity-extensions.json'), '{"entityTypeExtensions":[]}\n');
-      fs.writeFileSync(path.join(WORKFLOW_BUILD_DIR, 'src', 'backend', 'workflows', 'notify.js'), 'exports.rule = {};\n');
-
-      const scriptTemplate = readPackageFile('_templates/init/vite-app/scripts/build.cjs.t');
-      fs.writeFileSync(
-        path.join(WORKFLOW_BUILD_DIR, 'scripts', 'build.cjs'),
-        stripTemplateFrontmatter(scriptTemplate)
-      );
-
-      execSync('node scripts/build.cjs', { cwd: WORKFLOW_BUILD_DIR, encoding: 'utf8' });
-
-      const distManifest = JSON.parse(fs.readFileSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'manifest.json'), 'utf8'));
-      assert.strictEqual(Object.hasOwn(distManifest, 'widgets'), false);
-      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'notify.js')), true);
-      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'icon.svg')), true);
-      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'backend.js')), true);
-      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'custom-handler.js')), true);
-      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'settings.json')), true);
-      assert.strictEqual(fs.existsSync(path.join(WORKFLOW_BUILD_DIR, 'dist', 'entity-extensions.json')), true);
     });
 
     test('bare command in a JavaScript app should show add-feature commands instead of scaffolding a new app', () => {
