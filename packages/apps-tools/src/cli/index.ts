@@ -119,42 +119,175 @@ export async function run(argv = process.argv) {
 
   function printHelp() {
     br();
-    printLine(i18n('list     [--skip N, --limit N, --json]'), i18n('View a list of installed apps'));
-    printLine(i18n('download <app> [--output, --overwrite]       '), i18n('Download an app'));
-    printLine(i18n('upload   <directory>                         '), i18n('Upload app to server'));
-    printLine(i18n('validate <directory> [--manifest, --schema]  '), i18n('Validate manifest'));
-    printLine(i18n('search   <query> [--skip N, --limit N, --json]'), i18n('Search apps by title or package name'));
-    printLine(i18n('info     <app> [--json]                      '), i18n('Show app details'));
-    printLine(i18n('scripts  <app> [--json]                      '), i18n('Show app files and scripts'));
-    printLine(i18n('settings <app> [--project, --json]           '), i18n('Read app settings'));
-    printLine(i18n('settings-set <app> [--project, --settings, --enabled]'), i18n('Update app settings'));
-    printLine(i18n('tag-search <query> [--project, --skip N, --limit N, --json, --yaml]'), i18n('Search tags'));
-    printLine(i18n('delete   <app> [--yes]                       '), i18n('Delete an app'));
-    printLine(i18n('enable   <app> [--project <short-name>]      '), i18n('Enable an app'));
-    printLine(i18n('disable  <app> [--project <short-name>]      '), i18n('Disable an app'));
-    printLine(i18n('attach   <app> --project <short-name>        '), i18n('Attach an app to a project'));
-    printLine(i18n('detach   <app> --project <short-name>        '), i18n('Detach an app from a project'));
-    printLine(i18n('logs     <app> [--top N, --json]             '), i18n('Show app logs'));
-    printLine(i18n('script-logs <app> <script> [--skip N, --limit N, --json]'), i18n('Show script logs'));
-    printLine(i18n('requirement-errors <app> [--json]            '), i18n('Show app requirement errors'));
-    printLine(i18n('project-list [--skip N, --limit N, --json, --yaml]'), i18n('View a list of projects'));
-    printLine(i18n('project-info <project> [--yaml]              '), i18n('Show project details'));
-    printLine(i18n('project-fields <project> [--yaml]            '), i18n('Show project custom fields'));
-    printLine(i18n('group-list [--skip N, --limit N, --json, --yaml]'), i18n('View a list of user groups'));
-    printLine(i18n('group-members <group> [--yaml]               '), i18n('Show user group members'));
-    printLine(i18n('user-list [--skip N, --limit N, --json, --yaml]'), i18n('View a list of users'));
-    printLine(i18n('user-info <user> [--yaml]                    '), i18n('Show user details'));
+    console.log(i18n('youtrack-app <command> [options]'));
     br();
-    console.log(
-      i18n('One can also provide host and token via environment variables $YOUTRACK_HOST and $YOUTRACK_API_TOKEN.'),
-    );
+    console.log(i18n('Manage, inspect, and debug YouTrack apps from an external development environment.'));
+    console.log(i18n('Most commands require --host and --token. You can also set YOUTRACK_HOST and YOUTRACK_API_TOKEN.'));
+    br();
+
+    printSection(i18n('App lifecycle'));
+    printCommand(i18n('list [--skip N] [--limit N] [--json]'), {
+      does: i18n('Lists installed YouTrack apps visible to the token.'),
+      args: i18n('--skip and --limit page through large result sets.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('search <query> [--skip N] [--limit N] [--json]'), {
+      does: i18n('Finds installed apps whose title or package name matches the query text.'),
+      args: i18n('<query> is a full or partial app title/package name, for example "Slack" or "@acme/helpdesk".'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('info <app> [--json]'), {
+      does: i18n('Shows one app with enabled state, attached projects, rules, and requirement errors.'),
+      args: i18n('<app> is an app ID, package name, or title.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('upload <directory> [--open]'), {
+      does: i18n('Uploads a local app package to YouTrack.'),
+      args: i18n('<directory> is a local app directory or built package directory, usually dist. --open opens app settings after upload.'),
+      runs: i18n('Reads local files and writes to YouTrack.'),
+    });
+    printCommand(i18n('download <app> [--output DIR] [--overwrite]'), {
+      does: i18n('Downloads an app package from YouTrack and extracts it locally.'),
+      args: i18n('<app> is an app ID, package name, or title. --output selects the local destination.'),
+      runs: i18n('Reads from YouTrack and writes local files.'),
+    });
+    printCommand(i18n('validate <directory> [--manifest FILE] [--schema FILE]'), {
+      does: i18n('Validates a local manifest against the YouTrack app JSON schema.'),
+      args: i18n('<directory> is a local app directory. --manifest and --schema override the default files.'),
+      runs: i18n('Runs locally only. Does not connect to YouTrack.'),
+    });
+    printCommand(i18n('delete <app> [--yes]'), {
+      does: i18n('Deletes an installed app.'),
+      args: i18n('<app> is an app ID, package name, or title. --yes skips the confirmation prompt.'),
+      runs: i18n('Writes to YouTrack.'),
+    });
+    printCommand(i18n('enable <app> [--project <short-name>]'), {
+      does: i18n('Enables an app globally, or enables its usage for one project.'),
+      args: i18n('<app> is an app ID, package name, or title. --project is a project short name such as DEMO or JT.'),
+      runs: i18n('Writes to YouTrack.'),
+    });
+    printCommand(i18n('disable <app> [--project <short-name>]'), {
+      does: i18n('Disables an app globally, or disables its usage for one project.'),
+      args: i18n('<app> is an app ID, package name, or title. --project is a project short name such as DEMO or JT.'),
+      runs: i18n('Writes to YouTrack.'),
+    });
+    printCommand(i18n('attach <app> --project <short-name>'), {
+      does: i18n('Attaches an installed app to a project.'),
+      args: i18n('<app> is an app ID, package name, or title. <short-name> is the project key, for example DEMO or JT.'),
+      runs: i18n('Writes to YouTrack.'),
+    });
+    printCommand(i18n('detach <app> --project <short-name>'), {
+      does: i18n('Detaches an installed app from a project.'),
+      args: i18n('<app> is an app ID, package name, or title. <short-name> is the project key to remove from app usages.'),
+      runs: i18n('Writes to YouTrack.'),
+    });
+    br();
+
+    printSection(i18n('App inspection and configuration'));
+    printCommand(i18n('scripts <app> [--json]'), {
+      does: i18n('Shows package metadata, manifest content, settings schema, entity extensions, and script files.'),
+      args: i18n('<app> is an app ID, package name, or title.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('settings <app> [--project <short-name>] [--json]'), {
+      does: i18n('Reads global app settings or project-scoped settings.'),
+      args: i18n('<app> is resolved by title or package name. --project is a project short name.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('settings-set <app> [--project <short-name>] [--settings JSON] [--enabled true|false]'), {
+      does: i18n('Updates app settings and/or enabled state.'),
+      args: i18n('--settings is a JSON object string. Without --project it writes global settings; with --project it writes project settings.'),
+      runs: i18n('Writes to YouTrack.'),
+    });
+    printCommand(i18n('logs <app> [--top N] [--json]'), {
+      does: i18n('Shows recent app log entries.'),
+      args: i18n('<app> is an app ID, package name, or title. --top limits how many entries are requested.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('script-logs <app> <script> [--skip N] [--limit N] [--json]'), {
+      does: i18n('Shows log entries for one script, module, or workflow rule.'),
+      args: i18n('<script> is a script, module, rule ID, rule name, or rule title.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('requirement-errors <app> [--json]'), {
+      does: i18n('Shows broken requirement problems reported by app usages.'),
+      args: i18n('<app> is an app ID, package name, or title.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    br();
+
+    printSection(i18n('Instance exploration'));
+    printCommand(i18n('project-list [--skip N] [--limit N] [--json] [--yaml]'), {
+      does: i18n('Lists projects with short names and IDs for later project-scoped commands.'),
+      args: i18n('--skip and --limit page through large result sets.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('project-info <project> [--yaml]'), {
+      does: i18n('Shows details for one project.'),
+      args: i18n('<project> is an exact project ID, short name, or name.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('project-fields <project> [--yaml]'), {
+      does: i18n('Lists custom fields configured for one project.'),
+      args: i18n('<project> is an exact project ID, short name, or name.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('tag-search <query> [--project <short-name>] [--skip N] [--limit N] [--json] [--yaml]'), {
+      does: i18n('Searches visible tags, optionally narrowed to tags relevant for one project.'),
+      args: i18n('<query> is tag name text. --project is a project short name.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('group-list [--skip N] [--limit N] [--json] [--yaml]'), {
+      does: i18n('Lists user groups with IDs and user counts.'),
+      args: i18n('--skip and --limit page through large result sets.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('group-members <group> [--yaml]'), {
+      does: i18n('Shows direct members of one user group.'),
+      args: i18n('<group> is an exact user group ID or name.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('user-list [--skip N] [--limit N] [--json] [--yaml]'), {
+      does: i18n('Lists users with login, ID, and display name.'),
+      args: i18n('--skip and --limit page through large result sets.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    printCommand(i18n('user-info <user> [--yaml]'), {
+      does: i18n('Shows details for one user.'),
+      args: i18n('<user> is an exact user ID, login, username, or full name.'),
+      runs: i18n('Reads from YouTrack.'),
+    });
+    br();
+
+    printSection(i18n('Common options'));
+    printLine(i18n('--host <url>'), i18n('YouTrack instance URL. Overrides YOUTRACK_HOST.'));
+    printLine(i18n('--token <token>'), i18n('Permanent token. Overrides YOUTRACK_API_TOKEN.'));
+    printLine(i18n('--json'), i18n('Print machine-readable JSON for commands that support it.'));
+    printLine(i18n('--yaml'), i18n('Print YAML for commands that support it.'));
+    printLine(i18n('--skip N, --limit N'), i18n('Page through list-style command results.'));
+    printLine(i18n('version, --version, -v'), i18n('Print the CLI version.'));
 
     function br() {
       console.log('');
     }
 
+    function printSection(title: string) {
+      console.log(title + ':');
+    }
+
+    function printCommand(command: string, details: {does: string; args: string; runs: string}) {
+      console.log('  ' + command);
+      printDetail(i18n('Does'), details.does);
+      printDetail(i18n('Args'), details.args);
+      printDetail(i18n('Runs'), details.runs);
+    }
+
+    function printDetail(label: string, value: string) {
+      console.log('    ' + label + ': ' + value);
+    }
+
     function printLine(option: string, description: string) {
-      console.log('    ' + option + '   ' + description);
+      console.log('  ' + option.padEnd(78) + description);
     }
   }
 
