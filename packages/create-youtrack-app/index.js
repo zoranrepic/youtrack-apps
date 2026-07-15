@@ -1323,28 +1323,364 @@ async function promptForAppFeature(projectContext) {
         return;
       }
     }
-    return runHygen(hygenArgs);
+    return runHygen();
   }
 
-  if (projectContext.isYouTrackApp) {
-    await promptForAppFeature(projectContext);
+  // Non-interactive scaffold gate: `--name` with no subcommand bypasses every prompt
+  // and runs `init` directly. Mirrors the widget/handler flag-form pattern — the bare
+  // invocation (no --name) stays fully interactive for humans (backward-compatible).
+  if (args.name !== undefined) {
+    const appName = String(args.name);
+
+    // Reuse the exact widget-key validation style for the app name.
+    if (!/^[a-z][a-z0-9-]*$/.test(appName)) {
+      console.error(styleText("red", `Invalid app name: "${appName}". Must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens.`));
+      process.exit(1);
+    }
+
+    const appType = args.type != null ? String(args.type) : 'ts';
+    if (!['js', 'ts'].includes(appType)) {
+      console.error(styleText("red", `Invalid type: "${appType}". Must be one of: js, ts`));
+      process.exit(1);
+    }
+
+    const title = args.title != null
+      ? String(args.title)
+      : appName.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    const description = args.description != null
+      ? String(args.description)
+      : `A YouTrack app created with ${appType === 'ts' ? 'TypeScript' : 'JavaScript'}`;
+    const vendor = args.vendor != null ? String(args.vendor) : 'VendorName';
+    const vendorUrl = args['vendor-url'] != null ? String(args['vendor-url']) : 'https://vendor.com';
+
+    const templateName = appType === 'js' ? 'vite-app' : 'enhanced-dx';
+
+    // `--backend-only` scaffolds a widget-less Enhanced DX app (no src/widgets/, no
+    // manifest widgets key, frontend-free build scripts). Only meaningful for --type ts;
+    // the js/vite-app scaffold is already widget-less, so the flag is a silent no-op there.
+    const backendOnly = appType === 'ts' && (args['backend-only'] === true || args['backend-only'] === 'true');
+
+    console.log(styleText("cyan", `\nScaffolding ${appType === 'ts' ? 'Enhanced DX' : 'JavaScript'} app "${appName}"${backendOnly ? ' (backend-only)' : ''}...\n`));
+    const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, "--backendOnly", String(backendOnly)]);
+    if (!appRes.success) {
+      process.exitCode = 1;
+      return;
+    }
+
+    // `--no-install` → minimist sets args.install === false
+    if (args.install === false) {
+      console.log(styleText("green", `\n✓ App "${appName}" scaffolded. Dependencies not installed (--no-install). Run "npm install" in the app directory.\n`));
+      return;
+    }
+
+    const toolsPackageDir = path.join(__dirname, '..', 'apps-tools');
+    const isLocalWorkspace = fs.existsSync(toolsPackageDir);
+
+    console.log(styleText("bold", '\nInstalling dependencies...\n'));
+    if (isLocalWorkspace) {
+      // Local monorepo clone — link local builds instead of pulling from npm.
+      const installProcess = execa("npm", ["link", "@jetbrains/youtrack-apps-tools", "@jetbrains/youtrack-workflow-types"], {cwd});
+      installProcess.stdout.pipe(process.stdout);
+      await installProcess;
+    } else {
+      const installProcess = execa("npm", ["install"], {cwd});
+      installProcess.stdout.pipe(process.stdout);
+      await installProcess;
+    }
+
+    console.log(styleText("green", `\n✓ App "${appName}" created and dependencies installed.\n`));
     return;
   }
 
-  if (positionalArgs.length > 0) {
-    console.error(styleText("red", `Unknown command: "${positionalArgs[0]}". Run create-youtrack-app --help to see available commands.`));
-    process.exit(1);
+  const pkgPath = path.join(cwd, 'package.json');
+  const hasPkg = fs.existsSync(pkgPath);
+  if (hasPkg) {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+    const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+
+    if (isEnhancedDX) {
+      const action = await new Select({
+        name: 'action',
+        message: 'What do you want to generate?',
+        choices: [
+          { name: 'http-handler', message: 'HTTP Handler (API endpoint)' },
+          { name: 'extension-property', message: 'Extension Property (entity field)' },
+          { name: 'settings', message: 'App Settings (settings.json)' },
+          { name: 'widget', message: 'Widget (UI component)' },
+        ]
+      }).run();
+
+      if (action === 'http-handler') {
+        const method = await new Select({
+          name: 'method',
+          message: 'Which HTTP method should this handler respond to?',
+          choices: ['GET', 'POST', 'PUT', 'DELETE']
+        }).run();
+
+        const scope = await new Select({
+          name: 'scope',
+          message: 'Which scope should this handler use?',
+          choices: ['global', 'project', 'issue', 'article', 'user']
+        }).run();
+
+        const routePath = await new Input({
+          name: 'routePath',
+          message: `Route path under ${scope}/ (leave empty for root):`,
+          initial: ''
+        }).run();
+
+        const { PERMISSIONS } = require(path.join(defaultTemplates, 'consts.js'));
+        const permChoices = PERMISSIONS.map(p => ({ name: p.key, message: p.key }));
+        const permissions = await new MultiSelect({
+          name: 'permissions',
+          message: 'Do you want to limit access to this handler based on permissions? Leave empty to make it available to everyone. Optional. Press Space to toggle between options, Enter to confirm the selection.:',
+          choices: permChoices,
+          hint: 'Space to toggle, Enter to confirm',
+          validate: () => true
+        }).run();
+
+        const targetRel = path.join('src', 'backend', 'router', scope, routePath || '', `${method}.ts`);
+        const targetAbs = path.join(cwd, targetRel);
+
+        if (fs.existsSync(targetAbs)) {
+          const overwrite = await new Confirm({
+            initial: false,
+            message: `The file already exists: ${styleText("bold", targetRel)}. Overwrite?`
+          }).run();
+          if (!overwrite) {
+            console.log(styleText("yellow", 'Aborted.'));
+            return;
+          }
+        }
+
+        const hygenArgs = [
+          'http-handler',
+          'enhanced-dx',
+          '--ytScope', scope,
+          '--routePath', routePath,
+          '--method', method,
+          '--permissions', permissions.join(',')
+        ];
+
+        process.env.EDX = '1';
+        console.log(styleText("cyan", `\nGenerating ${method} handler at ${targetRel}...\n`));
+        await runHygen(hygenArgs);
+        runGeneratedFilesLintFix([targetRel]);
+        console.log(styleText("green", `\n✓ HTTP handler generated\n`));
+        return;
+      } else if (action === 'extension-property') {
+        const target = await new Select({
+          name: 'target',
+          message: 'Which entity type does this extension property apply to?',
+          choices: [
+            { name: 'Issue', message: 'Issue' },
+            { name: 'User', message: 'User' },
+            { name: 'Project', message: 'Project' },
+            { name: 'Article', message: 'Article' },
+          ]
+        }).run();
+
+        const name = await new Input({
+          name: 'name',
+          message: 'What is the name of the extension property?',
+          validate: (val) => val && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(val) ? true : 'Must be a valid identifier'
+        }).run();
+
+        const type = await new Select({
+          name: 'type',
+          message: 'What is the type of the extension property?',
+          choices: [
+            { name: 'string', message: 'String' },
+            { name: 'integer', message: 'Integer' },
+            { name: 'float', message: 'Float' },
+            { name: 'boolean', message: 'Boolean' },
+            { name: 'Issue', message: 'Issue (reference)' },
+            { name: 'User', message: 'User (reference)' },
+            { name: 'Project', message: 'Project (reference)' },
+            { name: 'Article', message: 'Article (reference)' },
+          ]
+        }).run();
+
+        const isSet = await new Confirm({
+          name: 'isSet',
+          message: 'Is it a set of values?',
+          initial: false
+        }).run();
+
+        const entityExtensionsPath = path.join(cwd, 'src', 'entity-extensions.json');
+        let entityExtensions;
+        if (fs.existsSync(entityExtensionsPath)) {
+          try {
+            entityExtensions = JSON.parse(fs.readFileSync(entityExtensionsPath, 'utf-8'));
+          } catch (err) {
+            console.error(styleText("red", `Error: Could not parse entity-extensions.json: ${(err && err.message) || String(err)}`));
+            process.exitCode = 1;
+            return;
+          }
+        } else {
+          entityExtensions = { entityTypeExtensions: [] };
+        }
+
+        let extendingEntity = entityExtensions.entityTypeExtensions.find((e) => e.entityType === target);
+        if (!extendingEntity) {
+          extendingEntity = { entityType: target, properties: {} };
+          entityExtensions.entityTypeExtensions.push(extendingEntity);
+        }
+        extendingEntity.properties[name] = { type, multi: isSet };
+
+        fs.writeFileSync(entityExtensionsPath, JSON.stringify(entityExtensions, null, 2));
+        console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
+        return;
+      } else if (action === 'settings') {
+        const settingsAction = await new Select({
+          name: 'settingsAction',
+          message: 'What do you want to do with settings?',
+          choices: [
+            { name: 'init', message: 'Initialize settings.json (create new)' },
+            { name: 'add', message: 'Add property to existing settings.json' },
+          ]
+        }).run();
+
+        if (settingsAction === 'init') {
+          const settingsPath = path.join(cwd, 'src', 'settings.json');
+          if (fs.existsSync(settingsPath)) {
+            console.error(styleText("red", '\nError: settings.json already exists at src/settings.json'));
+            console.log(styleText("yellow", 'Use "add" to add properties to the existing settings.json.\n'));
+            return;
+          }
+
+
+          const hygenArgs = ['settings', 'init'];
+          await runHygen(hygenArgs);
+          console.log(styleText("green", '\n✓ Settings schema created at src/settings.json\n'));
+        } else if (settingsAction === 'add') {
+          const settingsPath = path.join(cwd, 'src', 'settings.json');
+          if (!fs.existsSync(settingsPath)) {
+            console.error(styleText("red", '\nError: settings.json does not exist'));
+            console.log(styleText("yellow", 'Use "init" option first to create settings.json.\n'));
+            return;
+          }
+
+          const hygenArgs = ['settings', 'add'];
+          await runHygen(hygenArgs);
+          console.log(styleText("green", '\n✓ Property added to settings.json\n'));
+        }
+        return;
+      } else if (action === 'widget') {
+        return runHygen(['widget', 'add']);
+      }
+    }
   }
 
-  const createOptions = hasCreateAppFlags() || !isInteractive()
-    ? resolveCreateAppOptionsFromFlags()
-    : await promptForCreateAppOptions();
-
-  if (!createOptions) {
+  if (
+    !(await new Confirm({
+      initial: true,
+      message: `This will generate the scaffolding for a new YouTrack app in the following directory: ${styleText("bold", cwd)}\n\nContinue?`,
+    }).run())
+  ) {
     return;
   }
 
-  await createAppProject(createOptions);
+  const appType = await new Select({
+    name: 'appType',
+    message: 'Choose your development approach:',
+    choices: [
+      {
+        name: 'js',
+        message: 'JavaScript (Basic widgets and backend.js)',
+        hint: 'Simple approach with traditional backend.js file'
+      },
+      {
+        name: 'ts',
+        message: 'TypeScript (Enhanced DX with file-based routing)',
+        hint: 'Advanced approach with type-safe APIs, file-based routing, and Zod validation'
+      }
+    ]
+  }).run();
+
+  const appName = await new Input({
+    name: 'appName',
+    message: 'Enter your app name:',
+    initial: 'my-youtrack-app'
+  }).run();
+
+  const title = appName.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  const description = `A YouTrack app created with ${appType === 'ts' ? 'TypeScript' : 'JavaScript'}`;
+  const vendor = 'VendorName';
+  const vendorUrl = 'https://vendor.com';
+
+  const templateName = appType === 'js' ? 'vite-app' : 'enhanced-dx';
+  // Honor `--backend-only` for ts here too so the `backendOnly` template local is always defined.
+  const backendOnly = appType === 'ts' && (args['backend-only'] === true || args['backend-only'] === 'true');
+  const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, ...argv, "--backendOnly", String(backendOnly)]);
+  if (!appRes.success) {
+    return;
+  }
+
+  console.log(`
+====================================
+
+Your ${appType === 'ts' ? 'Enhanced DX' : 'JavaScript'} app with sample code has been created!
+To add more widgets later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')}
+To add app settings later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings init')}
+
+====================================
+  `);
+
+  const toolsPackageDir = path.join(__dirname, '..', 'apps-tools');
+  const isLocalWorkspace = fs.existsSync(toolsPackageDir);
+
+  console.log(`
+${styleText("bold", '======= Your app has been created! =======')}
+
+Please wait for just a moment. Dependencies are being installed:
+`);
+
+  if (isLocalWorkspace) {
+    // Running from a local monorepo clone — link the local builds instead of pulling from npm
+    const installProcess = execa("npm", ["link", "@jetbrains/youtrack-apps-tools", "@jetbrains/youtrack-workflow-types"], {cwd});
+    installProcess.stdout.pipe(process.stdout);
+    await installProcess;
+  } else {
+    const installProcess = execa("npm", ["install"], {cwd});
+    installProcess.stdout.pipe(process.stdout);
+    await installProcess;
+  }
+
+  // No explicit build of @jetbrains/youtrack-apps-tools here.
+  // The tools are consumed as Vite plugins and will be resolved/compiled by the app toolchain during dev/build.
+
+
+  const buildCommand = 'npm run build';
+  const additionalInfo = appType === 'ts' ? `
+
+${styleText("bold", '🚀 Enhanced DX Features:')}
+- Type-safe API endpoints with automatic type generation
+- File-based routing in src/backend/router/
+- Zod schema validation in dev builds (tree-shaken from production)
+- Example endpoints: global/demo, global/echo (POST), issue/details, project/demo
+
+${styleText("bold", 'Development workflow:')}
+1. Add endpoints: Create {GET|POST}.ts files in src/backend/router/
+2. Use @zod-to-schema comments for automatic validation
+3. Import and use the type-safe API client in your widgets
+
+` : '';
+
+  console.log(`
+${styleText("bold", 'Done. All dependencies are now installed!')}
+${additionalInfo}
+If you want to upload and test the app in your YouTrack site, you'll need to generate a permanent access token first.
+
+For instructions, please visit https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html
+
+Once you have this token, open your development environment and use the following commands to compile and upload the app:
+
+1. ${styleText("magenta", buildCommand)}
+2. ${styleText("magenta", 'npm run upload -- --host http://your-youtrack.url --token perm:cm9...')}
+
+To add more features to your app, run the generator script again.
+Run ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to explore available options.`);
 })().catch((e) => {
   if (isCancelled(e)) {
     console.log(styleText("yellow", '\nCancelled.'));
