@@ -1,4 +1,3 @@
----
 to: "<%= (() => { const clean = String(routePath || '').split('/').filter(Boolean).join('/'); const p = 'src/backend/router/' + ytScope + (clean ? '/' + clean : '') + '/' + method + '.ts'; return p; })() %>"
 ---
 <%
@@ -7,7 +6,10 @@ to: "<%= (() => { const clean = String(routePath || '').split('/').filter(Boolea
   const base = toPascal([ytScope].concat(segments).join('/')) || 'Root';
   const reqType = base + method + 'Req';
   const resType = base + method + 'Res';
-  const ctxType = method === 'GET' ? 'CtxGet' : (method === 'DELETE' ? 'CtxDelete' : (method === 'POST' ? 'CtxPost' : 'CtxPut'));
+  const ctxType = (method === 'GET' || method === 'HEAD') ? 'CtxGet'
+    : method === 'DELETE' ? 'CtxDelete'
+    : (method === 'PUT' || method === 'PATCH') ? 'CtxPut'
+    : 'CtxPost';
   const perms = (permissions || '').split(',').map(s => s.trim()).filter(Boolean);
 %>
 <% if (perms.length) { %>import { withPermissions } from '@jetbrains/youtrack-apps-tools/dx/runtime';
@@ -41,7 +43,7 @@ export type <%= resType %> = {
   timestamp: number;
 };
 
-function handle(ctx: <%- method === 'GET' || method === 'DELETE' ? `${ctxType}<${resType}, ${reqType}, "${ytScope}">` : `${ctxType}<${reqType}, ${resType}, never, "${ytScope}">` %>): void {
+function handle(ctx: <%- (method === 'GET' || method === 'HEAD' || method === 'DELETE') ? `${ctxType}<${resType}, ${reqType}>` : `${ctxType}<${reqType}, ${resType}>` %>): void {
 <% if (method === 'GET' || method === 'DELETE') { %>
   const msg = ctx.request.getParameter('message') || 'Hello from <%= ytScope %>/<%= (routePath || "") %> <%= method %>!';
 <% } else { %>

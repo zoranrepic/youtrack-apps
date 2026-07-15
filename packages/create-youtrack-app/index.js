@@ -19,24 +19,7 @@ const {
   installSkill,
   runSystemAgentScan,
 } = require('./utils/agent-skill');
-
-const DEFAULT_CREATE_APP_NAME = 'my-youtrack-app';
-const DEFAULT_CREATE_APP_VENDOR = 'VendorName';
-const DEFAULT_CREATE_APP_VENDOR_URL = 'https://vendor.com';
-const CREATE_APP_FLAG_NAMES = [
-  'yes',
-  'y',
-  'template',
-  'app-name',
-  'appName',
-  'title',
-  'description',
-  'vendor',
-  'vendor-url',
-  'vendorUrl',
-];
 const {
-  VALID_RULE_TYPES,
   resolveRuleTarget,
   validateRuleName,
   validateRuleType,
@@ -111,228 +94,6 @@ function runGeneratedFilesLintFix(files) {
 
 function isInteractive() {
   return Boolean(process.stdin.isTTY && process.stdout.isTTY);
-}
-
-function getArgValue(...names) {
-  for (const name of names) {
-    if (args[name] !== undefined) {
-      return args[name];
-    }
-  }
-
-  return undefined;
-}
-
-function isTruthyArg(value) {
-  return value === true || value === 'true' || value === '1' || value === 'yes';
-}
-
-function hasCreateAppFlags() {
-  return CREATE_APP_FLAG_NAMES.some(name => args[name] !== undefined);
-}
-
-function getDefaultCreateAppDescription(appType) {
-  return `A YouTrack app created with ${appType === 'ts' ? 'TypeScript' : 'JavaScript'}`;
-}
-
-function getDefaultCreateAppTitle(appName) {
-  return String(appName)
-    .split('-')
-    .filter(Boolean)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
-function normalizeCreateAppTemplate(template = 'js') {
-  const normalized = String(template || 'js').toLowerCase();
-
-  if (normalized === 'js' || normalized === 'javascript' || normalized === 'vite-app') {
-    return { appType: 'js', templateName: 'vite-app' };
-  }
-
-  if (normalized === 'ts' || normalized === 'typescript' || normalized === 'enhanced-dx') {
-    return { appType: 'ts', templateName: 'enhanced-dx' };
-  }
-
-  throw new Error(`Invalid template: "${template}". Must be one of: js, ts, vite-app, enhanced-dx.`);
-}
-
-function resolveCreateAppOptionsFromFlags() {
-  const yes = isTruthyArg(getArgValue('yes', 'y'));
-  const { appType, templateName } = normalizeCreateAppTemplate(getArgValue('template') || 'js');
-  const appNameValue = getArgValue('app-name', 'appName');
-  const appName = appNameValue != null ? String(appNameValue).trim() : (yes ? DEFAULT_CREATE_APP_NAME : '');
-
-  if (!appName) {
-    throw new Error('--app-name is required for non-interactive app creation unless --yes is used.');
-  }
-
-  const title = getArgValue('title') || getDefaultCreateAppTitle(appName);
-  const description = getArgValue('description') || getDefaultCreateAppDescription(appType);
-  const vendor = getArgValue('vendor') || DEFAULT_CREATE_APP_VENDOR;
-  const vendorUrl = getArgValue('vendor-url', 'vendorUrl') || DEFAULT_CREATE_APP_VENDOR_URL;
-
-  return {
-    appType,
-    templateName,
-    appName,
-    title,
-    description,
-    vendor,
-    vendorUrl,
-  };
-}
-
-async function promptForCreateAppOptions() {
-  if (
-    !(await new Confirm({
-      initial: true,
-      message: `This will generate the scaffolding for a new YouTrack app in the following directory: ${styleText("bold", cwd)}\n\nContinue?`,
-    }).run())
-  ) {
-    return null;
-  }
-
-  const appType = await new Select({
-    name: 'appType',
-    message: 'Choose your development approach:',
-    choices: [
-      {
-        name: 'js',
-        message: 'JavaScript (minimal app shell)',
-        hint: 'Start with manifest, build tooling, and add features as needed'
-      },
-      {
-        name: 'ts',
-        message: 'TypeScript (Enhanced DX with file-based routing)',
-        hint: 'Advanced approach with type-safe APIs, file-based routing, and Zod validation'
-      }
-    ]
-  }).run();
-
-  const appName = await new Input({
-    name: 'appName',
-    message: 'Enter your app name:',
-    initial: DEFAULT_CREATE_APP_NAME
-  }).run();
-
-  const { templateName } = normalizeCreateAppTemplate(appType);
-
-  return {
-    appType,
-    templateName,
-    appName,
-    title: getDefaultCreateAppTitle(appName),
-    description: getDefaultCreateAppDescription(appType),
-    vendor: DEFAULT_CREATE_APP_VENDOR,
-    vendorUrl: DEFAULT_CREATE_APP_VENDOR_URL,
-  };
-}
-
-async function installCreateAppDependencies() {
-  if (process.env.YOUTRACK_CREATE_APP_TEST_SKIP_INSTALL === '1') {
-    console.log(styleText("yellow", 'Dependency installation skipped by test environment.'));
-    return;
-  }
-
-  const toolsPackageDir = path.join(__dirname, '..', 'apps-tools');
-  const isLocalWorkspace = fs.existsSync(toolsPackageDir);
-
-  if (isLocalWorkspace) {
-    // Running from a local monorepo clone - link the local builds instead of pulling from npm.
-    const installProcess = execa("npm", ["link", "@jetbrains/youtrack-apps-tools", "@jetbrains/youtrack-workflow-types"], {cwd});
-    installProcess.stdout.pipe(process.stdout);
-    await installProcess;
-    return;
-  }
-
-  const installProcess = execa("npm", ["install"], {cwd});
-  installProcess.stdout.pipe(process.stdout);
-  await installProcess;
-}
-
-async function createAppProject(createOptions) {
-  const {
-    appType,
-    templateName,
-    appName,
-    title,
-    description,
-    vendor,
-    vendorUrl,
-  } = createOptions;
-
-  const appRes = await runHygen([
-    "init",
-    templateName,
-    "--appName",
-    appName,
-    "--title",
-    title,
-    "--description",
-    description,
-    "--vendor",
-    vendor,
-    "--vendorUrl",
-    vendorUrl,
-  ]);
-
-  if (!appRes.success) {
-    return;
-  }
-
-  const createdMessage = appType === 'ts'
-    ? 'Your Enhanced DX app with sample code has been created!'
-    : 'Your JavaScript app project has been created!';
-
-  console.log(`
-====================================
-
-${createdMessage}
-To add more widgets later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')}
-To add app settings later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings init')}
-
-====================================
-  `);
-
-  console.log(`
-${styleText("bold", '======= Your app has been created! =======')}
-
-Please wait for just a moment. Dependencies are being installed:
-`);
-
-  await installCreateAppDependencies();
-
-  const buildCommand = 'npm run build';
-  const additionalInfo = appType === 'ts' ? `
-
-${styleText("bold", '🚀 Enhanced DX Features:')}
-- Type-safe API endpoints with automatic type generation
-- File-based routing in src/backend/router/
-- Zod schema validation in dev builds (tree-shaken from production)
-- Example endpoints: global/demo, global/echo (POST), issue/details, project/demo
-
-${styleText("bold", 'Development workflow:')}
-1. Add endpoints: Create {GET|POST}.ts files in src/backend/router/
-2. Use @zod-to-schema comments for automatic validation
-3. Import and use the type-safe API client in your widgets
-
-` : '';
-
-  console.log(`
-${styleText("bold", 'Done. All dependencies are now installed!')}
-${additionalInfo}
-If you want to upload and test the app in your YouTrack site, you'll need to generate a permanent access token first.
-
-For instructions, please visit https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html
-
-Once you have this token, open your development environment and use the following commands to compile and upload the app:
-
-1. ${styleText("magenta", buildCommand)}
-2. ${styleText("magenta", 'npm run upload -- --host http://your-youtrack.url --token perm:cm9...')}
-
-To add more features to your app, run the generator script again.
-Run ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to explore available options.`);
 }
 
 function getDefaultSkillInstallOptions() {
@@ -525,380 +286,26 @@ async function handleRuleCommand(ruleArgs) {
   return true;
 }
 
-const commandAliases = {
-  'handler': 'http-handler',
-  'h': 'http-handler',
-  'property': 'extension-property',
-  'prop': 'extension-property',
-  'p': 'extension-property',
-  'setting': 'settings',
-  's': 'settings'
-};
-
-const hygenCommands = new Set([
-  'init',
-  'enhanced-dx',
-  'extension-property',
-  'rule',
-  'widget',
-  'settings',
-  'http-handler',
-  'endpoint',
-]);
-
-const defaultHygenActions = {
-  'endpoint': 'add',
-  'extension-property': 'add',
-  'http-handler': 'add',
-  'widget': 'add',
-};
-
-function readJsonFileIfExists(filePath) {
-  if (!fs.existsSync(filePath)) {
-    return null;
-  }
-
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
-
-function getJsonParseHint(error) {
-  return error && error.message && error.message.includes('Expected double-quoted')
-    ? ' Check for a trailing comma or an unquoted property name.'
-    : '';
-}
-
-function getProjectContext() {
-  const packageJsonPath = path.join(cwd, 'package.json');
-  const manifestPath = path.join(cwd, 'manifest.json');
-  const pkg = readJsonFileIfExists(packageJsonPath) || {};
-  const hasManifest = fs.existsSync(manifestPath);
-  const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
-
-  return {
-    hasPackageJson: fs.existsSync(packageJsonPath),
-    hasManifest,
-    isEnhancedDX,
-    isYouTrackApp: hasManifest || isEnhancedDX,
-  };
-}
-
-function normalizeCommandArgs(rawArgv, rawPositionalArgs) {
-  return {
-    normalizedArgv: rawArgv.map(arg => commandAliases[arg] || arg),
-    positionalArgs: rawPositionalArgs.map(arg => commandAliases[arg] || arg),
-  };
-}
-
-function hasHygenCommand(normalizedArgv) {
-  return normalizedArgv.some(arg => hygenCommands.has(arg));
-}
-
-function withDefaultHygenAction(normalizedArgv, positionalArgs) {
-  const command = positionalArgs[0];
-  const defaultAction = defaultHygenActions[command];
-  if (!defaultAction || positionalArgs[1]) {
-    return normalizedArgv;
-  }
-
-  const commandIndex = normalizedArgv.findIndex(arg => arg === command);
-  if (commandIndex === -1) {
-    return normalizedArgv;
-  }
-
-  return [
-    ...normalizedArgv.slice(0, commandIndex + 1),
-    defaultAction,
-    ...normalizedArgv.slice(commandIndex + 1),
-  ];
-}
-
-function printAppCommandHelp() {
-  console.log(`
-This looks like an existing YouTrack app, so no new app was scaffolded.
-
-Use one of these commands to add a feature:
-  ${styleText("magenta", 'create-youtrack-app rule add onChange notify-on-change')}
-  ${styleText("magenta", 'create-youtrack-app http-handler add')}
-  ${styleText("magenta", 'create-youtrack-app settings init')}
-  ${styleText("magenta", 'create-youtrack-app settings add')}
-  ${styleText("magenta", 'create-youtrack-app widget add')}
-  ${styleText("magenta", 'create-youtrack-app extension-property add')}
-`);
-}
-
-async function promptForRule() {
-  const ruleType = await new Select({
-    name: 'ruleType',
-    message: 'Which workflow rule type do you want to create?',
-    choices: VALID_RULE_TYPES.map(ruleType => ({ name: ruleType, message: ruleType })),
-  }).run();
-
-  const name = await new Input({
-    name: 'name',
-    message: 'What is the rule file name?',
-    initial: 'notify-on-change',
-  }).run();
-
-  await handleRuleCommand(['rule', 'add', ruleType, name]);
-}
-
-async function promptForSettingsAction() {
-  const settingsAction = await new Select({
-    name: 'settingsAction',
-    message: 'What do you want to do with settings?',
-    choices: [
-      { name: 'init', message: 'Initialize settings.json (create new)' },
-      { name: 'add', message: 'Add property to existing settings.json' },
-    ]
-  }).run();
-
-  if (settingsAction === 'init') {
-    const settingsPath = path.join(cwd, 'src', 'settings.json');
-    if (fs.existsSync(settingsPath)) {
-      console.error(styleText("red", '\nError: settings.json already exists at src/settings.json'));
-      console.log(styleText("yellow", 'Use "add" to add properties to the existing settings.json.\n'));
-      return;
-    }
-  } else {
-    const settingsPath = path.join(cwd, 'src', 'settings.json');
-    if (!fs.existsSync(settingsPath)) {
-      console.error(styleText("red", '\nError: settings.json does not exist'));
-      console.log(styleText("yellow", 'Use "init" option first to create settings.json.\n'));
-      return;
-    }
-  }
-
-  await runHygen(['settings', settingsAction]);
-  console.log(styleText("green", settingsAction === 'init'
-    ? '\n✓ Settings schema created at src/settings.json\n'
-    : '\n✓ Property added to settings.json\n'));
-}
-
-async function promptForEnhancedDxHttpHandler() {
-  const method = await new Select({
-    name: 'method',
-    message: 'Choose HTTP method:',
-    choices: ['GET', 'POST', 'PUT', 'DELETE']
-  }).run();
-
-  const scope = await new Select({
-    name: 'scope',
-    message: 'Choose scope (first path segment):',
-    choices: ['global', 'project', 'issue', 'article', 'user']
-  }).run();
-
-  const scopeRoot = path.join(cwd, 'src', 'backend', 'router', scope);
-
-  const listDirnames = (absDir) => {
-    try {
-      if (!fs.existsSync(absDir)) return [];
-      return fs.readdirSync(absDir, { withFileTypes: true })
-        .filter(d => d.isDirectory() && !d.name.startsWith('.'))
-        .map(d => d.name);
-    } catch { return []; }
-  };
-
-  const splitInput = (input) => {
-    const normalized = String(input || '').replace(/\\+/g, '/').replace(/^\/+/, '');
-    const idx = normalized.lastIndexOf('/');
-    if (idx === -1) return { base: '', segment: normalized };
-    return { base: normalized.slice(0, idx + 1), segment: normalized.slice(idx + 1) };
-  };
-
-  const lcp = (arr) => {
-    if (!arr.length) return '';
-    let prefix = arr[0];
-    for (let i = 1; i < arr.length; i++) {
-      let j = 0;
-      while (j < prefix.length && j < arr[i].length && prefix[j] === arr[i][j]) j++;
-      prefix = prefix.slice(0, j);
-      if (!prefix) break;
-    }
-    return prefix;
-  };
-
-  const computeSuggestions = (input) => {
-    const { base, segment } = splitInput(input);
-    const absBase = path.join(scopeRoot, base);
-    const dirs = listDirnames(absBase);
-    const matches = segment ? dirs.filter(d => d.startsWith(segment)) : dirs;
-    return matches.map(name => `${base}${name}/`);
-  };
-
-  const pathPrompt = new Input({
-    name: 'routePath',
-    message: 'Route path under src/backend/router/' + scope + ' (Tab: complete/cycle • Shift+Tab: previous • Enter: accept • empty: root):',
-    initial: ''
-  });
-
-  let lastTabInput = '';
-  let cycleIndex = 0;
-  let lastTabTs = 0;
-  let footerText = '';
-  pathPrompt.footer = () => footerText;
-
-  const updateFooter = (val) => {
-    const suggestions = computeSuggestions(val || '');
-    if (!suggestions.length) {
-      footerText = styleText("dim", 'No matches • new segments will be created');
-    } else {
-      const maxShow = 10;
-      const shown = suggestions.slice(0, maxShow).join('  ');
-      const more = suggestions.length > maxShow ? styleText("dim", `  +${suggestions.length - maxShow} more`) : '';
-      footerText = styleText("dim", 'Matches: ') + shown + more;
-    }
-  };
-
-  pathPrompt.on('keypress', (_, key) => {
-    const current = (pathPrompt.input || '').replace(/\\+/g, '/');
-    if (key && key.name === 'tab') {
-      const { base, segment } = splitInput(current);
-      const suggestions = computeSuggestions(current);
-
-      if (suggestions.length === 0) {
-        process.stdout.write('\x07');
-        updateFooter(current);
-        if (typeof pathPrompt.render === 'function') pathPrompt.render();
-        return;
-      }
-
-      const names = suggestions.map(s => s.slice(base.length).replace(/\/$/, ''));
-      const prefix = lcp(names);
-
-      let next;
-      const now = Date.now();
-      const isDoubleTab = now - lastTabTs < 500;
-      lastTabTs = now;
-
-      if (key.shift) {
-        if (lastTabInput !== current) {
-          cycleIndex = names.length;
-        }
-        cycleIndex = (cycleIndex - 1 + names.length) % names.length;
-        const name = names[cycleIndex];
-        next = `${base}${name}${name.endsWith('/') ? '' : '/'}`;
-        lastTabInput = next;
-      } else if (prefix && prefix.length > (segment || '').length) {
-        next = `${base}${prefix}`;
-        if (names.length === 1 && !next.endsWith('/')) next += '/';
-        cycleIndex = 0;
-        lastTabInput = next;
-      } else {
-        if (lastTabInput !== current) {
-          cycleIndex = 0;
-        }
-        const name = names[cycleIndex % names.length];
-        next = `${base}${name}${name.endsWith('/') ? '' : '/'}`;
-        cycleIndex++;
-        lastTabInput = next;
-      }
-
-      if (isDoubleTab && suggestions.length > 1) {
-        const maxShow = 30;
-        const shown = suggestions.slice(0, maxShow).join('  ');
-        const more = suggestions.length > maxShow ? styleText("dim", `  +${suggestions.length - maxShow} more`) : '';
-        footerText = styleText("dim", 'Matches: ') + shown + more;
-      }
-
-      pathPrompt.input = next;
-      try {
-        pathPrompt.cursor = next.length;
-      } catch {
-        // Some Enquirer versions expose cursor as read-only.
-      }
-      updateFooter(next);
-      if (typeof pathPrompt.render === 'function') pathPrompt.render();
-      return;
-    }
-
-    updateFooter(current);
-    if (typeof pathPrompt.render === 'function') pathPrompt.render();
-  });
-
-  updateFooter('');
-  let routePath = await pathPrompt.run();
-  routePath = trimPathSegments(routePath);
-
-  const { PERMISSIONS } = require(path.join(defaultTemplates, 'consts.js'));
-  const permChoices = PERMISSIONS.map(p => ({ name: p.key, message: p.key }));
-  const permissions = await new MultiSelect({
-    name: 'permissions',
-    message: 'Select permissions (optional, space to toggle, enter to confirm):',
-    choices: permChoices,
-    hint: 'Space to select, enter to confirm',
-    validate: () => true
-  }).run();
-
-  const targetRel = path.join('src', 'backend', 'router', scope, routePath ? routePath : '', `${method}.ts`);
-  const targetAbs = path.join(cwd, targetRel);
-  if (fs.existsSync(targetAbs)) {
-    const overwrite = await new Confirm({
-      initial: false,
-      message: `File already exists: ${styleText("bold", targetRel)}. Overwrite?`
-    }).run();
-    if (!overwrite) {
-      console.log(styleText("yellow", 'Aborted. No files were changed.'));
-      return;
-    }
-  }
-
-  const hygenArgs = [
-    'http-handler',
-    'enhanced-dx',
-    '--ytScope', scope,
-    '--routePath', routePath,
-    '--method', method,
-    '--permissions', permissions.join(',')
-  ];
-
-  process.env.EDX = '1';
-  await runHygen(hygenArgs);
-  runGeneratedFilesLintFix([targetRel]);
-}
-
-async function promptForAppFeature(projectContext) {
-  if (!isInteractive()) {
-    printAppCommandHelp();
-    return;
-  }
-
-  const action = await new Select({
-    name: 'action',
-    message: 'What do you want to add to this app?',
-    choices: [
-      { name: 'rule', message: 'Workflow Rule' },
-      { name: 'http-handler', message: 'HTTP Handler' },
-      { name: 'settings', message: 'App Settings' },
-      { name: 'widget', message: 'Widget' },
-      { name: 'extension-property', message: 'Extension Property' },
-    ],
-  }).run();
-
-  if (action === 'rule') {
-    await promptForRule();
-  } else if (action === 'http-handler') {
-    if (projectContext.isEnhancedDX) {
-      await promptForEnhancedDxHttpHandler();
-    } else {
-      await runHygen(['http-handler', 'add']);
-    }
-  } else if (action === 'settings') {
-    await promptForSettingsAction();
-  } else if (action === 'widget') {
-    await runHygen(['widget', 'add', '--cwd', cwd]);
-  } else if (action === 'extension-property') {
-    await runHygen(['extension-property', 'add']);
-  }
-}
-
 (async function run() {
   if ('help' in args || 'h' in args) {
     require('./help');
     return;
   }
 
-  const { normalizedArgv, positionalArgs } = normalizeCommandArgs(argv, args._);
-  const projectContext = getProjectContext();
+  // Map short aliases to full commands for NestJS-style simplicity
+  const aliasMap = {
+    'handler': 'http-handler',
+    'h': 'http-handler',
+    'property': 'extension-property',
+    'prop': 'extension-property',
+    'p': 'extension-property',
+    'setting': 'settings',
+    's': 'settings'
+  };
+
+  // Replace aliases in argv (create new array to avoid mutation issues)
+  const normalizedArgv = argv.map(arg => aliasMap[arg] || arg);
+  const positionalArgs = args._.map(arg => aliasMap[arg] || arg);
 
   const skillIndex = normalizedArgv.findIndex(a => a === 'skill');
   if (skillIndex !== -1) {
@@ -1028,7 +435,6 @@ async function promptForAppFeature(projectContext) {
       }
 
       // Find or create the entity
-      fs.mkdirSync(path.dirname(entityExtensionsPath), { recursive: true });
       let extendingEntity = entityExtensions.entityTypeExtensions.find(
         (e) => e.entityType === target
       );
@@ -1079,7 +485,6 @@ async function promptForAppFeature(projectContext) {
         "required": []
       };
 
-      fs.mkdirSync(path.dirname(settingsPath), { recursive: true });
       fs.writeFileSync(settingsPath, JSON.stringify(schema, null, 2));
       console.log(styleText("green", `\n✓ Settings schema created at src/settings.json\n`));
       return;
@@ -1237,7 +642,7 @@ async function promptForAppFeature(projectContext) {
           process.exit(1);
         }
       } catch (e) {
-        console.error(styleText("red", `Error: Could not parse manifest.json: ${e.message}.${getJsonParseHint(e)}`));
+        console.error(styleText("red", `Error: Could not parse manifest.json: ${e.message}`));
         process.exit(1);
       }
     }
@@ -1288,30 +693,213 @@ async function promptForAppFeature(projectContext) {
     return;
   }
 
-  const hasHygenParams = hasHygenCommand(normalizedArgv);
+  const hasHygenParams = ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
+    (key) => new Set(normalizedArgv).has(key)
+  );
 
   if (hasHygenParams) {
-    if (positionalArgs[0] === 'settings' && !positionalArgs[1]) {
-      if (!isInteractive()) {
-        console.log(`Use ${styleText("magenta", 'create-youtrack-app settings init')} or ${styleText("magenta", 'create-youtrack-app settings add')}.`);
-        return;
-      }
-      await promptForSettingsAction();
-      return;
-    }
-
-    const hygenArgs = withDefaultHygenAction(normalizedArgv, positionalArgs);
-
     // Intercept Enhanced DX http-handler flow for richer experience
-    const isHttpHandlerCmd = positionalArgs[0] === 'http-handler' && (!positionalArgs[1] || positionalArgs[1] === 'add');
+    const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler') && (new Set(normalizedArgv).has('add') || !normalizedArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
     if (isHttpHandlerCmd) {
       try {
-        if (!projectContext.isEnhancedDX) {
+        const pkgPath = path.join(cwd, 'package.json');
+        const hasPkg = fs.existsSync(pkgPath);
+        const pkg = hasPkg ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
+        const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+
+        if (!isEnhancedDX) {
           // Fallback to legacy templates/flow
-          return runHygen(hygenArgs);
+          return runHygen();
         }
 
-        await promptForEnhancedDxHttpHandler();
+        const method = await new Select({
+          name: 'method',
+          message: 'Choose HTTP method:',
+          choices: ['GET', 'POST', 'PUT', 'DELETE']
+        }).run();
+
+        const scope = await new Select({
+          name: 'scope',
+          message: 'Choose scope (first path segment):',
+          choices: ['global', 'project', 'issue', 'article', 'user']
+        }).run();
+
+        // Unix-like, segment-aware tab completion for route path under src/backend/router/<scope>
+        const scopeRoot = path.join(cwd, 'src', 'backend', 'router', scope);
+
+        const listDirnames = (absDir) => {
+          try {
+            if (!fs.existsSync(absDir)) return [];
+            return fs.readdirSync(absDir, { withFileTypes: true })
+              .filter(d => d.isDirectory() && !d.name.startsWith('.'))
+              .map(d => d.name);
+          } catch { return []; }
+        };
+
+        const splitInput = (input) => {
+          const normalized = String(input || '').replace(/\\+/g, '/').replace(/^\/+/, '');
+          const idx = normalized.lastIndexOf('/');
+          if (idx === -1) return { base: '', segment: normalized };
+          return { base: normalized.slice(0, idx + 1), segment: normalized.slice(idx + 1) };
+        };
+
+        const lcp = (arr) => {
+          if (!arr.length) return '';
+          let prefix = arr[0];
+          for (let i = 1; i < arr.length; i++) {
+            let j = 0;
+            while (j < prefix.length && j < arr[i].length && prefix[j] === arr[i][j]) j++;
+            prefix = prefix.slice(0, j);
+            if (!prefix) break;
+          }
+          return prefix;
+        };
+
+        const computeSuggestions = (input) => {
+          const { base, segment } = splitInput(input);
+          const absBase = path.join(scopeRoot, base);
+          const dirs = listDirnames(absBase);
+          const matches = segment ? dirs.filter(d => d.startsWith(segment)) : dirs;
+          return matches.map(name => `${base}${name}/`);
+        };
+
+        // Input prompt with Unix-like tab completion (no selection list, Enter always accepts)
+        const pathPrompt = new Input({
+          name: 'routePath',
+          message: 'Route path under src/backend/router/' + scope + ' (Tab: complete/cycle • Shift+Tab: previous • Enter: accept • empty: root):',
+          initial: ''
+        });
+
+        // Cycling state for repeated Tab presses when there is no longer LCP extension
+        let lastTabInput = '';
+        let cycleIndex = 0;
+        let lastTabTs = 0;
+        // Maintain a dynamic footer text and expose it via a function, since Enquirer calls this.footer()
+        let footerText = '';
+        pathPrompt.footer = () => footerText;
+
+        const updateFooter = (val) => {
+          const suggestions = computeSuggestions(val || '');
+          if (!suggestions.length) {
+            footerText = styleText("dim", 'No matches • new segments will be created');
+          } else {
+            const maxShow = 10;
+            const shown = suggestions.slice(0, maxShow).join('  ');
+            const more = suggestions.length > maxShow ? styleText("dim", `  +${suggestions.length - maxShow} more`) : '';
+            footerText = styleText("dim", 'Matches: ') + shown + more;
+          }
+        };
+
+        pathPrompt.on('keypress', (_, key) => {
+          const current = (pathPrompt.input || '').replace(/\\+/g, '/');
+          if (key && key.name === 'tab') {
+            const { base, segment } = splitInput(current);
+            const suggestions = computeSuggestions(current);
+
+            if (suggestions.length === 0) {
+              process.stdout.write('\x07'); // bell
+              updateFooter(current);
+              if (typeof pathPrompt.render === 'function') pathPrompt.render();
+              return;
+            }
+
+            const names = suggestions.map(s => s.slice(base.length).replace(/\/$/, ''));
+            const prefix = lcp(names);
+
+            let next;
+            const now = Date.now();
+            const isDoubleTab = now - lastTabTs < 500;
+            lastTabTs = now;
+
+            if (key.shift) {
+              if (lastTabInput !== current) {
+                cycleIndex = names.length; // start from end
+              }
+              cycleIndex = (cycleIndex - 1 + names.length) % names.length;
+              const name = names[cycleIndex];
+              next = `${base}${name}${name.endsWith('/') ? '' : '/'}`;
+              lastTabInput = next;
+            } else if (prefix && prefix.length > (segment || '').length) {
+              // Extend to LCP
+              next = `${base}${prefix}`;
+              if (names.length === 1 && !next.endsWith('/')) next += '/';
+              cycleIndex = 0;
+              lastTabInput = next;
+            } else {
+              // No extension possible: cycle through candidates on repeated Tab
+              if (lastTabInput !== current) {
+                cycleIndex = 0;
+              }
+              const name = names[cycleIndex % names.length];
+              next = `${base}${name}${name.endsWith('/') ? '' : '/'}`;
+              cycleIndex++;
+              lastTabInput = next;
+            }
+
+            // On double-Tab, just update footer to show all options prominently
+            if (isDoubleTab && suggestions.length > 1) {
+              const maxShow = 30;
+              const shown = suggestions.slice(0, maxShow).join('  ');
+              const more = suggestions.length > maxShow ? styleText("dim", `  +${suggestions.length - maxShow} more`) : '';
+              footerText = styleText("dim", 'Matches: ') + shown + more;
+            }
+
+            pathPrompt.input = next;
+            // Ensure cursor moves to the end after completion/cycling
+            try {
+              pathPrompt.cursor = next.length;
+            } catch {
+              // Some Enquirer versions expose cursor as read-only.
+            }
+            updateFooter(next);
+            if (typeof pathPrompt.render === 'function') pathPrompt.render();
+            return;
+          }
+
+          updateFooter(current);
+          if (typeof pathPrompt.render === 'function') pathPrompt.render();
+        });
+
+        updateFooter('');
+        let routePath = await pathPrompt.run();
+
+        routePath = trimPathSegments(routePath);
+
+        const { PERMISSIONS } = require(path.join(defaultTemplates, 'consts.js'));
+        const permChoices = PERMISSIONS.map(p => ({ name: p.key, message: p.key }));
+        const permissions = await new MultiSelect({
+          name: 'permissions',
+          message: 'Select permissions (optional, space to toggle, enter to confirm):',
+          choices: permChoices,
+          hint: 'Space to select, enter to confirm',
+          validate: () => true
+        }).run();
+
+        const targetRel = path.join('src', 'backend', 'router', scope, routePath ? routePath : '', `${method}.ts`);
+        const targetAbs = path.join(cwd, targetRel);
+        if (fs.existsSync(targetAbs)) {
+          const overwrite = await new Confirm({
+            initial: false,
+            message: `File already exists: ${styleText("bold", targetRel)}. Overwrite?`
+          }).run();
+          if (!overwrite) {
+            console.log(styleText("yellow", 'Aborted. No files were changed.'));
+            return;
+          }
+        }
+
+        const hygenArgs = [
+          'http-handler',
+          'enhanced-dx',
+          '--ytScope', scope,
+          '--routePath', routePath,
+          '--method', method,
+          '--permissions', permissions.join(',')
+        ];
+
+        process.env.EDX = '1';
+        await runHygen(hygenArgs);
+        runGeneratedFilesLintFix([targetRel]);
         return;
       } catch (e) {
         if (isCancelled(e)) {
@@ -1686,6 +1274,5 @@ Run ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to expl
     console.log(styleText("yellow", '\nCancelled.'));
     process.exit(0);
   }
-  console.error(styleText("red", `Error: ${(e && e.message) || String(e)}`));
-  process.exit(1);
+  throw e;
 });
