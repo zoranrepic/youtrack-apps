@@ -24,6 +24,10 @@ export default defineConfig({
           dest: '.'
         },
         {
+          src: 'workflows/*.js',
+          dest: '.'
+        },
+        {
           src: '../public/*.*',
           dest: '.'
         }
@@ -34,11 +38,6 @@ export default defineConfig({
         // Widget icons and configurations
         {
           src: 'widgets/**/*.{svg,png,jpg,json}',
-          dest: '.'
-        },
-        // Classic workflow rules
-        {
-          src: 'workflows/**/*.js',
           dest: '.'
         }
       ],

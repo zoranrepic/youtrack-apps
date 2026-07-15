@@ -119,10 +119,11 @@ describe('Non-interactive scaffold gate (--name)', () => {
       assert.strictEqual(manifest.description, 'A YouTrack app created with JavaScript');
 
       const pkgScripts = readJson(dir, 'package.json').scripts;
-      assert.ok(pkgScripts['copy:dist'].includes('src/workflows'), 'copy:dist should copy src/workflows');
+      assert.ok(pkgScripts['copy:dist'].includes('src/workflows/*.js'), 'copy:dist should copy workflow files');
+      assert.ok(pkgScripts['copy:dist'].includes(' dist/'), 'copy:dist should copy workflows to dist root');
 
       const viteConfig = readFile(dir, 'vite.config.ts');
-      assert.ok(viteConfig.includes("src: 'workflows/**/*.js'"), 'widget build should copy src/workflows');
+      assert.ok(viteConfig.includes("src: 'workflows/*.js'"), 'vite build should copy workflows from src/workflows');
     });
   });
 
