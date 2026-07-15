@@ -62,7 +62,6 @@ export async function run(argv = process.argv) {
     yaml: isFlagEnabled(args.yaml),
     yes: isFlagEnabled(args.yes),
     project: args.project || null,
-    top: optionalArgString(args.top),
     skip: optionalArgString(args.skip),
     limit: optionalArgString(args.limit),
     settings: optionalArgString(args.settings),
