@@ -407,6 +407,16 @@ describe('NestJS-Style Code Generation', () => {
     });
   });
 
+  describe('Workflow Rules', () => {
+    test('should create workflow rules in src/workflows', () => {
+      const result = runCLI('rule add onChange notify-cli-rule', { silent: true });
+
+      assert.strictEqual(result.success, true, 'Command should succeed');
+      assert.strictEqual(fileExists('src/workflows/notify-cli-rule.js'), true);
+      assert.strictEqual(fileExists('src/backend/workflows/notify-cli-rule.js'), false);
+    });
+  });
+
   describe('Error Handling & Validation', () => {
     test('should reject invalid scope', () => {
       const result = runCLI('handler invalid/health', { silent: true });

@@ -35,6 +35,11 @@ export default defineConfig({
         {
           src: 'widgets/**/*.{svg,png,jpg,json}',
           dest: '.'
+        },
+        // Classic workflow rules
+        {
+          src: 'workflows/**/*.js',
+          dest: '.'
         }
       ],
       structured: true

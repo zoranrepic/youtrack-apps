@@ -76,7 +76,7 @@ Classic workflow rule templates:
   ${styleText("magenta", `${createApp} rule add sla first-reply-sla`)}
 
 Generated files:
-  ${styleText("cyan", 'src/backend/workflows/<name>.js')}
+  ${styleText("cyan", 'src/workflows/<name>.js')}
 
 Notes:
   ${styleText("dim", '- Widget generation creates src/widgets/<key>/, updates manifest.json, and adds a Vite entry.')}

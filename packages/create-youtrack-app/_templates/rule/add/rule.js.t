@@ -1,5 +1,5 @@
 ---
-to: src/backend/workflows/<%= name %>.js
+to: src/workflows/<%= name %>.js
 unless_exists: true
 ---
 <%- content %>

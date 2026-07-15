@@ -35,6 +35,10 @@ function exists(dir, rel) {
   return fs.existsSync(path.join(dir, rel));
 }
 
+function readFile(dir, rel) {
+  return fs.readFileSync(path.join(dir, rel), 'utf8');
+}
+
 describe('Non-interactive scaffold gate (--name)', () => {
   before(() => {
     fs.rmSync(SCAFFOLD_ROOT, { recursive: true, force: true });
@@ -53,10 +57,15 @@ describe('Non-interactive scaffold gate (--name)', () => {
       assert.ok(exists(dir, 'package.json'), 'package.json created');
       assert.ok(exists(dir, 'manifest.json'), 'manifest.json created');
       assert.ok(exists(dir, 'src/widgets/enhanced-dx/app.tsx'), 'enhanced-dx widget scaffolded');
+      assert.ok(exists(dir, 'src/workflows/notify-on-change.ts'), 'sample workflows scaffolded under src/workflows');
+      assert.ok(!exists(dir, 'src/backend/workflows/notify-on-change.ts'), 'sample workflows should not be scaffolded under src/backend/workflows');
 
       const pkg = readJson(dir, 'package.json');
       assert.strictEqual(pkg.name, 'my-app', 'package name maps from --name');
       assert.strictEqual(pkg.enhancedDX, 'true', 'ts template is Enhanced DX');
+
+      const backendConfig = readFile(dir, 'vite.config.backend.ts');
+      assert.ok(backendConfig.includes("{ src: 'src/workflows' }"), 'backend build should bundle src/workflows');
 
       assert.ok(!exists(dir, 'node_modules'), '--no-install must skip dependency install');
     });
@@ -108,6 +117,12 @@ describe('Non-interactive scaffold gate (--name)', () => {
 
       const manifest = readJson(dir, 'manifest.json');
       assert.strictEqual(manifest.description, 'A YouTrack app created with JavaScript');
+
+      const pkgScripts = readJson(dir, 'package.json').scripts;
+      assert.ok(pkgScripts['copy:dist'].includes('src/workflows'), 'copy:dist should copy src/workflows');
+
+      const viteConfig = readFile(dir, 'vite.config.ts');
+      assert.ok(viteConfig.includes("src: 'workflows/**/*.js'"), 'widget build should copy src/workflows');
     });
   });
 
