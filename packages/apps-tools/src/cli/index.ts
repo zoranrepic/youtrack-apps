@@ -161,19 +161,19 @@ export async function run(argv = process.argv) {
 
     printSection(i18n('App inspection and configuration'));
     printCommand(i18n('list [--skip N] [--limit N] [--json]'), {
-      does: i18n('Lists installed apps visible to the token in the YouTrack instance.'),
-      args: i18n('--skip and --limit page through large result sets.'),
+      does: i18n('Lists installed apps visible to the token in the YouTrack instance, with page metadata for large app lists.'),
+      args: i18n('--skip and --limit page through large result sets; --json prints the raw page object.'),
     });
     printCommand(i18n('search <query> [--skip N] [--limit N] [--json]'), {
-      does: i18n('Finds installed apps in the YouTrack instance whose title or package name matches the query text.'),
-      args: i18n('<query> is a full or partial app title/package name, for example "Slack" or "@acme/helpdesk".'),
+      does: i18n('Finds installed apps in the YouTrack instance whose title matches the query text.'),
+      args: i18n('<query> is a full or partial app title, for example "Slack"; --skip and --limit page through matches.'),
     });
     printCommand(i18n('info <app> [--json]'), {
-      does: i18n('Shows one installed app in the YouTrack instance with enabled state, attached projects, rules, and requirement errors.'),
+      does: i18n('Shows one installed app in the YouTrack instance with enabled state, project usages, rules, and requirement errors.'),
       args: i18n('<app> is an app ID, package name, or title.'),
     });
     printCommand(i18n('scripts <app> [--json]'), {
-      does: i18n('Shows package metadata, manifest content, settings schema, entity extensions, and script files from an installed app in the YouTrack instance.'),
+      does: i18n('Shows package metadata, manifest content, settings schema, entity extensions, and script source files from an installed app in the YouTrack instance.'),
       args: i18n('<app> is an app ID, package name, or title.'),
     });
     printCommand(i18n('settings <app> [--project <short-name>] [--json]'), {
@@ -185,12 +185,12 @@ export async function run(argv = process.argv) {
       args: i18n('--settings is a JSON object string. Without --project it writes global settings; with --project it writes project settings.'),
     });
     printCommand(i18n('logs <app> [--top N] [--json]'), {
-      does: i18n('Shows recent app log entries from the YouTrack instance.'),
+      does: i18n('Shows recent app-level log entries from the YouTrack instance.'),
       args: i18n('<app> is an app ID, package name, or title. --top limits how many entries are requested.'),
     });
     printCommand(i18n('script-logs <app> <script> [--skip N] [--limit N] [--json]'), {
-      does: i18n('Shows log entries from the YouTrack instance for one script, module, or workflow rule.'),
-      args: i18n('<script> is a script, module, rule ID, rule name, or rule title.'),
+      does: i18n('Shows paged log entries from the YouTrack instance for one script, module, or workflow rule.'),
+      args: i18n('<app> is an app ID, package name, or title. <script> is a script, module, rule ID, rule name, or rule title.'),
     });
     printCommand(i18n('requirement-errors <app> [--json]'), {
       does: i18n('Shows broken requirement problems reported by app usages in the YouTrack instance.'),
@@ -201,34 +201,34 @@ export async function run(argv = process.argv) {
     printSection(i18n('Instance exploration'));
     printCommand(i18n('project-list [--skip N] [--limit N] [--json] [--yaml]'), {
       does: i18n('Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.'),
-      args: i18n('--skip and --limit page through large result sets.'),
+      args: i18n('--skip and --limit page through large project lists.'),
     });
     printCommand(i18n('project-info <project> [--yaml]'), {
-      does: i18n('Shows details for one project in the YouTrack instance.'),
+      does: i18n('Shows identifying details for one project in the YouTrack instance.'),
       args: i18n('<project> is an exact project ID, short name, or name.'),
     });
     printCommand(i18n('project-fields <project> [--yaml]'), {
-      does: i18n('Lists custom fields configured for one project in the YouTrack instance.'),
+      does: i18n('Lists the issue field schema for one project in the YouTrack instance, including custom field types, required fields, and allowed values when available.'),
       args: i18n('<project> is an exact project ID, short name, or name.'),
     });
     printCommand(i18n('tag-search <query> [--project <short-name>] [--skip N] [--limit N] [--json] [--yaml]'), {
-      does: i18n('Searches visible tags in the YouTrack instance, optionally narrowed to tags relevant for one project.'),
-      args: i18n('<query> is tag name text. --project is a project short name.'),
+      does: i18n('Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.'),
+      args: i18n('<query> is tag name text. --project is a project short name; --skip and --limit page through matches.'),
     });
     printCommand(i18n('group-list [--skip N] [--limit N] [--json] [--yaml]'), {
-      does: i18n('Lists user groups in the YouTrack instance with IDs and user counts.'),
-      args: i18n('--skip and --limit page through large result sets.'),
+      does: i18n('Lists user groups and project teams in the YouTrack instance with IDs and user counts.'),
+      args: i18n('--skip and --limit page through large group lists.'),
     });
     printCommand(i18n('group-members <group> [--yaml]'), {
-      does: i18n('Shows direct members of one user group in the YouTrack instance.'),
-      args: i18n('<group> is an exact user group ID or name.'),
+      does: i18n('Shows direct members of one user group or project team in the YouTrack instance.'),
+      args: i18n('<group> is an exact user group or project team ID or name.'),
     });
     printCommand(i18n('user-list [--skip N] [--limit N] [--json] [--yaml]'), {
-      does: i18n('Lists users in the YouTrack instance with login, ID, and display name.'),
-      args: i18n('--skip and --limit page through large result sets.'),
+      does: i18n('Lists users in the YouTrack instance with login, ID, and display name for later user lookup.'),
+      args: i18n('--skip and --limit page through large user lists.'),
     });
     printCommand(i18n('user-info <user> [--yaml]'), {
-      does: i18n('Shows details for one user in the YouTrack instance.'),
+      does: i18n('Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.'),
       args: i18n('<user> is an exact user ID, login, username, or full name.'),
     });
     br();
