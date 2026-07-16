@@ -74,47 +74,26 @@ export async function run(argv = process.argv) {
   }
 
   const option = args._[0];
-  switch (option) {
-    case 'list':
-    case 'download':
-    case 'upload':
-    case 'search':
-    case 'info':
-    case 'scripts':
-    case 'settings':
-    case 'settings-set':
-    case 'tag-search':
-    case 'delete':
-    case 'enable':
-    case 'disable':
-    case 'attach':
-    case 'detach':
-    case 'logs':
-    case 'script-logs':
-    case 'requirement-errors':
-    case 'project-list':
-    case 'project-info':
-    case 'project-fields':
-    case 'group-list':
-    case 'group-members':
-    case 'user-list':
-    case 'user-info':
-      await checkRequiredParams(['host', 'token'], args, async () => {
-        const executable = options[option];
-        const commandArg = shouldJoinCommandArg(option) ? args._.slice(1).join(' ') : args._.slice(1)[0];
-        await executable(config, commandArg);
-      });
-      return;
-    case 'validate':
-      await options['validate'](config, args._.slice(1)[0]);
-      return;
-    case 'version':
-      printVersion();
-      return;
-    default:
-      printHelp();
-      return;
+  if (option === 'version') {
+    printVersion();
+    return;
   }
+
+  if (!isCommand(option)) {
+    printHelp();
+    return;
+  }
+
+  const executable = options[option];
+  const commandArg = shouldJoinCommandArg(option) ? args._.slice(1).join(' ') : args._.slice(1)[0];
+  if (option === 'validate') {
+    await executable(config, commandArg);
+    return;
+  }
+
+  await checkRequiredParams(['host', 'token'], args, async () => {
+    await executable(config, commandArg);
+  });
 
   function printHelp() {
     br();
@@ -302,5 +281,9 @@ export async function run(argv = process.argv) {
 
   function shouldJoinCommandArg(option: string | number): boolean {
     return option === 'search' || option === 'settings' || option === 'settings-set' || option === 'tag-search' || option === 'script-logs';
+  }
+
+  function isCommand(option: string | number | undefined): option is keyof typeof options {
+    return option !== undefined && Object.hasOwn(options, option);
   }
 }
