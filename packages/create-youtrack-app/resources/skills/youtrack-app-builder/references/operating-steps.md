@@ -1,13 +1,3 @@
-## Prerequisites
-
-Check that both dependencies are available before running any commands. Do this once at the start of the session, not before every command.
-
-1. **create-youtrack-app** — run `create-youtrack-app --help`. If missing, read [cli-setup.md](./cli-setup.md) for install instructions.
-2. **youtrack-app** — run `youtrack-app --help`. If missing, read [cli-setup.md](./cli-setup.md) for install instructions.
-
-If either tool is missing and cannot be installed (e.g. no network access), ask user for approval.  
-- Never explore CLI source files.
-
 ## Step 1: Classify the request
 
 Classify the request as one of the common task types:

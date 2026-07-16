@@ -2,11 +2,26 @@
 name: youtrack-app-builder
 description: Guides building, debugging, extending, and managing JetBrains YouTrack apps and workflows. Used when scaffolding, modifying, validating, uploading, downloading, enabling, disabling, or inspecting a YouTrack app, workflow rule, app endpoint, or manifest.
 metadata:
-  version: 1.0.2
+  version: 1.0.3
   YouTrackVersion: 2026.3.2907
 ---
 
 # YouTrack App Builder
+
+# Required Environment
+
+Verify these requirements once near the start of the session before using this skill for YouTrack app work.
+
+| Requirement | How to verify |
+| --- | --- |
+| Node.js `>= 24` | Run `node --version`. Node is required because both scaffolding and app management run through Node-based CLIs and npm scripts. |
+| npm | Run `npm --version`. Use the version bundled with Node.js `>= 24`, unless the app project declares a stricter version. |
+| npx | Run `npx --version`. Use the version bundled with npm, unless the app project declares a stricter version. |
+| `create-youtrack-app` CLI | Run `create-youtrack-app --help`. If missing, read [references/cli-setup.md](references/cli-setup.md). |
+| `youtrack-app` CLI | Run `youtrack-app --help`. If missing, read [references/cli-setup.md](references/cli-setup.md). Commands that contact YouTrack also require a target host (`YOUTRACK_HOST`) and API token (`YOUTRACK_API_TOKEN`). If token variables are not in environment then read the article on how to obtain the token and instruct the user: [Manage Permanent Tokens](https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html#obtain-permanent-token). Never print token values. |
+
+If required tooling is missing and cannot be installed in the current environment, ask the
+user before continuing with a reduced local-only workflow.
 
 # Mandatory Operating Steps
 
