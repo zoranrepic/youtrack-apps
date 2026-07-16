@@ -1,9 +1,19 @@
+## Prerequisites
+
+Check that both dependencies are available before running any commands. Do this once at the start of the session, not before every command.
+
+1. **create-youtrack-app** — run `create-youtrack-app --help`. If missing, read [cli-setup.md](./cli-setup.md) for install instructions.
+2. **youtrack-app** — run `youtrack-app --help`. If missing, read [cli-setup.md](./cli-setup.md) for install instructions.
+
+If either tool is missing and cannot be installed (e.g. no network access), ask user for approval.  
+- Never explore CLI source files.
+
 ## Step 1: Classify the request
 
 Classify the request as one of the common task types:
 
 - `answer-only`: explain concepts or answer questions without commands or code changes
-- `manage-existing-app`: deploy, list, search, download, upload, enable, disable, attach, detach, validate, inspect, or delete an app
+- `manage-existing-app`: deploy, list, search, download, upload, enable, disable, attach, detach, validate, or inspect an app
 - `scaffold-new-app`: create a new app or add a new app module
 - `modify-existing-app`: change code, manifest, settings, workflows, endpoints, UI, or API usage
 
@@ -13,7 +23,7 @@ Extract and remember all user-provided data, including:
 
 - target app name or app id
 - project short name, if project-specific
-- desired app surface: workflow rule, HTTP handler, MCP tool, manifest, settings, entity extension, UI, or unknown
+- desired app script types: workflow rule, HTTP handler, MCP tool, manifest, settings, entity extension, UI, or unknown
 - requested output format: explanation, plan, files - modified, sources, suggested actions.
 
 ## Step 3: Check Required-input
@@ -25,7 +35,6 @@ Required inputs by task type:
 - `manage-existing-app`: target app and desired action
 - `scaffold-new-app`: app name, title, description
 - `modify-existing-app`: the requested change
-- `destructive`: explicit user confirmation immediately before the destructive command
 
 If required input is missing, ask the user one concise grouped question and stop.
 Do not assume missing app names, project short names, or destructive confirmations.
@@ -57,13 +66,13 @@ After printing the PLAN:
 - For write operations, proceed only if the user requested code/file changes.
 - For destructive operations, ask for explicit confirmation and stop.
 
-## Step 6: Select app surface and load references
+## Step 6: Select app script type and load references
 
-Before code generation, select primary app surfaces:
+Before code generation, select primary app script type:
 - [rules](#rules)
 - [Custom API Endpoints](#custom-api-endpoints)
 
-Load the linked surface reference before codegen.
+Load the linked app script type reference before codegen.
 
 Then load only the relevant API reference files needed by the code.
 For every entity, property, method, constructor, and module function used in generated code, verify it against the reference files before final output.
@@ -72,10 +81,11 @@ For every entity, property, method, constructor, and module function used in gen
 
 When writing code:
 
-- Follow the selected surface reference.
-- Use Ring UI for any frontend/UI work.
+- Follow the selected script type reference.
+- Use Ring UI for any frontend/UI work if the user does not specifi otherwise.
+- Use [`Host API`](../references/host-api.md) for front-end < - > back-end communication
 - Never put issue link types into workflow requirements.
-- Never perform rule -> http handler calls in the same app. Only front-end calls http handler via `HOST API`
+- Never perform rule -> http handler calls in the same app. Only front-end calls http handler via [`Host API`](../references/host-api.md)
 - Never compare whole objects; compare by name, login, key, id, or similar stable scalar value.
 - Use `npm run build` before deployment.
 - Deploy only `dist`.

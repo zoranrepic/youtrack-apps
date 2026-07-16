@@ -1,7 +1,18 @@
-# App Settings
+# App Persistence
+
+Contains app settings and extension properties.
+
+## Types
+
+- [App Settings](#app-settings)
+- [Extension Properties](#extension-properties)
+
+## App Settings
+
 `settings.json` declares configurable app values. It is the contract between the app developer and the YouTrack administrator: the app exposes settings, the administrator provides values globally or per project, and scripts read the resolved values through `ctx.settings`.
 
-## Structure
+### Structure
+
 `settings.json` is placed at the app package root. YouTrack validates the file as JSON Schema and adds YouTrack-specific extensions.
 Root fields:
 
@@ -13,7 +24,7 @@ Root fields:
 | [`properties`](#properties) | object | yes | An object that contains definitions of app settings. |
 | `required` | string[] | no | An array of setting names that must be configured before the app can become active in the relevant context. See [Required Settings](#required-settings). |
 
-### Properties
+#### Properties
 
 Each app setting is declared as a field of the `properties` object. The key is the setting name, and the value is an object that defines the setting. YouTrack apps support property parameters from JSON Schema Draft 07 plus YouTrack-specific extensions.
 
@@ -44,7 +55,8 @@ Each app setting is declared as a field of the `properties` object. The key is t
 | `minLength` | integer | Minimum length for `string` settings. |
 | `multipleOf` | number | Value is valid only when division by this number results in an integer. Must be greater than `0`; applies to `integer` and `number` settings. |
 
-## Choosing Scope
+### Choosing Scope
+
 Before generating settings, understand where the setting is accessed:
 - Use `GLOBAL` when the value is read by global-level modules, such as global-scope HTTP handlers, MCP tools, or shared app services. These modules do not have access to project settings.
 - Use `PROJECT` when the value is read by project-level modules, such as workflow rules attached to a project.
@@ -54,7 +66,8 @@ Then check ownership. If a YouTrack administrator should configure the value onc
 
 Scope affects where the setting can be configured and how `ctx.settings` is resolved at runtime.
 
-## Settings Context
+### Settings Context
+
 `ctx.settings` is resolved from the script execution context.
 
 Apps can have global modules and project-level modules. Global modules, such as HTTP handler endpoints with `global` or `user` scope and MCP tools, cannot be attached to a project. They always execute in the app's global context, so `ctx.settings` contains global setting values. Global settings are configured by a system administrator.
@@ -63,7 +76,8 @@ Project-level modules, such as workflow rules, require the app to be attached to
 
 Project context inherits from global context. If a setting has a project-specific value, `ctx.settings.<settingName>` returns that value. If the project does not override the setting, `ctx.settings.<settingName>` falls back to the global value.
 
-## Required Settings
+### Required Settings
+
 The root `required` array lists settings that must have values before the app can become active in a context.
 Required settings are checked at the level where the app is activated:
 - Required global settings block global app activation until a system administrator sets them.
@@ -72,14 +86,16 @@ Required settings are checked at the level where the app is activated:
 
 A setting `default` does not satisfy `required`. If a setting is listed in `required`, it must be explicitly configured in the relevant context before that context can become active.
 
-## Lifecycle
+### Lifecycle
+
 Setting values are tied to the app declaration and are not versioned.
 
 - Deleting the app deletes all setting values owned by that app.
 - If `settings.json` no longer declares a setting, existing values for that setting are deleted.
 - If an app update keeps the same setting name but changes its type, old values for that setting are lost.
 
-## Secrets
+### Secrets
+
 Declare secrets as strings with `format: "secret"`:
 ```json
 {
@@ -103,7 +119,8 @@ connection.addHeader('My-Token-Header', ctx.settings.secretToken);
 connection.getSync(url, { apiKey: ctx.settings.apiKey });
 ```
 
-## Usage
+### Usage
+
 Use `ctx.settings.<settingName>` in workflow rules, HTTP handlers, MCP tools, and other app scripts.
 ```javascript
 const http = require('@jetbrains/youtrack-scripting-api/http');
@@ -123,7 +140,8 @@ exports.httpHandler = {
   ]
 };
 ```
-## DOs and DON'Ts
+### DOs and DON'Ts
+
 DO:
 - Mark required settings in the root `required` array when missing values should block activation in that context.
 - Pick `x-scope` from where the setting is read, not just from the data type.
@@ -132,7 +150,8 @@ DON'T:
 - Use lowercase scope values in generated schemas; the documented values are `GLOBAL` and `PROJECT`.
 - Try to log `secret` settings, those are only accessible in http methods and can't be seen in logs.
 
-## Example
+### Example
+
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -181,3 +200,154 @@ DON'T:
   }
 }
 ```
+
+## Extension Properties
+
+`entity-extensions.json` declares app-owned persistent properties on YouTrack entities. Use extension properties for mutable app state.
+Scripts access declared values through `entity.extensionProperties` or by using the `findByExtensionProperties()` method on the target type.
+```javascript
+ctx.issue.extensionProperties.stringProp = 'value';
+const current = ctx.issue.extensionProperties.stringProp;
+ctx.globalStorage.extensionProperties.cacheKey = 'value';
+```
+An app can access only the extension properties it declares.
+
+### Structure
+
+Place `entity-extensions.json` at the app package root.
+```json
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "Issue",
+      "properties": {
+        "stringProp": {
+          "type": "string"
+        },
+        "issueProp": {
+          "type": "Issue"
+        },
+        "issuesProp": {
+          "type": "Issue",
+          "multi": true
+        }
+      }
+    }
+  ]
+}
+```
+
+Declaration fields:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `entityTypeExtensions` | object[] | List of entity types extended by this app. |
+| `entityType` | string | Workflow/API entity type to extend. |
+| `properties` | object | Map of extension-property names to declarations. |
+
+Property fields:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `type` | string | Required. Use `string`, `integer`, `float`, `boolean`, or a YouTrack entity type supported by the Workflow API. |
+| `multi` | boolean | Optional. Only for YouTrack entity references. When `true`, the property returns a YouTrack `Set`. |
+
+### Supported Targets
+
+The exact set of entity types is [entities](./api/entities.md). Target entity must have the `findByExtensionProperties` method.
+
+Some commong targets are:
+- [`Issue`](./api/entities.md#issue)
+- [`Project`](./api/entities.md#project)
+- [`User`](./api/entities.md#user)
+- [`UserGroup`](./api/entities.md#usergroup)
+
+### Lifecycle
+
+Extension property values are tied to the app declaration and are not versioned.
+
+- Deleting the app deletes all extension property values owned by that app.
+- If `entity-extensions.json` no longer declares a property, existing values for that property are deleted.
+- If an app update keeps the same property name but changes its type, old values for that property are lost.
+
+### App Global Storage
+
+Use `AppGlobalStorage` for per-app global data that is not tied to a regular YouTrack entity.
+
+```json
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "AppGlobalStorage",
+      "properties": {
+        "globalCounter": {
+          "type": "integer"
+        },
+        "globalIssuesSet": {
+          "type": "Issue",
+          "multi": true
+        }
+      }
+    }
+  ]
+}
+```
+
+Scripts access it through `ctx.globalStorage`:
+
+```javascript
+ctx.globalStorage.extensionProperties.globalCounter =
+  (ctx.globalStorage.extensionProperties.globalCounter || 0) + 1;
+ctx.globalStorage.extensionProperties.globalIssuesSet.add(ctx.issue);
+```
+
+### Usage
+
+Regular entity access:
+
+```javascript
+ctx.issue.extensionProperties.stringProp = 'value';
+const value = ctx.issue.extensionProperties.stringProp;
+```
+
+> **Quirk:** You can store JSON objects in extension properties, but only by stringifying them into a `string` property first. This is a common pattern in apps.
+
+```javascript
+ctx.issue.extensionProperties.stringProp = JSON.stringify({
+  status: 'synced',
+  externalId: 'CRM-42'
+});
+
+const stored = JSON.parse(ctx.issue.extensionProperties.stringProp || '{}');
+```
+
+Entity lookup access:
+```javascript
+const entities = require('@jetbrains/youtrack-scripting-api/entities');
+
+const issue = entities.Issue.findById('DEMO-1');
+const value = issue.extensionProperties.stringProp;
+```
+Search issues by extension properties with `search.search`:
+```javascript
+const search = require('@jetbrains/youtrack-scripting-api/search');
+
+const found = search.search(ctx.issue.project, {
+  query: 'State: Open',
+  extensionPropertiesQuery: {
+    stringProp: 'value'
+  }
+}, ctx.currentUser);
+```
+
+### DOs and DON'Ts
+
+DO:
+- Use extension properties for app-owned mutable state on entities.
+- Use `AppGlobalStorage` for app-owned state that is global to the app.
+- Use YouTrack entity references when the value should stay connected to an exact entity.
+
+DON'T:
+- Store administrator configuration in extension properties; use [App Settings](#app-settings).
+- Store secrets in extension properties; there is no `secret` extension-property type.
+- Expect an app to read extension properties declared by another app.
