@@ -139,15 +139,15 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('App details and configuration'));
-    printCommand(i18n('list [--skip N] [--limit N] [--json]'), {
+    printCommand(i18n('list [--skip N] [--limit N] [--json] [--yaml]'), {
       does: i18n('Lists installed apps visible to the token in the YouTrack instance, with page metadata for large app lists.'),
-      args: i18n('--skip and --limit page through large result sets; --json prints the raw page object.'),
+      args: i18n('--skip and --limit page through large result sets; --json and --yaml print the raw page object.'),
     });
-    printCommand(i18n('search <query> [--skip N] [--limit N] [--json]'), {
+    printCommand(i18n('search <query> [--skip N] [--limit N] [--json] [--yaml]'), {
       does: i18n('Finds installed apps in the YouTrack instance whose title matches the query text.'),
       args: i18n('<query> is a full or partial app title, for example "Slack"; --skip and --limit page through matches.'),
     });
-    printCommand(i18n('info <app> [--json]'), {
+    printCommand(i18n('info <app> [--json] [--yaml]'), {
       does: i18n('Shows one installed app in the YouTrack instance with enabled state, project usages, rules, and requirement errors.'),
       args: i18n('<app> is an app ID, package name, or title.'),
     });

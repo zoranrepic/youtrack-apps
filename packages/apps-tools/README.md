@@ -24,12 +24,12 @@ If you prefer to install it as a dependency in your development environment, run
 
 The package includes scripts for synchronizing local changes with your YouTrack. The following commands are available:
 
-- `youtrack-app list [--skip N] [--limit N] [--json]`
+- `youtrack-app list [--skip N] [--limit N] [--json] [--yaml]`
 - `youtrack-app upload <directory>`
 - `youtrack-app download <app>`
 - `youtrack-app validate <directory>`
-- `youtrack-app search <query> [--skip N] [--limit N] [--json]`
-- `youtrack-app info <app> [--json]`
+- `youtrack-app search <query> [--skip N] [--limit N] [--json] [--yaml]`
+- `youtrack-app info <app> [--json] [--yaml]`
 - `youtrack-app scripts <app> [--json]`
 - `youtrack-app settings <app> [--project <project-short-name>] [--json]`
 - `youtrack-app settings-set <app> [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
@@ -94,7 +94,7 @@ Skip and limit pagination is intended for browsing. For synchronization against 
 
 ### List
 
-`youtrack-app list --host --token [--skip N] [--limit N] [--json]`
+`youtrack-app list --host --token [--skip N] [--limit N] [--json] [--yaml]`
 
 This command lists all apps available in your YouTrack. To use it, specify the following parameters:
 
@@ -138,13 +138,13 @@ When both `dir` and `--manifest` are provided, the manifest file is used.
 
 ### Search
 
-`youtrack-app search <query> --host --token [--skip N] [--limit N] [--json]`
+`youtrack-app search <query> --host --token [--skip N] [--limit N] [--json] [--yaml]`
 
 This command searches installed apps by app title or package name.
 
 ### Info
 
-`youtrack-app info <app> --host --token [--json]`
+`youtrack-app info <app> --host --token [--json] [--yaml]`
 
 This command shows app details, including enabled state, attached projects, rules, and requirement errors when available.
 
