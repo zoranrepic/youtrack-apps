@@ -36,7 +36,7 @@ export async function groupList(config: Config): Promise<void> {
 
 export async function groupMembers(config: Config, groupKey?: string): Promise<void> {
   try {
-    const result = await createAppManagementOperations(config).getGroupMembers(groupKey);
+    const result = await createAppManagementOperations(config).getGroupMembers(groupKey, paginationFromConfig(config));
 
     if (config.yaml) {
       printYaml(result);

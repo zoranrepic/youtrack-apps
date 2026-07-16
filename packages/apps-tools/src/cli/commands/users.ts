@@ -36,7 +36,7 @@ export async function userList(config: Config): Promise<void> {
 
 export async function userInfo(config: Config, userKey?: string): Promise<void> {
   try {
-    const user = await createAppManagementOperations(config).getUserInfo(userKey);
+    const user = await createAppManagementOperations(config).getUserInfo(userKey, paginationFromConfig(config));
 
     if (config.yaml) {
       printYaml(user);

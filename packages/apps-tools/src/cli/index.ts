@@ -120,7 +120,7 @@ export async function run(argv = process.argv) {
     br();
     console.log(i18n('youtrack-app <command> [options]'));
     br();
-    console.log(i18n('Manage, inspect, and debug YouTrack apps from an external development environment.'));
+    console.log(i18n('Manage, configure, and debug YouTrack apps from an external development environment.'));
     console.log(i18n('Most commands require --host and --token. You can also set YOUTRACK_HOST and YOUTRACK_API_TOKEN.'));
     br();
 
@@ -159,7 +159,7 @@ export async function run(argv = process.argv) {
     });
     br();
 
-    printSection(i18n('App inspection and configuration'));
+    printSection(i18n('App details and configuration'));
     printCommand(i18n('list [--skip N] [--limit N] [--json]'), {
       does: i18n('Lists installed apps visible to the token in the YouTrack instance, with page metadata for large app lists.'),
       args: i18n('--skip and --limit page through large result sets; --json prints the raw page object.'),
@@ -203,13 +203,13 @@ export async function run(argv = process.argv) {
       does: i18n('Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.'),
       args: i18n('--skip and --limit page through large project lists.'),
     });
-    printCommand(i18n('project-info <project> [--yaml]'), {
+    printCommand(i18n('project-info <project> [--skip N] [--limit N] [--yaml]'), {
       does: i18n('Shows identifying details for one project in the YouTrack instance.'),
-      args: i18n('<project> is an exact project ID, short name, or name.'),
+      args: i18n('<project> is an exact project ID, short name, or name. --skip and --limit choose the resource page to resolve within.'),
     });
-    printCommand(i18n('project-fields <project> [--yaml]'), {
+    printCommand(i18n('project-fields <project> [--skip N] [--limit N] [--yaml]'), {
       does: i18n('Lists the issue field schema for one project in the YouTrack instance, including custom field types, required fields, and allowed values when available.'),
-      args: i18n('<project> is an exact project ID, short name, or name.'),
+      args: i18n('<project> is an exact project ID, short name, or name. --skip and --limit choose the resource page to resolve within.'),
     });
     printCommand(i18n('tag-search <query> [--project <short-name>] [--skip N] [--limit N] [--json] [--yaml]'), {
       does: i18n('Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.'),
@@ -219,17 +219,17 @@ export async function run(argv = process.argv) {
       does: i18n('Lists user groups and project teams in the YouTrack instance with IDs and user counts.'),
       args: i18n('--skip and --limit page through large group lists.'),
     });
-    printCommand(i18n('group-members <group> [--yaml]'), {
+    printCommand(i18n('group-members <group> [--skip N] [--limit N] [--yaml]'), {
       does: i18n('Shows direct members of one user group or project team in the YouTrack instance.'),
-      args: i18n('<group> is an exact user group or project team ID or name.'),
+      args: i18n('<group> is an exact user group or project team ID or name. --skip and --limit choose the resource page to resolve within.'),
     });
     printCommand(i18n('user-list [--skip N] [--limit N] [--json] [--yaml]'), {
       does: i18n('Lists users in the YouTrack instance with login, ID, and display name for later user lookup.'),
       args: i18n('--skip and --limit page through large user lists.'),
     });
-    printCommand(i18n('user-info <user> [--yaml]'), {
+    printCommand(i18n('user-info <user> [--skip N] [--limit N] [--yaml]'), {
       does: i18n('Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.'),
-      args: i18n('<user> is an exact user ID, login, username, or full name.'),
+      args: i18n('<user> is an exact user ID, login, username, or full name. --skip and --limit choose the resource page to resolve within.'),
     });
     br();
 
@@ -238,7 +238,7 @@ export async function run(argv = process.argv) {
     printLine(i18n('--token <token>'), i18n('Permanent token. Overrides YOUTRACK_API_TOKEN.'));
     printLine(i18n('--json'), i18n('Print machine-readable JSON for commands that support it.'));
     printLine(i18n('--yaml'), i18n('Print YAML for commands that support it.'));
-    printLine(i18n('--skip N, --limit N'), i18n('Page through list-style command results.'));
+    printLine(i18n('--skip N, --limit N'), i18n('Page through list results or choose the resource page used by exact lookup commands.'));
     printLine(i18n('version, --version, -v'), i18n('Print the CLI version.'));
 
     function br() {

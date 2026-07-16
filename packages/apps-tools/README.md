@@ -63,7 +63,8 @@ If these variables are set, you can omit `--host` and `--token`. If you provide 
 
 List-style commands fetch the first 50 results by default. This applies to `list`, `search`, `tag-search`, `script-logs`, `project-list`, `group-list`, and `user-list`.
 
-Use these flags to page through results:
+
+Use these flags to page through list results or choose the resource page used by exact lookup commands:
 
 | Option | Description |
 | ------ | :---------- |
@@ -71,6 +72,7 @@ Use these flags to page through results:
 | `--limit N` | Request up to `N` results. |
 
 For example, `youtrack-app list --skip 100 --limit 50` requests up to 50 results starting at offset 100.
+
 
 When text output is truncated, the CLI prints a hint such as `Showing 50 apps. Use --skip 50 --limit 50 for more.`
 For JSON and YAML output, list-style commands return an object with `items` and `pagination` metadata:
@@ -220,11 +222,11 @@ This command prints requirement errors reported for an app from broken pluggable
 
 This command lists projects in your YouTrack by short name and ID.
 
-`youtrack-app project-info <project> --host --token [--yaml]`
+`youtrack-app project-info <project> --host --token [--skip N] [--limit N] [--yaml]`
 
 This command shows project details. The project is resolved by exact project ID, short name, or name, ignoring case.
 
-`youtrack-app project-fields <project> --host --token [--yaml]`
+`youtrack-app project-fields <project> --host --token [--skip N] [--limit N] [--yaml]`
 
 This command lists custom fields configured for a project. The project is resolved by exact project ID, short name, or name, ignoring case.
 
@@ -234,7 +236,7 @@ This command lists custom fields configured for a project. The project is resolv
 
 This command lists user groups with their IDs and user counts.
 
-`youtrack-app group-members <group> --host --token [--yaml]`
+`youtrack-app group-members <group> --host --token [--skip N] [--limit N] [--yaml]`
 
 This command prints the IDs of users that are direct members of a user group. The group is resolved by exact group ID or name, ignoring case.
 
@@ -244,7 +246,7 @@ This command prints the IDs of users that are direct members of a user group. Th
 
 This command lists users with login, ID, and display name.
 
-`youtrack-app user-info <user> --host --token [--yaml]`
+`youtrack-app user-info <user> --host --token [--skip N] [--limit N] [--yaml]`
 
 This command shows user details. The user is resolved by exact user ID, login, name, or full name, ignoring case.
 
