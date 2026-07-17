@@ -235,22 +235,24 @@ async function handleRuleCommand(ruleArgs) {
     return false;
   }
 
-  const usage = 'Usage: rule add <type> <name>';
+  const usage = 'Usage: rule add <type> --name <name>';
   let ruleType;
   let name;
 
   if (ruleArgs[1] === 'add') {
-    if (ruleArgs.length !== 4) {
+    if (ruleArgs.length < 3 || ruleArgs.length > 4) {
       console.error(styleText("red", usage));
       process.exit(1);
     }
-    [, , ruleType, name] = ruleArgs;
+    [, , ruleType] = ruleArgs;
+    name = ruleArgs[3] || args.name;
   } else {
-    if (ruleArgs.length !== 3) {
+    if (ruleArgs.length < 2 || ruleArgs.length > 3) {
       console.error(styleText("red", usage));
       process.exit(1);
     }
-    [, ruleType, name] = ruleArgs;
+    [, ruleType] = ruleArgs;
+    name = ruleArgs[2] || args.name;
   }
 
   if (!ruleType || !name) {
@@ -261,7 +263,11 @@ async function handleRuleCommand(ruleArgs) {
   validateRuleType(ruleType);
   validateRuleName(name);
 
-  const { relativePath, absolutePath } = resolveRuleTarget(cwd, name);
+  const pkgPath = path.join(cwd, 'package.json');
+  const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
+  const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+
+  const { relativePath, absolutePath } = resolveRuleTarget(cwd, name, isEnhancedDX);
 
   if (fs.existsSync(absolutePath)) {
     throw new Error(`Workflow rule already exists at ${relativePath}`);
@@ -274,6 +280,8 @@ async function handleRuleCommand(ruleArgs) {
     ruleType,
     '--name',
     name,
+    '--isEnhancedDX',
+    String(isEnhancedDX),
     '--cwd',
     cwd,
   ]);
