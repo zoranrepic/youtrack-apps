@@ -36,8 +36,8 @@ Usage:
 Common:
   ${command('--cwd <path>')}        Run from another directory.
   ${command('--help, -h')}          Show help.
-  Names: app/rule/widget keys use ${code('[a-z][a-z0-9-]*')}; settings and
-  extension properties use ${code('[A-Za-z_][A-Za-z0-9_]*')}.
+  Names: app/rule/widget keys use ${code('[a-z][a-z0-9-]*')}; extension
+  properties use ${code('[A-Za-z_][A-Za-z0-9_]*')}; settings keys reject whitespace.
 
 
 ${heading('App Initialization')}
@@ -64,7 +64,7 @@ ${heading('Backend and Workflows')}
 
   ${command(`${createApp} rule add <type> --name <name>`)}
 
-  Adds a workflow rule. Missing values are prompted interactively.
+  Adds a workflow rule.
 
   Args:
     ${command('<type>')}                onChange | onSchedule | action | stateMachine | sla.
@@ -76,23 +76,27 @@ ${heading('Backend and Workflows')}
 
   ${command(`${createApp} http-handler <scope>/<path> [options]`)}
 
-  Adds an HTTP handler in an Enhanced DX app. ${command('http-handler add')} opens
-  the interactive flow. Aliases: ${command('handler')}, ${command('h')}.
+  Adds an HTTP handler. ${command('http-handler add')} opens the interactive flow.
+  Aliases: ${command('handler')}, ${command('h')}.
 
   Args:
     ${command('<scope>/<path>')}         scope: global | project | issue | article | user.
     ${command('--method <method>')}      GET | POST | PUT | DELETE. Default: GET.
     ${command('--permissions <csv>')}    Permission keys, comma-separated.
+    ${command('--handler <name>')}       JS apps only: handler file stem. Default: backend.
 
-  Output: ${code('src/backend/router/<scope>/<path>/<METHOD>.ts')}.
+  JS usage: ${command('http-handler <scope>/<path> --handler <name>')} writes
+  ${code('src/<name>.js')}; omit ${command('--handler')} to update ${code('src/backend.js')}.
+  TS output:
+  ${code('src/backend/router/<scope>/<path>/<METHOD>.ts')}.
 
 
-${heading('Configuration')}
+${heading('App Persistance')}
 
   ${command(`${createApp} settings init [options]`)}
 
-  Creates ${code('src/settings.json')}. Missing values are prompted interactively.
-  Aliases: ${command('setting init')}, ${command('s init')}.
+  Creates ${code('src/settings.json')} when absent. Missing values are prompted
+  interactively. Aliases: ${command('setting init')}, ${command('s init')}.
 
   Options:
     ${command('--title <text>')}         Settings schema title.
@@ -101,8 +105,8 @@ ${heading('Configuration')}
 
   ${command(`${createApp} settings add --name <name> --type <type> [options]`)}
 
-  Adds one property to ${code('src/settings.json')}. Missing values are prompted
-  interactively. Aliases: ${command('setting add')}, ${command('s add')}.
+  Adds one property to ${code('src/settings.json')}. Aliases:
+  ${command('setting add')}, ${command('s add')}.
 
   Options:
     ${command('--name <name>')}          Property key.
