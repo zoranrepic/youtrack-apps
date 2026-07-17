@@ -2,124 +2,182 @@ create-youtrack-app --help
 
 Create YouTrack App
 
-Use this generator to create a new YouTrack app or add features to an existing
-app directory. Run commands from the directory where the app should be created
-or modified.
+Scaffold a YouTrack app or add features to the current app.
 
-Create a New App
+Usage:
+  npx @jetbrains/create-youtrack-app [command] [options]
 
-Interactive setup:
-  npx @jetbrains/create-youtrack-app
-  # npm create @jetbrains/youtrack-app and npm init @jetbrains/youtrack-app run the same initializer flow
+Common:
+  --cwd <path>        Run from another directory.
+  --help, -h          Show help.
+  Names: app/rule/widget keys use [a-z][a-z0-9-]*; extension
+  properties use [A-Za-z_][A-Za-z0-9_]*; settings keys reject whitespace.
 
-Non-interactive setup:
-  npx @jetbrains/create-youtrack-app --name my-youtrack-app
-  # Only --name is required. Title, description, vendor, and vendor URL are optional.
 
-Choose the generated app shape:
-  npx @jetbrains/create-youtrack-app --name my-ts-app # TypeScript Enhanced DX app; default
-  npx @jetbrains/create-youtrack-app --name my-js-app --type js # JavaScript app shell
-  npx @jetbrains/create-youtrack-app --name backend-api --type ts --backend-only # Enhanced DX without the sample widget
+App Initialization
 
-Commands for both ts and js apps
+  npx @jetbrains/create-youtrack-app [options]
 
-These commands work in both JavaScript and TypeScript app directories.
+  Creates a new app. Missing values are prompted in an interactive terminal.
+  Project type is selected here only; feature commands infer the existing app.
 
-  npx @jetbrains/create-youtrack-app settings init
-    Interactive: create src/settings.json.
+  Options:
+    --name <name>         App package name.
+    --type <type>         js | ts. Default: ts.
+                          js = basic JavaScript app.
+                          ts = TypeScript Enhanced DX app.
+    --title <text>        Manifest title. Default: title-cased --name.
+    --description <text>  Manifest description. Default: derived from --type.
+    --vendor <text>       Manifest vendor name. Default: VendorName.
+    --vendor-url <url>    Manifest vendor URL. Default: https://vendor.com.
+    --backend-only        For --type ts, omit the sample widget.
+    --no-install          Skip dependency install.
 
-  npx @jetbrains/create-youtrack-app settings init --title "Settings" --description "App configuration"
-    Non-interactive: create src/settings.json.
 
-  npx @jetbrains/create-youtrack-app settings add
-    Interactive: add a property to src/settings.json.
+Backend and Workflows
 
-  npx @jetbrains/create-youtrack-app settings add --name apiUrl --type string
-    Non-interactive: add a property to src/settings.json.
+  npx @jetbrains/create-youtrack-app rule add <type> --name <name>
 
-  npx @jetbrains/create-youtrack-app widget add
-    Interactive: add a widget.
+  Adds a workflow rule.
 
-  npx @jetbrains/create-youtrack-app widget --key issue-panel --extension-point ISSUE_BELOW_SUMMARY
-    Non-interactive: add a widget.
+  Args:
+    <type>                onChange | onSchedule | action | stateMachine | sla.
+    --name <name>         Rule filename stem.
 
-  npx @jetbrains/create-youtrack-app widget --key dashboard-card --extension-point DASHBOARD_WIDGET --name "Dashboard Card"
-    Non-interactive: add a named dashboard widget.
+  Compatibility: rule add <type> <name>, rule <type> <name>.
+  Output: JS apps write src/workflows/<name>.js; TS apps write src/workflows/<name>.ts.
 
-  npx @jetbrains/create-youtrack-app extension-property add
-    Interactive: declare an app-owned entity extension property.
 
-  npx @jetbrains/create-youtrack-app property Issue.customStatus
-    Non-interactive: declare an extension property.
+  npx @jetbrains/create-youtrack-app http-handler <scope>/<path> [options]
 
-  npx @jetbrains/create-youtrack-app p Issue.tags --type string --set
-    Non-interactive: declare a multi-value extension property using the short alias.
+  Adds an HTTP handler. http-handler add opens the interactive flow.
+  Aliases: handler, h.
 
-  npx @jetbrains/create-youtrack-app http-handler add
-    Interactive: add an HTTP handler.
-    
-  npm run build
-    Build backend and frontend, then validate dist. Works for backend only apps as well.
+  Args:
+    <scope>/<path>         scope: global | project | issue | article | user.
+    --method <method>      GET | POST | PUT | DELETE. Default: GET.
+    --permissions <csv>    Permission keys, comma-separated.
+    --handler <name>       JS apps only: handler file stem. Default: backend.
 
-JavaScript App (--type js)
+  JS usage: http-handler <scope>/<path> --handler <name> writes
+  src/<name>.js; omit --handler to update src/backend.js.
+  TS output:
+  src/backend/router/<scope>/<path>/<METHOD>.ts.
 
-JavaScript apps start as backend.js and manifest.js. Add rule/script types.
 
-Classic workflow rule templates:
-  npx @jetbrains/create-youtrack-app rule add onChange notify-on-change
-  npx @jetbrains/create-youtrack-app rule add onSchedule weekly-digest
-  npx @jetbrains/create-youtrack-app rule add action apply-template
-  npx @jetbrains/create-youtrack-app rule add stateMachine issue-state
-  npx @jetbrains/create-youtrack-app rule add sla first-reply-sla
+App Persistance
 
-Generated files:
-  src/workflows/<name>.js
+  npx @jetbrains/create-youtrack-app settings init [options]
 
-Notes:
-  - Widget generation creates src/widgets/<key>/, updates manifest.json, and adds a Vite entry.
-  - npm run build can package backend-only apps before widgets exist.
+  Creates src/settings.json when absent. Missing values are prompted
+  interactively. Aliases: setting init, s init.
 
-TypeScript App (--type ts / Enhanced DX)
+  Options:
+    --title <text>         Settings schema title.
+    --description <text>   Settings schema description.
 
-Enhanced DX apps include TypeScript, file-based backend routing, generated API
-types, a typed frontend client, and Vite plugins for local development.
-The default scaffold includes a sample MAIN_MENU_ITEM widget and example routes:
-global/demo, global/echo (POST), issue/details, and project/demo.
 
-Common commands:
-  npm run dev
-    Rebuild and upload continuously during development.
+  npx @jetbrains/create-youtrack-app settings add --name <name> --type <type> [options]
 
-Enhanced DX-only generator commands:
-  npx @jetbrains/create-youtrack-app handler global/health
-    Non-interactive: add a GET handler.
+  Adds one property to src/settings.json. Aliases:
+  setting add, s add.
 
-  npx @jetbrains/create-youtrack-app handler project/users --method POST
-    Non-interactive: add a POST handler.
+  Options:
+    --name <name>          Property key.
+    --type <type>          string | integer | number | boolean | object | array.
+    --title <text>         Property title.
+    --description <text>   Property description.
+    --scope <scope>        global | project | none. Default: none.
+    --entity <entity>      Issue | User | Project | UserGroup | Article; only object/array.
+    --required             Add to required[].
+    --readonly             Mark read-only.
+    --const <value>        Constant value for read-only property.
+    --min-length <n>       String minimum length.
+    --max-length <n>       String maximum length.
+    --format <format>      String format, for example secret, date, date-time, email, uri.
+    --enum <csv>           String allowed values.
+    --min <n>              Number/integer inclusive minimum.
+    --max <n>              Number/integer inclusive maximum.
+    --exclusive-min <n>    Number/integer exclusive minimum.
+    --exclusive-max <n>    Number/integer exclusive maximum.
+    --multiple-of <n>      Number/integer multiple.
 
-  npx @jetbrains/create-youtrack-app h issue/comments --method POST --permissions READ_ISSUE,UPDATE_ISSUE
-    Non-interactive: add a POST handler with permissions using the short alias.
+
+  npx @jetbrains/create-youtrack-app extension-property <Entity>.<name> [options]
+
+  Updates src/entity-extensions.json. extension-property add opens
+  the interactive flow. Aliases: property, prop, p.
+
+  Args:
+    <Entity>               Issue | User | Project | Article.
+    <name>                 Extension property key.
+    --type <type>          string | integer | float | boolean | Issue | User | Project | Article.
+    --set                  Multi-value property. Alias: --multi.
+
+
+Widgets
+
+  npx @jetbrains/create-youtrack-app widget --key <key> --extension-point <point> [options]
+
+  Adds a widget and manifest entry. widget add opens the interactive flow.
+
+  Options:
+    --key <key>            Widget key.
+    --extension-point <p>  ADMINISTRATION_MENU_ITEM, ARTICLE_ABOVE_ACTIVITY_STREAM, ARTICLE_OPTIONS_MENU_ITEM, DASHBOARD_WIDGET, HELPDESK_CHANNEL, ISSUE_ABOVE_ACTIVITY_STREAM, ISSUE_BELOW_SUMMARY, ISSUE_FIELD_PANEL_FIRST, ISSUE_FIELD_PANEL_LAST, ISSUE_OPTIONS_MENU_ITEM, MAIN_MENU_ITEM, MARKDOWN, PROJECT_SETTINGS, USER_CARD, USER_PROFILE_SETTINGS
+    --name <text>          Display name. Default: title-cased --key.
+    --description <text>   Widget description.
+    --permissions <csv>    Permission keys, comma-separated.
+    --width <n>            Expected width in pixels.
+    --height <n>           Expected height in pixels.
+
+  Output: src/widgets/<key>/ plus manifest widget entry.
+
+
+App Lifecycle
+
+  Generated package scripts:
+    npm run build                         Build and validate dist.
+    npm run upload -- --host <url> --token <token> [--open]
+                                             Upload dist.
+
+
+Enhanced DX
+
+  Enhanced DX is selected with --type ts during app initialization. It adds
+  file-based routing, generated API types, typed widget client, dev Zod
+  validation, watch upload, and optional frontend hot reload.
+
+  Generated package scripts:
+    npm run dev                           Start the Enhanced DX dev workflow.
+    npm run g -- <generator-command>      Run this generator in the app.
 
   npx @jetbrains/create-youtrack-app endpoint add
-    Interactive: add a typed router endpoint with scope, path, method, request type, and response type prompts.
 
-Enhanced DX features:
-  File-based routing: create handlers in src/backend/router/<scope>/<path>/<METHOD>.ts.
-  Handler contracts: add @zod-to-schema to exported request/response types and export type Handle = typeof handle.
-  Generated API types: backend builds generate route types in src/api/api.d.ts and Zod schemas in src/api/api.zod.ts.
-  Typed client: widgets call backend handlers through the generated client from src/api.
-    import {createApi} from "@/api";
-    const host = await YTApp.register();
-    const api = createApi(host);
-    const result = await api.project.demo.GET({projectId: "DEMO", message: "hello"});
-  Dev validation: Zod validation runs in development builds.
-  Build order: backend builds first so generated API files exist before frontend code imports them.
-  Widget generation: creates src/widgets/<key>/ and updates manifest.json; Vite discovers widget entries automatically.
+  Interactive typed endpoint generator for Enhanced DX apps.
+
+  Values:
+    scope: global | issue | project | custom.
+    method: GET | POST | PUT | DELETE.
+    request type: type name or never. Default: never.
+    response type: type name or never. Default: never.
+    controller: function name, or empty to generate inline.
+
+  Output: src/backend/router/<path>/<METHOD>.ts; backend builds generate
+  src/api/api.d.ts and src/api/api.zod.ts.
+
 
 Agent Skill
 
-  npx @jetbrains/create-youtrack-app skill install
-    Interactive: install the YouTrack app builder skill for supported coding agents.
+  npx @jetbrains/create-youtrack-app skill install [options]
+  npx @jetbrains/create-youtrack-app skill status [options]
 
-  npx @jetbrains/create-youtrack-app skill status
-    Non-interactive: show installed skill status for supported coding agents.
+  Installs or reports the bundled YouTrack app builder skill.
+
+  Options:
+    --agent <agent>        claude | codex | junie | all. Default: all.
+    --scope <scope>        global | project | all. install default: global.
+
+
+Permission Keys
+
+  READ_PROJECT_BASIC, CREATE_PROJECT, READ_PROJECT, UPDATE_PROJECT, DELETE_PROJECT, READ_ORGANIZATION, UPDATE_ORGANIZATION, CREATE_ORGANIZATION, DELETE_ORGANIZATION, UPDATE_PROFILE, READ_USER_BASIC, READ_USER, UPDATE_USER, CREATE_USER, DELETE_USER, ADMIN_READ_APP, ADMIN_UPDATE_APP, READ_ISSUE, PRIVATE_READ_ISSUE, UPDATE_ISSUE, CREATE_ISSUE, DELETE_ISSUE, LINK_ISSUE, PRIVATE_UPDATE_ISSUE, APPLY_COMMANDS_SILENTLY, VIEW_WATCHERS, UPDATE_WATCHERS, VIEW_VOTERS, CREATE_ATTACHMENT_ISSUE, UPDATE_ATTACHMENT_ISSUE, DELETE_ATTACHMENT_ISSUE, CREATE_COMMENT, READ_COMMENT, UPDATE_COMMENT, DELETE_COMMENT, UPDATE_NOT_OWN_COMMENT, DELETE_NOT_OWN_COMMENT, READ_HIDDEN_STUFF, READ_WORK_ITEM, UPDATE_WORK_ITEM, UPDATE_NOT_OWN_WORK_ITEM, CREATE_WORK_ITEM, CREATE_NOT_OWN_WORK_ITEM, READ_ARTICLE, CREATE_ARTICLE, UPDATE_ARTICLE, DELETE_ARTICLE, READ_ARTICLE_COMMENT, CREATE_ARTICLE_COMMENT, UPDATE_ARTICLE_COMMENT, DELETE_ARTICLE_COMMENT
