@@ -357,7 +357,12 @@ async function handleRuleCommand(ruleArgs) {
         process.exit(1);
       }
 
-      const method = args.method || 'GET'; // Default to GET
+      const method = String(args.method || 'GET').toUpperCase(); // Default to GET
+      const validMethods = ['GET', 'POST', 'PUT', 'DELETE'];
+      if (!validMethods.includes(method)) {
+        console.error(styleText("red", `Invalid method: ${method}. Must be one of: ${validMethods.join(', ')}`));
+        process.exit(1);
+      }
       const permissions = args.permissions || '';
 
       const pkgPath = path.join(cwd, 'package.json');
@@ -365,8 +370,35 @@ async function handleRuleCommand(ruleArgs) {
       const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
 
       if (!isEnhancedDX) {
-        console.error(styleText("red", 'This command requires an Enhanced DX project.'));
-        process.exit(1);
+        const handlerName = args.handler != null ? String(args.handler) : 'backend';
+        if (!/^[a-z][a-z0-9-]*$/.test(handlerName)) {
+          console.error(styleText("red", `Invalid handler name: "${handlerName}". Must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens.`));
+          process.exit(1);
+        }
+
+        const handlerRel = path.join('src', `${handlerName}.js`);
+        const hygenArgs = [
+          'http-handler',
+          'add',
+          '--handlerName',
+          handlerName,
+          '--path',
+          routePath,
+          '--method',
+          method,
+          '--handlerScope',
+          scope,
+          '--permissions',
+          permissions,
+          '--cwd',
+          cwd
+        ];
+
+        console.log(styleText("cyan", `\nAdding ${method} handler to ${handlerRel}...\n`));
+        await runHygen(hygenArgs);
+        runGeneratedFilesLintFix([handlerRel]);
+        console.log(styleText("green", `\n✓ HTTP handler created successfully!\n`));
+        return;
       }
 
       const targetRel = path.join('src', 'backend', 'router', scope, routePath || '', `${method}.ts`);
