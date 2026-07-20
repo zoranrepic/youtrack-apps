@@ -32,6 +32,20 @@ describe('AppManagementOperations', () => {
     expect(result.items[0].id).toBe('148-1');
   });
 
+  it('search without a query lists apps through the app search endpoint', async () => {
+    const gateway = fakeGateway({
+      apps: [
+        {id: '148-1', name: 'some-app', title: 'Workflow App'},
+      ],
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.search();
+
+    expect(result.items).toHaveLength(1);
+    expect(gateway.searchRequests).toEqual([undefined]);
+  });
+
   it('deleteApp resolves titles through the shared app resolver before deleting', async () => {
     const gateway = fakeGateway({
       apps: [{id: '148-1', name: 'some-app', title: 'Workflow App'}],
@@ -308,7 +322,7 @@ interface FakeGateway extends YouTrackAppsGateway {
   projectConfigurationUpdates: {projectId: string; usageId: string; payload: ProjectConfigurationPayload | AppSettingsUpdate}[];
   globalConfigRequests: string[];
   globalConfigUpdates: {appId: string; payload: AppSettingsUpdate}[];
-  searchRequests: string[];
+  searchRequests: (string | undefined)[];
   appRequests: string[];
   appPackageRequests: string[];
   deleteRequests: string[];
@@ -370,7 +384,7 @@ function fakeGateway(overrides: {
     async listApps(): Promise<PaginatedResult<AppDetails>> {
       return page(overrides.apps ?? [app]);
     },
-    async searchApps(query: string): Promise<PaginatedResult<AppDetails>> {
+    async searchApps(query?: string): Promise<PaginatedResult<AppDetails>> {
       gateway.searchRequests.push(query);
       return page(overrides.apps ?? [app]);
     },

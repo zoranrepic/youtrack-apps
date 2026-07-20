@@ -1,12 +1,12 @@
 import {jest, describe, it, expect, beforeEach, afterEach} from '@jest/globals';
 import nock from 'nock';
-import {list} from './commands/list.js';
+import {search} from './commands/discovery.js';
 import {settings} from './commands/settings.js';
 import {scriptLogs} from './commands/diagnostics.js';
 import {deleteApp} from './commands/lifecycle.js';
 
 nock.back.setMode('record');
-jest.mock('./commands/list');
+jest.mock('./commands/discovery');
 jest.mock('./commands/settings');
 jest.mock('./commands/diagnostics');
 jest.mock('./commands/lifecycle');
@@ -93,7 +93,7 @@ describe('index', function () {
 
     require('./index').run(['', '', 'list', '--host=foo', '--token=bar']);
 
-    expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
+    expect(search).toHaveBeenCalledWith(expectedCallArgs, undefined);
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });
@@ -123,7 +123,7 @@ describe('index', function () {
 
     require('./index').run(['', '', 'list', '--host=foo', '--token=bar', '--yaml']);
 
-    expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
+    expect(search).toHaveBeenCalledWith(expectedCallArgs, undefined);
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });

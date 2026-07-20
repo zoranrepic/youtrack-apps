@@ -34,10 +34,6 @@ export class AppManagementOperations {
   constructor(private readonly client: YouTrackAppsGateway) {}
 
   async search(query?: string, pagination?: PaginationOptions): Promise<PaginatedResult<SearchResult>> {
-    if (!query) {
-      throw new Error(i18n('Search query should be defined'));
-    }
-
     return await this.client.searchApps(query, undefined, pagination);
   }
 

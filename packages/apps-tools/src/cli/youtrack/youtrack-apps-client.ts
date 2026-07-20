@@ -73,7 +73,7 @@ export interface ProjectConfigurationPayload {
 
 export interface YouTrackAppsGateway {
   listApps(fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>>;
-  searchApps(query: string, fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>>;
+  searchApps(query?: string, fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>>;
   getApp(appName: string, fields?: QueryField): Promise<AppDetails | null>;
   getAppPackage(appName: string): Promise<AppDetails | null>;
   listProjects(fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<ProjectDetails>>;
@@ -101,16 +101,16 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
   constructor(private readonly config: Config) {}
 
   async listApps(fields: QueryField = APP_SEARCH_FIELDS, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>> {
-    return await this.listRequest<AppDetails>('/api/admin/apps', fields, {}, pagination);
+    return await this.searchApps(undefined, fields, pagination);
   }
 
   async searchApps(
-    query: string,
+    query?: string,
     fields: QueryField = APP_SEARCH_FIELDS,
     pagination?: PaginationOptions,
   ): Promise<PaginatedResult<AppDetails>> {
     return await this.listRequest<AppDetails>('/api/admin/apps', fields, {
-      title: query,
+      ...(query ? {title: query} : {}),
       sort: 'asc',
     }, pagination);
   }

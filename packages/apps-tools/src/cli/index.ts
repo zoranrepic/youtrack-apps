@@ -3,7 +3,6 @@ import {i18n} from '../../lib/i18n/i18n.js';
 import {exit} from '../../lib/cli/exit.js';
 import {parse} from '../../lib/cli/parseargv.js';
 import {Config, RequiredParams} from '../../@types/types.js';
-import {list} from './commands/list.js';
 import {download} from './download.js';
 import {upload} from './upload.js';
 import {resolve} from '../../lib/net/resolve.js';
@@ -20,7 +19,7 @@ import {settings, settingsSet} from './commands/settings.js';
 import {tagSearch} from './commands/tags.js';
 
 const options = {
-  list: list,
+  list: search,
   download: download,
   upload: upload,
   validate: validate,
@@ -175,13 +174,10 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('App details and configuration'));
-    printCommand(i18n('list [--skip N] [--limit N] [--json] [--yaml]'), {
-      does: i18n('Lists installed apps visible to the token in the YouTrack instance, with page metadata for large app lists.'),
-    });
-    printCommand(i18n('search <query> [--skip N] [--limit N] [--json] [--yaml]'), {
-      does: i18n('Finds installed apps in the YouTrack instance whose title matches the query text.'),
+    printCommand(i18n('search [query] [--skip N] [--limit N] [--json] [--yaml]'), {
+      does: i18n('Lists installed apps visible to the token, optionally filtered by app title.'),
       args: [
-        i18n('<query> is a full or partial app title, for example "Slack".'),
+        i18n('[query] is a full or partial app title, for example "Slack".'),
       ],
     });
     printCommand(i18n('info <app> [--json] [--yaml]'), {

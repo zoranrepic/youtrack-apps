@@ -101,6 +101,23 @@ describe('YouTrackAppsClient', () => {
     expect(url.searchParams.get('fields')).toContain('title');
   });
 
+  it('searchApps without a query omits the title filter', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([{id: '93-1', name: 'my-app', title: 'My App'}]), {status: 200});
+    });
+
+    const result = await new YouTrackAppsClient(config()).searchApps();
+
+    expect(result.items).toEqual([{id: '93-1', name: 'my-app', title: 'My App'}]);
+
+    const url = new URL(requests[0].url);
+    expect(url.pathname).toBe('/api/admin/apps');
+    expect(url.searchParams.has('title')).toBe(false);
+    expect(url.searchParams.get('sort')).toBe('asc');
+  });
+
   it('searchWorkflows requests packages with rule summaries', async () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
