@@ -432,7 +432,6 @@ function config(): Config {
     yaml: false,
     yes: false,
     project: null,
-    top: null,
     skip: null,
     limit: null,
     settings: null,

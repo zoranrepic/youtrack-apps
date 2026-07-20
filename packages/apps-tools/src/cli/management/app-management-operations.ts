@@ -103,10 +103,10 @@ export class AppManagementOperations {
     return {app, project, projectIds: nextProjects.map(candidate => candidate.id)};
   }
 
-  async getLogs(appName: string | undefined, top: string | null): Promise<LogEntry[]> {
-    const normalizedTop = validateTop(top);
+  async getLogs(appName: string | undefined, limit: string | null): Promise<LogEntry[]> {
+    const normalizedLimit = validateLogLimit(limit);
     const app = await this.resolveApp(appName);
-    return normalizeLogs(await this.client.getLogs(app.id, normalizedTop ?? undefined));
+    return normalizeLogs(await this.client.getLogs(app.id, normalizedLimit ?? undefined));
   }
 
   async getScriptLogs(
@@ -379,17 +379,17 @@ export function createAppManagementOperations(config: Config): AppManagementOper
   return new AppManagementOperations(new YouTrackAppsClient(config));
 }
 
-function validateTop(top: string | null): string | null {
-  if (!top) {
+function validateLogLimit(limit: string | null): string | null {
+  if (!limit) {
     return null;
   }
 
-  const parsed = Number(top);
+  const parsed = Number(limit);
   if (!Number.isInteger(parsed) || parsed <= 0) {
-    throw new Error(i18n('Option "--top" should be a positive number'));
+    throw new Error(i18n('Option "--limit" should be a positive number'));
   }
 
-  return top;
+  return limit;
 }
 
 function resourceResolvePagination(pagination?: PaginationOptions): PaginationOptions {

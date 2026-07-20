@@ -19,7 +19,6 @@ import {settings, settingsSet} from './commands/settings.js';
 import {tagSearch} from './commands/tags.js';
 
 const options = {
-  list: search,
   download: download,
   upload: upload,
   validate: validate,
@@ -68,10 +67,6 @@ export async function run(argv = process.argv) {
     cwd: process.cwd(),
   };
 
-  if (args.version || args.v) {
-    return printVersion();
-  }
-
   const option = args._[0];
   if (option === 'version') {
     printVersion();
@@ -84,7 +79,7 @@ export async function run(argv = process.argv) {
   }
 
   const executable = options[option];
-  const commandArg = shouldJoinCommandArg(option) ? args._.slice(1).join(' ') : args._.slice(1)[0];
+  const commandArg = getCommandArg(option, args._.slice(1));
   if (option === 'validate') {
     await executable(config, commandArg);
     return;
@@ -99,7 +94,7 @@ export async function run(argv = process.argv) {
     console.log(i18n('youtrack-app <command> [options]'));
     br();
     console.log(i18n('Manage, configure, and debug YouTrack apps from an external development environment.'));
-    console.log(i18n('Most commands require --host and --token. You can also set YOUTRACK_HOST and YOUTRACK_API_TOKEN.'));
+    console.log(i18n('Configure YOUTRACK_HOST and YOUTRACK_API_TOKEN, or pass --host and --token to each command.'));
     br();
 
     printSection(i18n('Common options'));
@@ -109,7 +104,12 @@ export async function run(argv = process.argv) {
     printLine(i18n('--yaml'), i18n('Print YAML for commands that support it.'));
     printLine(i18n('--skip N'), i18n('Choose how many results to skip in commands that support paging.'));
     printLine(i18n('--limit N'), i18n('Choose how many results to request in commands that support paging.'));
-    printLine(i18n('version, --version, -v'), i18n('Print the CLI version.'));
+    br();
+
+    printSection(i18n('General commands'));
+    printCommand(i18n('version'), {
+      does: i18n('Prints the CLI version.'),
+    });
     br();
 
     printSection(i18n('App lifecycle'));
@@ -128,11 +128,11 @@ export async function run(argv = process.argv) {
         i18n('--overwrite replaces files in the destination directory.'),
       ],
     });
-    printCommand(i18n('validate <directory> [--manifest FILE] [--schema FILE]'), {
+    printCommand(i18n('validate [directory] [--manifest FILE] [--schema FILE]'), {
       does: i18n('Validates local app manifest files against the YouTrack app JSON schema without connecting to YouTrack.'),
       args: [
-        i18n('<directory> is a local app directory.'),
-        i18n('--manifest FILE overrides the default manifest file.'),
+        i18n('[directory] is a local app directory.'),
+        i18n('--manifest FILE validates a manifest file directly or overrides the default manifest file.'),
         i18n('--schema FILE overrides the default schema file.'),
       ],
     });
@@ -174,25 +174,25 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('App details and configuration'));
-    printCommand(i18n('search [query] [--skip N] [--limit N] [--json] [--yaml]'), {
+    printCommand(i18n('search [query]'), {
       does: i18n('Lists installed apps visible to the token, optionally filtered by app title.'),
       args: [
         i18n('[query] is a full or partial app title, for example "Slack".'),
       ],
     });
-    printCommand(i18n('info <app> [--json] [--yaml]'), {
+    printCommand(i18n('info <app>'), {
       does: i18n('Shows one installed app in the YouTrack instance with enabled state, project usages, rules, and requirement errors.'),
       args: [
         i18n('<app> is an app ID, package name, or title.'),
       ],
     });
-    printCommand(i18n('scripts <app> [--json]'), {
+    printCommand(i18n('scripts <app>'), {
       does: i18n('Shows package metadata, manifest content, settings schema, entity extensions, and script source files from an installed app in the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID, package name, or title.'),
       ],
     });
-    printCommand(i18n('settings <app> [--project <short-name>] [--json]'), {
+    printCommand(i18n('settings <app> [--project <short-name>]'), {
       does: i18n('Reads global app settings or project-scoped settings from the YouTrack instance.'),
       args: [
         i18n('<app> is resolved by title or package name.'),
@@ -208,21 +208,20 @@ export async function run(argv = process.argv) {
         i18n('--enabled true|false updates the enabled state.'),
       ],
     });
-    printCommand(i18n('logs <app> [--top N] [--json]'), {
+    printCommand(i18n('logs <app>'), {
       does: i18n('Shows recent app-level log entries from the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID, package name, or title.'),
-        i18n('--top N limits how many entries are requested.'),
       ],
     });
-    printCommand(i18n('script-logs <app> <script> [--skip N] [--limit N] [--json]'), {
+    printCommand(i18n('script-logs <app> <script>'), {
       does: i18n('Shows paged log entries from the YouTrack instance for one script, module, or workflow rule.'),
       args: [
         i18n('<app> is an app ID, package name, or title.'),
         i18n('<script> is a script, module, rule ID, rule name, or rule title.'),
       ],
     });
-    printCommand(i18n('requirement-errors <app> [--json]'), {
+    printCommand(i18n('requirement-errors <app>'), {
       does: i18n('Shows broken requirement problems reported by app usages in the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID, package name, or title.'),
@@ -231,41 +230,41 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('Instance exploration'));
-    printCommand(i18n('project-list [--skip N] [--limit N] [--json] [--yaml]'), {
+    printCommand(i18n('project-list'), {
       does: i18n('Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.'),
     });
-    printCommand(i18n('project-info <project> [--skip N] [--limit N] [--yaml]'), {
+    printCommand(i18n('project-info <project>'), {
       does: i18n('Shows identifying details for one project in the YouTrack instance.'),
       args: [
         i18n('<project> is an exact project ID, short name, or name.'),
       ],
     });
-    printCommand(i18n('project-fields <project> [--skip N] [--limit N] [--yaml]'), {
+    printCommand(i18n('project-fields <project>'), {
       does: i18n('Lists the issue field schema for one project in the YouTrack instance, including custom field types, required fields, and allowed values when available.'),
       args: [
         i18n('<project> is an exact project ID, short name, or name.'),
       ],
     });
-    printCommand(i18n('tag-search <query> [--project <short-name>] [--skip N] [--limit N] [--json] [--yaml]'), {
+    printCommand(i18n('tag-search <query> [--project <short-name>]'), {
       does: i18n('Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.'),
       args: [
         i18n('<query> is tag name text.'),
         i18n('--project <short-name> narrows tags to one project.'),
       ],
     });
-    printCommand(i18n('group-list [--skip N] [--limit N] [--json] [--yaml]'), {
+    printCommand(i18n('group-list'), {
       does: i18n('Lists user groups and project teams in the YouTrack instance with IDs and user counts.'),
     });
-    printCommand(i18n('group-members <group> [--skip N] [--limit N] [--yaml]'), {
+    printCommand(i18n('group-members <group>'), {
       does: i18n('Shows direct members of one user group or project team in the YouTrack instance.'),
       args: [
         i18n('<group> is an exact user group or project team ID or name.'),
       ],
     });
-    printCommand(i18n('user-list [--skip N] [--limit N] [--json] [--yaml]'), {
+    printCommand(i18n('user-list'), {
       does: i18n('Lists users in the YouTrack instance with login, ID, and display name for later user lookup.'),
     });
-    printCommand(i18n('user-info <user> [--skip N] [--limit N] [--yaml]'), {
+    printCommand(i18n('user-info <user>'), {
       does: i18n('Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.'),
       args: [
         i18n('<user> is an exact user ID, login, username, or full name.'),
@@ -336,6 +335,15 @@ export async function run(argv = process.argv) {
 
   function optionalArgString(value: unknown): string | null {
     return value === undefined || value === null || value === false ? null : value.toString();
+  }
+
+  function getCommandArg(option: string | number, values: unknown[]): string | undefined {
+    if (!shouldJoinCommandArg(option)) {
+      return values[0]?.toString();
+    }
+
+    const joined = values.join(' ');
+    return joined || undefined;
   }
 
   function shouldJoinCommandArg(option: string | number): boolean {

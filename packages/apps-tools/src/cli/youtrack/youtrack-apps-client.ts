@@ -91,7 +91,7 @@ export interface YouTrackAppsGateway {
   getProjectConfiguration(projectId: string, usageId: string): Promise<AppConfiguration | null>;
   updateProjectConfiguration(projectId: string, usageId: string, payload: ProjectConfigurationPayload | AppSettingsUpdate): Promise<AppConfiguration | null>;
   updateAppUsages(appId: string, projectIds: string[]): Promise<void>;
-  getLogs(appId: string, top?: string): Promise<LogEntry[] | LogsResponse | undefined>;
+  getLogs(appId: string, limit?: string): Promise<LogEntry[] | LogsResponse | undefined>;
   getWorkflow(appName: string): Promise<AppDetails | null>;
   searchWorkflows(query: string): Promise<AppDetails[]>;
   getRuleLogs(workflowId: string, ruleId: string, pagination?: PaginationOptions): Promise<PaginatedResult<RuleLogEntry>>;
@@ -221,9 +221,9 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     });
   }
 
-  async getLogs(appId: string, top?: string): Promise<LogEntry[] | LogsResponse | undefined> {
+  async getLogs(appId: string, limit?: string): Promise<LogEntry[] | LogsResponse | undefined> {
     const text = await this.textRequest('GET', `/api/admin/apps/${appId}/logs`, {
-      searchParams: top ? {'$top': top} : undefined,
+      searchParams: limit ? {'$top': limit} : undefined,
     });
     return parseLogsResponse(text);
   }
