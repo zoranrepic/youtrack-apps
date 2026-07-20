@@ -229,8 +229,12 @@ export class AppManagementOperations {
     return {project, schema};
   }
 
-  async listGroups(pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {
-    return await this.client.listGroups(pagination);
+  async listGroups(query: string | undefined, pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {
+    if (!query) {
+      throw new Error(i18n('Group query should be defined'));
+    }
+
+    return await this.client.listGroups(query, pagination);
   }
 
   async getGroupMembers(groupKey?: string, pagination?: PaginationOptions): Promise<GroupMembersResult> {
@@ -239,8 +243,12 @@ export class AppManagementOperations {
     return {group, members: details?.ownUsers ?? []};
   }
 
-  async listUsers(pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>> {
-    return await this.client.listUsers(pagination);
+  async listUsers(query: string | undefined, pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>> {
+    if (!query) {
+      throw new Error(i18n('User query should be defined'));
+    }
+
+    return await this.client.listUsers(query, pagination);
   }
 
   async getUserInfo(userKey?: string, pagination?: PaginationOptions): Promise<UserInfoResult> {
@@ -332,7 +340,7 @@ export class AppManagementOperations {
     }
 
     return requireExactMatch(
-      (await this.client.listGroups(resourceResolvePagination(pagination))).items,
+      (await this.client.listGroups(groupKey, resourceResolvePagination(pagination))).items,
       groupKey,
       group => [group.id, group.name],
       'Group',
@@ -345,7 +353,7 @@ export class AppManagementOperations {
     }
 
     return requireExactMatch(
-      (await this.client.listUsers(resourceResolvePagination(pagination))).items,
+      (await this.client.listUsers(userKey, resourceResolvePagination(pagination))).items,
       userKey,
       user => [user.id, user.login, user.name, user.fullName],
       'User',

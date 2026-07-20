@@ -6,10 +6,10 @@ import {printYaml, UserGroup} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
 import {printList} from './output.js';
 
-export async function groupList(config: Config): Promise<void> {
+export async function groupList(config: Config, query?: string): Promise<void> {
   try {
     const pagination = paginationFromConfig(config);
-    const result = await createAppManagementOperations(config).listGroups(pagination);
+    const result = await createAppManagementOperations(config).listGroups(query, pagination);
 
     printList({
       config,

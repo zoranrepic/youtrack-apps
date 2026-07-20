@@ -245,17 +245,23 @@ export async function run(argv = process.argv) {
         i18n('--project <short-name> narrows tags to one project.'),
       ],
     });
-    printCommand(i18n('group-list'), {
-      does: i18n('Lists user groups and project teams in the YouTrack instance with IDs and user counts.'),
+    printCommand(i18n('group-list <query>'), {
+      does: i18n('Searches user groups and project teams in the YouTrack instance with IDs and user counts.'),
+      args: [
+        i18n('<query> is a required group search filter.'),
+      ],
     });
     printCommand(i18n('group-members <group>'), {
       does: i18n('Shows direct members of one user group or project team in the YouTrack instance.'),
       args: [
-        i18n('<group> is an exact user group or project team ID or name.'),
+        i18n('<group> is a required group search filter; one result must exactly match its ID or name.'),
       ],
     });
-    printCommand(i18n('user-list'), {
-      does: i18n('Lists users in the YouTrack instance with login, ID, and display name for later user lookup.'),
+    printCommand(i18n('user-list <query>'), {
+      does: i18n('Searches users in the YouTrack instance with login, ID, and display name.'),
+      args: [
+        i18n('<query> is a required user search filter.'),
+      ],
     });
     printCommand(i18n('user-info <user>'), {
       does: i18n('Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.'),
@@ -348,6 +354,9 @@ export async function run(argv = process.argv) {
       'settings',
       'settings-set',
       'tag-search',
+      'group-list',
+      'group-members',
+      'user-list',
       'delete',
       'enable',
       'disable',

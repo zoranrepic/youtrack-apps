@@ -69,9 +69,9 @@ export interface YouTrackAppsGateway {
   getProjectFields(projectKey: string): Promise<IssueFieldsSchema>;
   searchTags(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
   searchProjectTags(projectId: string, query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
-  listGroups(pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>>;
+  listGroups(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>>;
   getGroupMembers(groupId: string): Promise<UserGroupMembers | null>;
-  listUsers(pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>>;
+  listUsers(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>>;
   getUser(userId: string): Promise<UserDetails | null>;
   deleteWorkflow(appId: string): Promise<void>;
   getGlobalConfig(appId: string): Promise<AppConfiguration | null>;
@@ -148,8 +148,10 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     }, pagination);
   }
 
-  async listGroups(pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {
-    return await this.listRequest<UserGroup>('/api/groups', GROUP_SEARCH_FIELDS, {}, pagination);
+  async listGroups(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {
+    return await this.listRequest<UserGroup>('/api/groups', GROUP_SEARCH_FIELDS, {
+      query,
+    }, pagination);
   }
 
   async getGroupMembers(groupId: string): Promise<UserGroupMembers | null> {
@@ -158,8 +160,10 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     }) ?? null;
   }
 
-  async listUsers(pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>> {
-    return await this.listRequest<UserSummary>('/api/users', USER_SEARCH_FIELDS, {}, pagination);
+  async listUsers(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>> {
+    return await this.listRequest<UserSummary>('/api/users', USER_SEARCH_FIELDS, {
+      query,
+    }, pagination);
   }
 
   async getUser(userId: string): Promise<UserDetails | null> {

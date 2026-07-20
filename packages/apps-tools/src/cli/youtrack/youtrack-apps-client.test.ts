@@ -10,8 +10,8 @@ describe('YouTrackAppsClient', () => {
   describe.each([
     ['apps', '/api/admin/apps', (client: YouTrackAppsClient) => client.listApps(['id'], {skip: 100, limit: 25})],
     ['projects', '/api/admin/projects', (client: YouTrackAppsClient) => client.listProjects(['id'], {skip: 100, limit: 25})],
-    ['groups', '/api/groups', (client: YouTrackAppsClient) => client.listGroups({skip: 100, limit: 25})],
-    ['users', '/api/users', (client: YouTrackAppsClient) => client.listUsers({skip: 100, limit: 25})],
+    ['groups', '/api/groups', (client: YouTrackAppsClient) => client.listGroups('developers', {skip: 100, limit: 25})],
+    ['users', '/api/users', (client: YouTrackAppsClient) => client.listUsers('root', {skip: 100, limit: 25})],
   ])('list %s', (_name, path, requestList) => {
     it('uses skip and limit pagination', async () => {
       const requests: Request[] = [];
@@ -30,6 +30,36 @@ describe('YouTrackAppsClient', () => {
       expect(new URL(requests[0].url).searchParams.get('$skip')).toBe('100');
       expect(new URL(requests[0].url).searchParams.get('$top')).toBe('25');
     });
+  });
+
+  it('listGroups sends the required query filter', async () => {
+    const requests: Request[] = [];
+
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([]), {status: 200});
+    });
+
+    await new YouTrackAppsClient(config()).listGroups('developers');
+
+    expect(requests).toHaveLength(1);
+    expect(new URL(requests[0].url).pathname).toBe('/api/groups');
+    expect(new URL(requests[0].url).searchParams.get('query')).toBe('developers');
+  });
+
+  it('listUsers sends the required query filter', async () => {
+    const requests: Request[] = [];
+
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([]), {status: 200});
+    });
+
+    await new YouTrackAppsClient(config()).listUsers('root');
+
+    expect(requests).toHaveLength(1);
+    expect(new URL(requests[0].url).pathname).toBe('/api/users');
+    expect(new URL(requests[0].url).searchParams.get('query')).toBe('root');
   });
 
   it('listApps defaults to the first 50 results', async () => {

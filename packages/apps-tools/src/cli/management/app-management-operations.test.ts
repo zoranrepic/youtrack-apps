@@ -261,7 +261,17 @@ describe('AppManagementOperations', () => {
     const result = await operations.getGroupMembers('developers');
 
     expect(result.members).toEqual([{id: 'user-1'}, {id: 'user-2'}]);
+    expect(gateway.groupListRequests).toContainEqual({
+      query: 'developers',
+      pagination: {limit: 100, skip: undefined},
+    });
     expect(gateway.groupMembersRequests).toEqual(['group-1']);
+  });
+
+  it('listGroups requires a search query', async () => {
+    const operations = new AppManagementOperations(fakeGateway());
+
+    await expect(operations.listGroups(undefined)).rejects.toThrow('Group query should be defined');
   });
 
   it('getUserInfo resolves exact logins and fetches details by user id', async () => {
@@ -274,7 +284,17 @@ describe('AppManagementOperations', () => {
     const result = await operations.getUserInfo('ROOT');
 
     expect(result.email).toBe('root@example.com');
+    expect(gateway.userListRequests).toContainEqual({
+      query: 'ROOT',
+      pagination: {limit: 100, skip: undefined},
+    });
     expect(gateway.userRequests).toEqual(['user-1']);
+  });
+
+  it('listUsers requires a search query', async () => {
+    const operations = new AppManagementOperations(fakeGateway());
+
+    await expect(operations.listUsers(undefined)).rejects.toThrow('User query should be defined');
   });
 
   it('exact resource matching does not fall back to partial matches', async () => {
@@ -321,8 +341,8 @@ describe('AppManagementOperations', () => {
     await operations.getUserInfo('root', pagination);
 
     expect(gateway.projectListRequests).toContainEqual(pagination);
-    expect(gateway.groupListRequests).toContainEqual(pagination);
-    expect(gateway.userListRequests).toContainEqual(pagination);
+    expect(gateway.groupListRequests).toContainEqual({query: 'Developers', pagination});
+    expect(gateway.userListRequests).toContainEqual({query: 'root', pagination});
   });
 });
 
@@ -345,8 +365,8 @@ interface FakeGateway extends YouTrackAppsGateway {
   workflowSearchRequests: string[];
   userRequests: string[];
   projectListRequests: PaginationOptions[];
-  groupListRequests: PaginationOptions[];
-  userListRequests: PaginationOptions[];
+  groupListRequests: {query: string; pagination: PaginationOptions}[];
+  userListRequests: {query: string; pagination: PaginationOptions}[];
 }
 
 function fakeGateway(overrides: {
@@ -425,16 +445,16 @@ function fakeGateway(overrides: {
       gateway.projectTagRequests.push({projectId, query});
       return page(overrides.tags ?? []);
     },
-    async listGroups(pagination: PaginationOptions = {}): Promise<PaginatedResult<UserGroup>> {
-      gateway.groupListRequests.push(pagination);
+    async listGroups(query: string, pagination: PaginationOptions = {}): Promise<PaginatedResult<UserGroup>> {
+      gateway.groupListRequests.push({query, pagination});
       return page(overrides.groups ?? []);
     },
     async getGroupMembers(groupId: string): Promise<UserGroupMembers | null> {
       gateway.groupMembersRequests.push(groupId);
       return overrides.groupMembers ?? {ownUsers: []};
     },
-    async listUsers(pagination: PaginationOptions = {}): Promise<PaginatedResult<UserSummary>> {
-      gateway.userListRequests.push(pagination);
+    async listUsers(query: string, pagination: PaginationOptions = {}): Promise<PaginatedResult<UserSummary>> {
+      gateway.userListRequests.push({query, pagination});
       return page(overrides.users ?? []);
     },
     async getUser(userId: string): Promise<UserDetails | null> {

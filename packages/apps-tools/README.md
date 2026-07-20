@@ -44,9 +44,9 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app project-list`
 - `youtrack-app project-info <project>`
 - `youtrack-app project-fields <project>`
-- `youtrack-app group-list`
+- `youtrack-app group-list <query>`
 - `youtrack-app group-members <group>`
-- `youtrack-app user-list`
+- `youtrack-app user-list <query>`
 - `youtrack-app user-info <user>`
 
 ### Using Environment Variables
@@ -223,19 +223,19 @@ This command returns the full issue fields JSON schema for a project. The projec
 
 ### User Groups
 
-`youtrack-app group-list --host --token`
+`youtrack-app group-list <query> --host --token`
 
-This command lists user groups with their IDs and user counts.
+This command searches user groups with their IDs and user counts. The query is required.
 
 `youtrack-app group-members <group> --host --token`
 
-This command prints the IDs of users that are direct members of a user group. The group is resolved by exact group ID or name, ignoring case.
+This command prints the IDs of users that are direct members of a user group. The group search filter is required, and one matching group must resolve by exact group ID or name, ignoring case.
 
 ### Users
 
-`youtrack-app user-list --host --token`
+`youtrack-app user-list <query> --host --token`
 
-This command lists users with login, ID, and display name.
+This command searches users with login, ID, and display name. The query is required.
 
 `youtrack-app user-info <user> --host --token`
 
