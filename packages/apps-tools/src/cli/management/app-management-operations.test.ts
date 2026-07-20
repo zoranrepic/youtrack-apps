@@ -221,14 +221,20 @@ describe('AppManagementOperations', () => {
     await expect(operations.getScriptLogs('effort-level-monitor', 'action')).rejects.toThrow('App "effort-level-monitor" is ambiguous');
   });
 
-  it('getProjectInfo resolves exact project names and fetches details by short name', async () => {
+  it('getProjectInfo resolves project IDs and short names and fetches details by short name', async () => {
     const gateway = fakeGateway({projects: [projectDetails()]});
     const operations = new AppManagementOperations(gateway);
 
-    const result = await operations.getProjectInfo('car-project');
+    const result = await operations.getProjectInfo('CP');
 
     expect(result.id).toBe('0-1');
     expect(gateway.projectRequests).toEqual(['CP']);
+  });
+
+  it('getProjectInfo does not resolve project display names', async () => {
+    const operations = new AppManagementOperations(fakeGateway({projects: [projectDetails()]}));
+
+    await expect(operations.getProjectInfo('car-project')).rejects.toThrow('Project "car-project" was not found');
   });
 
   it('getProjectFields resolves any project key and fetches fields by project short name', async () => {
@@ -279,7 +285,7 @@ describe('AppManagementOperations', () => {
     await expect(operations.getUserInfo('roo')).rejects.toThrow('User "roo" was not found');
   });
 
-  it('exact resource matching rejects ambiguous matches', async () => {
+  it('project matching ignores display-name collisions', async () => {
     const operations = new AppManagementOperations(fakeGateway({
       projects: [
         {id: '0-1', name: 'Car Project', shortName: 'CP'},
@@ -287,7 +293,9 @@ describe('AppManagementOperations', () => {
       ],
     }));
 
-    await expect(operations.getProjectInfo('cp')).rejects.toThrow('Project "cp" is ambiguous');
+    await expect(operations.getProjectInfo('cp')).resolves.toEqual(
+      expect.objectContaining({id: '0-1', shortName: 'CP'}),
+    );
   });
 
   it('exact resource matching uses a 100 item resolver page by default', async () => {

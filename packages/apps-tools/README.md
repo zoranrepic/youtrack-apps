@@ -215,11 +215,11 @@ This command lists projects in your YouTrack by short name and ID.
 
 `youtrack-app project-info <project> --host --token`
 
-This command shows project details. The project is resolved by exact project ID, short name, or name, ignoring case.
+This command shows project details. The project is resolved by exact project ID or short name/key, ignoring case.
 
 `youtrack-app project-fields <project> --host --token`
 
-This command returns the full issue fields JSON schema for a project. The project is resolved by exact project ID, short name, or name, ignoring case.
+This command returns the full issue fields JSON schema for a project. The project is resolved by exact project ID or short name/key, ignoring case.
 
 ### User Groups
 

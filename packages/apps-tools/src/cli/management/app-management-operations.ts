@@ -321,7 +321,7 @@ export class AppManagementOperations {
     return requireExactMatch(
       (await this.client.listProjects(PROJECT_RESOLVE_FIELDS, resourceResolvePagination(pagination))).items,
       projectKey,
-      project => [project.id, project.shortName, project.name],
+      project => [project.id, project.shortName],
       'Project',
     );
   }

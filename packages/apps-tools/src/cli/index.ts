@@ -229,13 +229,13 @@ export async function run(argv = process.argv) {
     printCommand(i18n('project-info <project>'), {
       does: i18n('Shows identifying details for one project in the YouTrack instance.'),
       args: [
-        i18n('<project> is an exact project ID, short name, or name.'),
+        i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
     printCommand(i18n('project-fields <project>'), {
       does: i18n('Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.'),
       args: [
-        i18n('<project> is an exact project ID, short name, or name.'),
+        i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
     printCommand(i18n('tag-search <query> [--project <short-name>]'), {
