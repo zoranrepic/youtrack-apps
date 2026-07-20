@@ -25,7 +25,7 @@ App Initialization
     --name <name>         App package name.
     --type <type>         js | ts. Default: ts.
                           js = basic JavaScript app.
-                          ts = TypeScript Enhanced DX app.
+                          ts = TypeScript app with Advanced tools.
     --title <text>        Manifest title. Default: title-cased --name.
     --description <text>  Manifest description. Default: derived from --type.
     --vendor <text>       Manifest vendor name. Default: VendorName.
@@ -141,19 +141,20 @@ App Lifecycle
                                              Upload dist.
 
 
-Enhanced DX
+Advanced tools
 
-  Enhanced DX is selected with --type ts during app initialization. It adds
-  file-based routing, generated API types, typed widget client, dev Zod
-  validation, watch upload, and optional frontend hot reload.
+  Advanced tools are available only for TypeScript apps selected with
+  --type ts during app initialization. They add file-based routing,
+  generated API types, typed widget client, dev Zod validation, watch upload,
+  and optional frontend hot reload.
 
   Generated package scripts:
-    npm run dev                           Start the Enhanced DX dev workflow.
+    npm run dev                           Start the Advanced tools dev workflow.
     npm run g -- <generator-command>      Run this generator in the app.
 
   npx @jetbrains/create-youtrack-app endpoint add
 
-  Interactive typed endpoint generator for Enhanced DX apps.
+  Interactive typed endpoint generator for TypeScript apps with Advanced tools.
 
   Values:
     scope: global | issue | project | custom.
@@ -176,8 +177,3 @@ Agent Skill
   Options:
     --agent <agent>        claude | codex | junie | all. Default: all.
     --scope <scope>        global | project | all. install default: global.
-
-
-Permission Keys
-
-  READ_PROJECT_BASIC, CREATE_PROJECT, READ_PROJECT, UPDATE_PROJECT, DELETE_PROJECT, READ_ORGANIZATION, UPDATE_ORGANIZATION, CREATE_ORGANIZATION, DELETE_ORGANIZATION, UPDATE_PROFILE, READ_USER_BASIC, READ_USER, UPDATE_USER, CREATE_USER, DELETE_USER, ADMIN_READ_APP, ADMIN_UPDATE_APP, READ_ISSUE, PRIVATE_READ_ISSUE, UPDATE_ISSUE, CREATE_ISSUE, DELETE_ISSUE, LINK_ISSUE, PRIVATE_UPDATE_ISSUE, APPLY_COMMANDS_SILENTLY, VIEW_WATCHERS, UPDATE_WATCHERS, VIEW_VOTERS, CREATE_ATTACHMENT_ISSUE, UPDATE_ATTACHMENT_ISSUE, DELETE_ATTACHMENT_ISSUE, CREATE_COMMENT, READ_COMMENT, UPDATE_COMMENT, DELETE_COMMENT, UPDATE_NOT_OWN_COMMENT, DELETE_NOT_OWN_COMMENT, READ_HIDDEN_STUFF, READ_WORK_ITEM, UPDATE_WORK_ITEM, UPDATE_NOT_OWN_WORK_ITEM, CREATE_WORK_ITEM, CREATE_NOT_OWN_WORK_ITEM, READ_ARTICLE, CREATE_ARTICLE, UPDATE_ARTICLE, DELETE_ARTICLE, READ_ARTICLE_COMMENT, CREATE_ARTICLE_COMMENT, UPDATE_ARTICLE_COMMENT, DELETE_ARTICLE_COMMENT

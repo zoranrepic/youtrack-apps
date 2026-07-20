@@ -112,7 +112,6 @@ export async function run(argv = process.argv) {
     printLine(i18n('--yaml'), i18n('Print YAML for commands that support it.'));
     printLine(i18n('--skip N'), i18n('Choose how many results to skip in commands that support paging.'));
     printLine(i18n('--limit N'), i18n('Choose how many results to request in commands that support paging.'));
-    printLine(i18n('--field <field>'), i18n('Project custom field ID or name for field-values.'));
     br();
 
     printSection(i18n('General commands'));
@@ -177,9 +176,9 @@ export async function run(argv = process.argv) {
 
     printSection(i18n('App details and configuration'));
     printCommand(i18n('search [query]'), {
-      does: i18n('Lists installed apps visible to the token, optionally filtered by app title.'),
+      does: i18n('Lists installed apps visible to the token, or resolves one app by package name or ID.'),
       args: [
-        i18n('[query] is a full or partial app title, for example "Slack".'),
+        i18n('[query] is an app package name or ID. When omitted, all visible apps are listed.'),
       ],
     });
     printCommand(i18n('info <app>'), {

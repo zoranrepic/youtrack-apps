@@ -22,17 +22,20 @@ import {ProjectConfigurationPayload, YouTrackAppsGateway} from '../youtrack/yout
 import {PaginatedResult, PaginationOptions} from '../pagination.js';
 
 describe('AppManagementOperations', () => {
-  it('search delegates to the app search endpoint', async () => {
-    const operations = new AppManagementOperations(fakeGateway({
+  it('search with a query resolves an app by id or package name', async () => {
+    const gateway = fakeGateway({
       apps: [
         {id: '148-1', name: 'some-app', title: 'Workflow App'},
       ],
-    }));
+    });
+    const operations = new AppManagementOperations(gateway);
 
-    const result = await operations.search('workflow');
+    const result = await operations.search('some-app');
 
     expect(result.items).toHaveLength(1);
     expect(result.items[0].id).toBe('148-1');
+    expect(gateway.appRequests).toEqual(['some-app']);
+    expect(gateway.searchRequests).toEqual([]);
   });
 
   it('search without a query lists apps through the app search endpoint', async () => {

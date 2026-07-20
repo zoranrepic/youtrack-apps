@@ -99,7 +99,7 @@ Skip and limit pagination is intended for browsing. For synchronization against 
 
 `youtrack-app search [query] --host --token`
 
-This command lists apps available in your YouTrack. When `query` is provided, the list is filtered by app title. To use it, specify the following parameters:
+This command lists apps available in your YouTrack. When `query` is provided, it resolves one app by package name or app ID. To use it, specify the following parameters:
 
 | Parameter | Description                                                                                                                                                                               |
 | --------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
