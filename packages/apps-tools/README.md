@@ -24,11 +24,10 @@ If you prefer to install it as a dependency in your development environment, run
 
 The package includes scripts for synchronizing local changes with your YouTrack. The following commands are available:
 
-- `youtrack-app list [--skip N] [--limit N] [--json] [--yaml]`
 - `youtrack-app upload <directory>`
 - `youtrack-app download <app>`
 - `youtrack-app validate <directory>`
-- `youtrack-app search <query> [--skip N] [--limit N] [--json] [--yaml]`
+- `youtrack-app search [query] [--skip N] [--limit N] [--json] [--yaml]`
 - `youtrack-app info <app> [--json] [--yaml]`
 - `youtrack-app scripts <app> [--json]`
 - `youtrack-app settings <app> [--project <project-short-name>] [--json]`
@@ -61,7 +60,7 @@ If these variables are set, you can omit `--host` and `--token`. If you provide 
 
 ### Pagination
 
-List-style commands fetch the first 50 results by default. This applies to `list`, `search`, `tag-search`, `script-logs`, `project-list`, `group-list`, and `user-list`.
+List-style commands fetch the first 50 results by default. This applies to `search`, `tag-search`, `script-logs`, `project-list`, `group-list`, and `user-list`.
 
 
 Use these flags to page through list results or choose the resource page used by exact lookup commands:
@@ -71,7 +70,7 @@ Use these flags to page through list results or choose the resource page used by
 | `--skip N` | Start at result offset `N`. |
 | `--limit N` | Request up to `N` results. |
 
-For example, `youtrack-app list --skip 100 --limit 50` requests up to 50 results starting at offset 100.
+For example, `youtrack-app search --skip 100 --limit 50` requests up to 50 results starting at offset 100.
 
 
 When text output is truncated, the CLI prints a hint such as `Showing 50 apps. Use --skip 50 --limit 50 for more.`
@@ -92,11 +91,11 @@ For JSON and YAML output, list-style commands return an object with `items` and 
 
 Skip and limit pagination is intended for browsing. For synchronization against changing datasets, resource-specific cursor, timestamp, or ID filters are more stable when available.
 
-### List
+### Search
 
-`youtrack-app list --host --token [--skip N] [--limit N] [--json] [--yaml]`
+`youtrack-app search [query] --host --token [--skip N] [--limit N] [--json] [--yaml]`
 
-This command lists all apps available in your YouTrack. To use it, specify the following parameters:
+This command lists apps available in your YouTrack. When `query` is provided, the list is filtered by app title. To use it, specify the following parameters:
 
 | Parameter | Description                                                                                                                                                                               |
 | --------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -135,12 +134,6 @@ Use `--open` to open the app settings in the browser after the upload is complet
 This command validates the app's `manifest.json` from the specified directory against the [YouTrack App JSON schema][json-schema].
 You can also use `--schema` to provide a custom schema file and `--manifest` to specify a custom manifest file.
 When both `dir` and `--manifest` are provided, the manifest file is used.
-
-### Search
-
-`youtrack-app search <query> --host --token [--skip N] [--limit N] [--json] [--yaml]`
-
-This command searches installed apps by app title or package name.
 
 ### Info
 
