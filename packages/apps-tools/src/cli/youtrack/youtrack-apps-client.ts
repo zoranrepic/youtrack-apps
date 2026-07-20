@@ -79,9 +79,9 @@ export interface YouTrackAppsGateway {
   listProjectCustomFields(projectId: string): Promise<ProjectCustomField[]>;
   searchTags(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
   searchProjectTags(projectId: string, query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
-  listGroups(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>>;
+  listGroups(query?: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>>;
   getGroupMembers(groupId: string): Promise<UserGroupMembers | null>;
-  listUsers(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>>;
+  listUsers(query?: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>>;
   getUser(userId: string): Promise<UserDetails | null>;
   deleteWorkflow(appId: string): Promise<void>;
   getGlobalConfig(appId: string): Promise<AppConfiguration | null>;
@@ -183,28 +183,38 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     }, pagination);
   }
 
-  async listGroups(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {
-    return await this.listRequest<UserGroup>('/api/groups', GROUP_SEARCH_FIELDS, {
-      query,
-    }, pagination);
+  async listGroups(query?: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {
+    return await this.listRequest<UserGroup>('/api/groups', GROUP_SEARCH_FIELDS, query ? {query} : {}, pagination);
   }
 
   async getGroupMembers(groupId: string): Promise<UserGroupMembers | null> {
-    return await this.jsonRequest<UserGroupMembers>('GET', `/api/groups/${groupId}`, {
-      fields: GROUP_MEMBERS_FIELDS,
-    }) ?? null;
+    try {
+      return await this.jsonRequest<UserGroupMembers>('GET', `/api/groups/${groupId}`, {
+        fields: GROUP_MEMBERS_FIELDS,
+      }) ?? null;
+    } catch (error) {
+      if (isNotFoundError(error)) {
+        return null;
+      }
+      throw error;
+    }
   }
 
-  async listUsers(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>> {
-    return await this.listRequest<UserSummary>('/api/users', USER_SEARCH_FIELDS, {
-      query,
-    }, pagination);
+  async listUsers(query?: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>> {
+    return await this.listRequest<UserSummary>('/api/users', USER_SEARCH_FIELDS, query ? {query} : {}, pagination);
   }
 
   async getUser(userId: string): Promise<UserDetails | null> {
-    return await this.jsonRequest<UserDetails>('GET', `/api/users/${userId}`, {
-      fields: USER_DETAILS_FIELDS,
-    }) ?? null;
+    try {
+      return await this.jsonRequest<UserDetails>('GET', `/api/users/${userId}`, {
+        fields: USER_DETAILS_FIELDS,
+      }) ?? null;
+    } catch (error) {
+      if (isNotFoundError(error)) {
+        return null;
+      }
+      throw error;
+    }
   }
 
   async deleteWorkflow(appId: string): Promise<void> {

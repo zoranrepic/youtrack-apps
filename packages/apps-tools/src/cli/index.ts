@@ -276,22 +276,22 @@ export async function run(argv = process.argv) {
         i18n('--field <field> is a field ID or name.'),
       ],
     });
-    printCommand(i18n('group-list <query>'), {
-      does: i18n('Searches user groups and project teams in the YouTrack instance with IDs and user counts.'),
+    printCommand(i18n('group-list [query]'), {
+      does: i18n('Searches user groups and project teams in the YouTrack instance with IDs.'),
       args: [
-        i18n('<query> is a required group search filter.'),
+        i18n('[query] is an optional group search filter. When omitted, all visible groups are listed.'),
       ],
     });
-    printCommand(i18n('group-members <group>'), {
-      does: i18n('Shows direct members of one user group or project team in the YouTrack instance.'),
+    printCommand(i18n('group-members [group]'), {
+      does: i18n('Shows direct members of one user group or project team, or direct members for all paged groups when omitted.'),
       args: [
-        i18n('<group> is a required group search filter; one result must exactly match its ID or name.'),
+        i18n('[group] is an optional exact group ID or name.'),
       ],
     });
-    printCommand(i18n('user-list <query>'), {
+    printCommand(i18n('user-list [query]'), {
       does: i18n('Searches users in the YouTrack instance with login, ID, and display name.'),
       args: [
-        i18n('<query> is a required user search filter.'),
+        i18n('[query] is an optional user search filter. When omitted, all visible users are listed.'),
       ],
     });
     printCommand(i18n('user-info <user>'), {

@@ -47,9 +47,9 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app project-info <project>`
 - `youtrack-app project-fields <project>`
 - `youtrack-app project-apps <project>`
-- `youtrack-app group-list <query>`
-- `youtrack-app group-members <group>`
-- `youtrack-app user-list <query>`
+- `youtrack-app group-list [query]`
+- `youtrack-app group-members [group]`
+- `youtrack-app user-list [query]`
 - `youtrack-app user-info <user>`
 - `youtrack-app delete <app> [--yes]`
 
@@ -251,23 +251,23 @@ This command lists apps attached to a project, including the project app configu
 
 ### User Groups
 
-`youtrack-app group-list <query> --host --token`
+`youtrack-app group-list [query] --host --token`
 
-This command searches user groups with their IDs and user counts. The query is required.
+This command lists user groups with their IDs. When `query` is provided, the list is filtered by group text. When omitted, all visible groups are listed.
 
-`youtrack-app group-members <group> --host --token`
+`youtrack-app group-members [group] --host --token`
 
-This command prints the IDs of users that are direct members of a user group. The group search filter is required, and one matching group must resolve by exact group ID or name, ignoring case.
+This command prints the IDs of users that are direct members of a user group. When `group` is provided, it is resolved first as a direct group ID, then by exact group ID or name, ignoring case. When omitted, the command lists direct members for each group in the current page.
 
 ### Users
 
-`youtrack-app user-list <query> --host --token`
+`youtrack-app user-list [query] --host --token`
 
-This command searches users with login, ID, and display name. The query is required.
+This command lists users with login, ID, and display name. When `query` is provided, the list is filtered by user text. When omitted, all visible users are listed.
 
 `youtrack-app user-info <user> --host --token`
 
-This command shows user details. The user is resolved by exact user ID, login, name, or full name, ignoring case.
+This command shows user details. The user is resolved first as a direct user ID, then by exact user ID, login, name, or full name, ignoring case.
 
 For these project, user group, and user commands, text output is used by default. Pass `--json` or `--yaml` when structured output is supported.
 

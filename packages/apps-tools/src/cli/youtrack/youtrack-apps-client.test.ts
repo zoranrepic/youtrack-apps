@@ -32,7 +32,7 @@ describe('YouTrackAppsClient', () => {
     });
   });
 
-  it('listGroups sends the required query filter', async () => {
+  it('listGroups sends the provided query filter', async () => {
     const requests: Request[] = [];
 
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
@@ -47,7 +47,22 @@ describe('YouTrackAppsClient', () => {
     expect(new URL(requests[0].url).searchParams.get('query')).toBe('developers');
   });
 
-  it('listUsers sends the required query filter', async () => {
+  it('listGroups without a query omits the query filter', async () => {
+    const requests: Request[] = [];
+
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([]), {status: 200});
+    });
+
+    await new YouTrackAppsClient(config()).listGroups();
+
+    expect(requests).toHaveLength(1);
+    expect(new URL(requests[0].url).pathname).toBe('/api/groups');
+    expect(new URL(requests[0].url).searchParams.has('query')).toBe(false);
+  });
+
+  it('listUsers sends the provided query filter', async () => {
     const requests: Request[] = [];
 
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
@@ -60,6 +75,21 @@ describe('YouTrackAppsClient', () => {
     expect(requests).toHaveLength(1);
     expect(new URL(requests[0].url).pathname).toBe('/api/users');
     expect(new URL(requests[0].url).searchParams.get('query')).toBe('root');
+  });
+
+  it('listUsers without a query omits the query filter', async () => {
+    const requests: Request[] = [];
+
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([]), {status: 200});
+    });
+
+    await new YouTrackAppsClient(config()).listUsers();
+
+    expect(requests).toHaveLength(1);
+    expect(new URL(requests[0].url).pathname).toBe('/api/users');
+    expect(new URL(requests[0].url).searchParams.has('query')).toBe(false);
   });
 
   it('listApps defaults to the first 50 results', async () => {

@@ -331,28 +331,55 @@ export class AppManagementOperations {
   }
 
   async listGroups(query: string | undefined, pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {
-    if (!query) {
-      throw new Error(i18n('Group query should be defined'));
-    }
-
     return await this.client.listGroups(query, pagination);
   }
 
+  async listGroupMembers(pagination?: PaginationOptions): Promise<PaginatedResult<GroupMembersResult>> {
+    const groups = await this.client.listGroups(undefined, pagination);
+    const items = await Promise.all(groups.items.map(async group => {
+      const details = await this.client.getGroupMembers(group.id);
+      return {group, members: details?.ownUsers ?? []};
+    }));
+
+    return {...groups, items};
+  }
+
   async getGroupMembers(groupKey?: string, pagination?: PaginationOptions): Promise<GroupMembersResult> {
+    if (!groupKey) {
+      throw new Error(i18n('Group key should be defined'));
+    }
+
+    const direct = await this.client.getGroupMembers(groupKey);
+    if (direct?.id) {
+      return {
+        group: {
+          id: direct.id,
+          name: direct.name ?? direct.id,
+          userCount: direct.userCount,
+        },
+        members: direct.ownUsers ?? [],
+      };
+    }
+
     const group = await this.requireGroupByKey(groupKey, pagination);
     const details = await this.client.getGroupMembers(group.id);
     return {group, members: details?.ownUsers ?? []};
   }
 
   async listUsers(query: string | undefined, pagination?: PaginationOptions): Promise<PaginatedResult<UserSummary>> {
-    if (!query) {
-      throw new Error(i18n('User query should be defined'));
-    }
-
     return await this.client.listUsers(query, pagination);
   }
 
   async getUserInfo(userKey?: string, pagination?: PaginationOptions): Promise<UserInfoResult> {
+    if (!userKey) {
+      throw new Error(i18n('User key should be defined'));
+    }
+
+    const direct = await this.client.getUser(userKey);
+    if (direct?.id) {
+      return direct as UserInfoResult;
+    }
+
     const user = await this.requireUserByKey(userKey, pagination);
     const details = await this.client.getUser(user.id);
     if (!details) {

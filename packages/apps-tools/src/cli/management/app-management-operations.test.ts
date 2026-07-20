@@ -404,10 +404,43 @@ describe('AppManagementOperations', () => {
     expect(gateway.groupMembersRequests).toEqual(['group-1']);
   });
 
-  it('listGroups requires a search query', async () => {
-    const operations = new AppManagementOperations(fakeGateway());
+  it('listGroups allows an empty query and lists groups', async () => {
+    const result = await new AppManagementOperations(fakeGateway({
+      groups: [{id: 'group-1', name: 'Developers'}],
+    })).listGroups(undefined);
 
-    await expect(operations.listGroups(undefined)).rejects.toThrow('Group query should be defined');
+    expect(result.items).toEqual([{id: 'group-1', name: 'Developers'}]);
+  });
+
+  it('getGroupMembers accepts a direct group id', async () => {
+    const gateway = fakeGateway({
+      groupMembers: {id: 'group-1', name: 'Developers', ownUsers: [{id: 'user-1'}]},
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.getGroupMembers('group-1');
+
+    expect(result).toEqual({
+      group: {id: 'group-1', name: 'Developers', userCount: undefined},
+      members: [{id: 'user-1'}],
+    });
+    expect(gateway.groupListRequests).toEqual([]);
+    expect(gateway.groupMembersRequests).toEqual(['group-1']);
+  });
+
+  it('listGroupMembers lists direct members for each paged group', async () => {
+    const gateway = fakeGateway({
+      groups: [{id: 'group-1', name: 'Developers'}],
+      groupMembers: {id: 'group-1', name: 'Developers', ownUsers: [{id: 'user-1'}]},
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.listGroupMembers({skip: 0, limit: 50});
+
+    expect(result.items).toEqual([
+      {group: {id: 'group-1', name: 'Developers'}, members: [{id: 'user-1'}]},
+    ]);
+    expect(gateway.groupListRequests).toContainEqual({query: undefined, pagination: {skip: 0, limit: 50}});
   });
 
   it('getUserInfo resolves exact logins and fetches details by user id', async () => {
@@ -427,10 +460,25 @@ describe('AppManagementOperations', () => {
     expect(gateway.userRequests).toEqual(['user-1']);
   });
 
-  it('listUsers requires a search query', async () => {
-    const operations = new AppManagementOperations(fakeGateway());
+  it('listUsers allows an empty query and lists users', async () => {
+    const result = await new AppManagementOperations(fakeGateway({
+      users: [{id: 'user-1', login: 'root', name: 'root'}],
+    })).listUsers(undefined);
 
-    await expect(operations.listUsers(undefined)).rejects.toThrow('User query should be defined');
+    expect(result.items).toEqual([{id: 'user-1', login: 'root', name: 'root'}]);
+  });
+
+  it('getUserInfo accepts a direct user id', async () => {
+    const gateway = fakeGateway({
+      userDetails: {id: 'user-1', login: 'root', email: 'root@example.com', guest: false},
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.getUserInfo('user-1');
+
+    expect(result).toEqual({id: 'user-1', login: 'root', email: 'root@example.com', guest: false});
+    expect(gateway.userListRequests).toEqual([]);
+    expect(gateway.userRequests).toEqual(['user-1']);
   });
 
   it('exact resource matching does not fall back to partial matches', async () => {

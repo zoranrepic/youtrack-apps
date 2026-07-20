@@ -284,6 +284,9 @@ export interface UserGroupMember {
 }
 
 export interface UserGroupMembers {
+  id?: string;
+  name?: string;
+  userCount?: number;
   ownUsers?: UserGroupMember[];
 }
 
@@ -296,6 +299,11 @@ export interface UserSummary {
 }
 
 export interface UserDetails {
+  id?: string;
+  banned?: boolean;
+  login?: string;
+  name?: string;
+  fullName?: string;
   userType?: {
     id?: string;
   };
@@ -313,7 +321,7 @@ export interface GroupMembersResult {
   members: UserGroupMember[];
 }
 
-export interface UserInfoResult extends UserSummary, UserDetails {}
+export type UserInfoResult = UserSummary & UserDetails;
 
 export type LogEntry = string | Record<string, unknown>;
 
@@ -620,11 +628,11 @@ export const PROJECT_FIELDS_FIELDS: QueryField = [
 
 export const GROUP_SEARCH_FIELDS: QueryField = ['id', 'name', 'userCount'];
 
-export const GROUP_MEMBERS_FIELDS: QueryField = [{ownUsers: ['id']}];
+export const GROUP_MEMBERS_FIELDS: QueryField = ['id', 'name', 'userCount', {ownUsers: ['id']}];
 
 export const USER_SEARCH_FIELDS: QueryField = ['banned', 'login', 'id', 'name', 'fullName'];
 
-export const USER_DETAILS_FIELDS: QueryField = [{userType: ['id']}, 'email', 'guest'];
+export const USER_DETAILS_FIELDS: QueryField = ['banned', 'login', 'id', 'name', 'fullName', {userType: ['id']}, 'email', 'guest'];
 
 export const TAG_SEARCH_FIELDS: QueryField = [
   'id',
