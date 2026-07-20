@@ -46,30 +46,28 @@ describe('AppManagementOperations', () => {
     expect(gateway.searchRequests).toEqual([undefined]);
   });
 
-  it('deleteApp resolves titles through the shared app resolver before deleting', async () => {
+  it('deleteApp resolves unique app identifiers before deleting', async () => {
     const gateway = fakeGateway({
       apps: [{id: '148-1', name: 'some-app', title: 'Workflow App'}],
     });
     const operations = new AppManagementOperations(gateway);
 
-    const result = await operations.deleteApp('Workflow App');
+    const result = await operations.deleteApp('some-app');
 
     expect(result.id).toBe('148-1');
-    expect(gateway.searchRequests).toEqual(['Workflow App']);
-    expect(gateway.appRequests).toEqual(['148-1']);
+    expect(gateway.searchRequests).toEqual([]);
+    expect(gateway.appRequests).toEqual(['some-app']);
     expect(gateway.deleteRequests).toEqual(['148-1']);
   });
 
-  it('deleteApp rejects ambiguous title matches before deleting', async () => {
+  it('deleteApp does not resolve app titles before deleting', async () => {
     const gateway = fakeGateway({
-      apps: [
-        {id: '148-1', name: 'first-app', title: 'Workflow App'},
-        {id: '148-2', name: 'second-app', title: 'Workflow App'},
-      ],
+      apps: [{id: '148-1', name: 'some-app', title: 'Workflow App'}],
     });
     const operations = new AppManagementOperations(gateway);
 
-    await expect(operations.deleteApp('Workflow App')).rejects.toThrow('App "Workflow App" is ambiguous');
+    await expect(operations.deleteApp('Workflow App')).rejects.toThrow('App "Workflow App" was not found');
+    expect(gateway.searchRequests).toEqual([]);
     expect(gateway.deleteRequests).toEqual([]);
   });
 
@@ -101,11 +99,11 @@ describe('AppManagementOperations', () => {
     });
     const operations = new AppManagementOperations(gateway);
 
-    const result = await operations.getSettings('Workflow App', null);
+    const result = await operations.getSettings('some-app', null);
 
     expect(result.id).toBe('94-1');
-    expect(gateway.searchRequests).toEqual(['Workflow App']);
-    expect(gateway.appRequests).toEqual(['148-1']);
+    expect(gateway.searchRequests).toEqual([]);
+    expect(gateway.appRequests).toEqual(['some-app']);
     expect(gateway.globalConfigRequests).toEqual(['148-1']);
   });
 
@@ -179,7 +177,7 @@ describe('AppManagementOperations', () => {
     ]);
   });
 
-  it('getScriptLogs falls back to search when exact workflow lookup misses', async () => {
+  it('getScriptLogs does not search by title when exact workflow lookup misses', async () => {
     const gateway = fakeGateway({
       workflow: null,
       workflowPackages: [
@@ -200,25 +198,11 @@ describe('AppManagementOperations', () => {
     });
     const operations = new AppManagementOperations(gateway);
 
-    await operations.getScriptLogs('effort-level-monitor', 'action');
+    await expect(operations.getScriptLogs('effort-level-monitor', 'action')).rejects.toThrow('App "effort-level-monitor" was not found');
 
     expect(gateway.workflowGetRequests).toEqual(['effort-level-monitor']);
-    expect(gateway.workflowSearchRequests).toEqual(['effort-level-monitor']);
-    expect(gateway.ruleLogRequests).toEqual([
-      {workflowId: 'workflow-1', ruleId: 'rule-1', options: undefined},
-    ]);
-  });
-
-  it('getScriptLogs keeps duplicate unscoped package names ambiguous', async () => {
-    const operations = new AppManagementOperations(fakeGateway({
-      workflow: null,
-      workflowPackages: [
-        {id: 'workflow-1', name: '@acme/effort-level-monitor', rules: [{id: 'rule-1', name: 'action'}]},
-        {id: 'workflow-2', name: '@other/effort-level-monitor', rules: [{id: 'rule-2', name: 'action'}]},
-      ],
-    }));
-
-    await expect(operations.getScriptLogs('effort-level-monitor', 'action')).rejects.toThrow('App "effort-level-monitor" is ambiguous');
+    expect(gateway.workflowSearchRequests).toEqual([]);
+    expect(gateway.ruleLogRequests).toEqual([]);
   });
 
   it('getProjectInfo resolves project IDs and short names and fetches details by short name', async () => {
@@ -419,11 +403,11 @@ function fakeGateway(overrides: {
     },
     async getApp(appName: string): Promise<AppDetails | null> {
       gateway.appRequests.push(appName);
-      return findApp(overrides.apps ?? [app], appName) ?? app;
+      return findApp(overrides.apps ?? [app], appName) ?? null;
     },
     async getAppPackage(appName: string): Promise<AppDetails | null> {
       gateway.appPackageRequests.push(appName);
-      return findApp(overrides.apps ?? [app], appName) ?? app;
+      return findApp(overrides.apps ?? [app], appName) ?? null;
     },
     async listProjects(_fields?: unknown, pagination: PaginationOptions = {}): Promise<PaginatedResult<ProjectDetails>> {
       gateway.projectListRequests.push(pagination);
@@ -491,7 +475,7 @@ function fakeGateway(overrides: {
     },
     async getWorkflow(appName: string): Promise<AppDetails | null> {
       gateway.workflowGetRequests.push(appName);
-      return overrides.workflow === undefined ? overrides.workflowPackages?.[0] ?? app : overrides.workflow;
+      return overrides.workflow === undefined ? findApp(overrides.workflowPackages ?? [app], appName) ?? null : overrides.workflow;
     },
     async searchWorkflows(query: string): Promise<AppDetails[]> {
       gateway.workflowSearchRequests.push(query);

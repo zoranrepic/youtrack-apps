@@ -122,7 +122,7 @@ export async function run(argv = process.argv) {
     printCommand(i18n('download <app> [--output DIR] [--overwrite]'), {
       does: i18n('Downloads an app package from the YouTrack instance and extracts it locally.'),
       args: [
-        i18n('<app> is an app ID, package name, or title.'),
+        i18n('<app> is an app ID or package name.'),
         i18n('--output DIR selects the local destination.'),
         i18n('--overwrite replaces files in the destination directory.'),
       ],
@@ -135,38 +135,31 @@ export async function run(argv = process.argv) {
         i18n('--schema FILE overrides the default schema file.'),
       ],
     });
-    printCommand(i18n('delete <app> [--yes]'), {
-      does: i18n('Deletes an installed app from the YouTrack instance.'),
-      args: [
-        i18n('<app> is an app ID, package name, or title.'),
-        i18n('--yes skips the confirmation prompt.'),
-      ],
-    });
     printCommand(i18n('enable <app> [--project <short-name>]'), {
       does: i18n('Enables an installed app globally in the YouTrack instance, or enables its usage for one project.'),
       args: [
-        i18n('<app> is an app ID, package name, or title.'),
+        i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> is a project short name such as DEMO or JT.'),
       ],
     });
     printCommand(i18n('disable <app> [--project <short-name>]'), {
       does: i18n('Disables an installed app globally in the YouTrack instance, or disables its usage for one project.'),
       args: [
-        i18n('<app> is an app ID, package name, or title.'),
+        i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> is a project short name such as DEMO or JT.'),
       ],
     });
     printCommand(i18n('attach <app> --project <short-name>'), {
       does: i18n('Attaches an installed app to a project in the YouTrack instance.'),
       args: [
-        i18n('<app> is an app ID, package name, or title.'),
+        i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> is the project key, for example DEMO or JT.'),
       ],
     });
     printCommand(i18n('detach <app> --project <short-name>'), {
       does: i18n('Detaches an installed app from a project in the YouTrack instance.'),
       args: [
-        i18n('<app> is an app ID, package name, or title.'),
+        i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> is the project key to remove from app usages.'),
       ],
     });
@@ -182,26 +175,26 @@ export async function run(argv = process.argv) {
     printCommand(i18n('info <app>'), {
       does: i18n('Shows one installed app in the YouTrack instance with enabled state, project usages, rules, and requirement errors.'),
       args: [
-        i18n('<app> is an app ID, package name, or title.'),
+        i18n('<app> is an app ID or package name.'),
       ],
     });
     printCommand(i18n('scripts <app>'), {
       does: i18n('Shows package metadata, manifest content, settings schema, entity extensions, and script source files from an installed app in the YouTrack instance.'),
       args: [
-        i18n('<app> is an app ID, package name, or title.'),
+        i18n('<app> is an app ID or package name.'),
       ],
     });
     printCommand(i18n('settings <app> [--project <short-name>]'), {
       does: i18n('Reads global app settings or project-scoped settings from the YouTrack instance.'),
       args: [
-        i18n('<app> is resolved by title or package name.'),
+        i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> is a project short name.'),
       ],
     });
     printCommand(i18n('settings-set <app> [--project <short-name>] [--settings JSON] [--enabled true|false]'), {
       does: i18n('Updates app settings and/or enabled state in the YouTrack instance.'),
       args: [
-        i18n('<app> is resolved by title or package name.'),
+        i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> writes project settings instead of global settings.'),
         i18n('--settings JSON is a JSON object string.'),
         i18n('--enabled true|false updates the enabled state.'),
@@ -210,14 +203,14 @@ export async function run(argv = process.argv) {
     printCommand(i18n('logs <app> [script]'), {
       does: i18n('Shows recent app-level log entries, or paged log entries for one script, module, or workflow rule.'),
       args: [
-        i18n('<app> is an app ID, package name, or title.'),
+        i18n('<app> is an app ID or package name.'),
         i18n('[script] is a script, module, rule ID, rule name, or rule title.'),
       ],
     });
     printCommand(i18n('requirement-errors <app>'), {
       does: i18n('Shows broken requirement problems reported by app usages in the YouTrack instance.'),
       args: [
-        i18n('<app> is an app ID, package name, or title.'),
+        i18n('<app> is an app ID or package name.'),
       ],
     });
     br();
@@ -267,6 +260,16 @@ export async function run(argv = process.argv) {
       does: i18n('Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.'),
       args: [
         i18n('<user> is an exact user ID, login, username, or full name.'),
+      ],
+    });
+    br();
+
+    printSection(i18n('Dangerous commands'));
+    printCommand(i18n('delete <app> [--yes]'), {
+      does: i18n('Danger: permanently deletes the installed app and everything app-related from the YouTrack instance.'),
+      args: [
+        i18n('<app> is an app ID or package name. Titles are not accepted.'),
+        i18n('--yes skips the confirmation prompt.'),
       ],
     });
 

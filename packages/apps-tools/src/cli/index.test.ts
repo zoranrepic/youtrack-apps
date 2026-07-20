@@ -126,24 +126,24 @@ describe('index', function () {
     expect(process.exit).not.toHaveBeenCalled();
   });
 
-  it('should join settings app title arguments', function () {
+  it('should pass settings app package arguments', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    require('./index').run(['', '', 'settings', 'My', 'App', '--host=foo', '--token=bar']);
+    require('./index').run(['', '', 'settings', '@acme/my-app', '--host=foo', '--token=bar']);
 
-    expect(settings).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar'}), 'My App');
+    expect(settings).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar'}), '@acme/my-app');
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });
 
-  it('should join app title arguments for lifecycle commands', function () {
+  it('should pass unique app identifiers for lifecycle commands', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    require('./index').run(['', '', 'delete', 'My', 'App', '--host=foo', '--token=bar', '--yes']);
+    require('./index').run(['', '', 'delete', '@acme/my-app', '--host=foo', '--token=bar', '--yes']);
 
-    expect(deleteApp).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar', yes: true}), 'My App');
+    expect(deleteApp).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar', yes: true}), '@acme/my-app');
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });

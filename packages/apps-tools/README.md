@@ -34,7 +34,6 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app settings <app> [--project <project-short-name>]`
 - `youtrack-app settings-set <app> [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
 - `youtrack-app tag-search <query> [--project <project-short-name>]`
-- `youtrack-app delete <app> [--yes]`
 - `youtrack-app enable <app> [--project <project-short-name>]`
 - `youtrack-app disable <app> [--project <project-short-name>]`
 - `youtrack-app attach <app> --project <project-short-name>`
@@ -48,6 +47,7 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app group-members <group>`
 - `youtrack-app user-list <query>`
 - `youtrack-app user-info <user>`
+- `youtrack-app delete <app> [--yes]`
 
 ### Using Environment Variables
 
@@ -140,25 +140,27 @@ When both `directory` and `--manifest` are provided, the manifest file is used.
 `youtrack-app info <app> --host --token`
 
 This command shows app details, including enabled state, attached projects, rules, and requirement errors when available.
+The app is resolved by app ID or package name.
 
 ### Scripts
 
 `youtrack-app scripts <app> --host --token`
 
 This command shows package metadata, manifest content, settings schema content, entity extension content, and app scripts.
+The app is resolved by app ID or package name.
 Use `--json` when another tool needs to inspect the raw response.
 
 ### Settings
 
 `youtrack-app settings <app> --host --token [--project <project-short-name>]`
 
-This command reads app settings. The app argument is resolved by title or package name.
+This command reads app settings. The app argument is resolved by app ID or package name.
 Without `--project`, it reads the global app configuration.
 With `--project`, it reads the app configuration for the project identified by short name.
 
 `youtrack-app settings-set <app> --host --token [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
 
-This command updates app settings. The app argument is resolved by title or package name.
+This command updates app settings. The app argument is resolved by app ID or package name.
 Without `--project`, `--settings` is written as `globalSettings`.
 With `--project`, `--settings` is written as `projectSettings`.
 The settings value must be a JSON string, for example `--settings '{"apiUrl":"https://api.example.test"}'`.
@@ -170,12 +172,6 @@ Pass secret masks such as `<***>` back unchanged to keep existing masked secret 
 
 This command searches visible usable tags by query. With `--project`, it returns project-relevant tag suggestions for the project identified by short name.
 
-### Delete
-
-`youtrack-app delete <app> --host --token [--yes]`
-
-This command deletes an app. In non-interactive use, pass `--yes` to confirm deletion.
-
 ### Enable and Disable
 
 `youtrack-app enable <app> --host --token [--project <project-short-name>]`
@@ -184,6 +180,7 @@ This command deletes an app. In non-interactive use, pass `--yes` to confirm del
 
 These commands enable or disable an installed app. Without `--project`, they update the global app configuration.
 With `--project`, they update the app configuration for the project identified by short name.
+The app is resolved by app ID or package name.
 
 ### Attach and Detach
 
@@ -192,20 +189,23 @@ With `--project`, they update the app configuration for the project identified b
 `youtrack-app detach <app> --project <project-short-name> --host --token`
 
 These commands attach an app to a project or detach it from a project. The project is resolved by short name before the app usages are updated.
+The app is resolved by app ID or package name.
 
 ### Logs
 
 `youtrack-app logs <app> [script] --host --token`
 
 This command prints app log entries. Use `--limit` to limit the number of returned entries.
+The app is resolved by app ID or package name.
 
-When `script` is provided, this command prints paged log entries for that script, module, or rule. The app argument is a package name or ID for script logs. The script argument is a script, module, or rule name or ID.
+When `script` is provided, this command prints paged log entries for that script, module, or rule. The script argument is a script, module, or rule name or ID.
 
 ### Requirement Errors
 
 `youtrack-app requirement-errors <app> --host --token`
 
 This command prints requirement errors reported for an app from broken pluggable object usages.
+The app is resolved by app ID or package name.
 
 ### Projects
 
@@ -242,6 +242,14 @@ This command searches users with login, ID, and display name. The query is requi
 This command shows user details. The user is resolved by exact user ID, login, name, or full name, ignoring case.
 
 For these project, user group, and user commands, text output is used by default. Pass `--json` or `--yaml` when structured output is supported.
+
+### Delete
+
+`youtrack-app delete <app> --host --token [--yes]`
+
+Danger: this command permanently deletes the installed app and everything app-related from YouTrack.
+The app is resolved by app ID or package name. Titles are not accepted.
+In non-interactive use, pass `--yes` to confirm deletion.
 
 ## Enhanced DX Support
 

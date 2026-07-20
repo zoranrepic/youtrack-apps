@@ -38,7 +38,7 @@ export class AppManagementOperations {
   }
 
   async resolveApp(appName?: string, fields?: QueryField): Promise<AppDetails> {
-    return await this.requireAppFromSearch(appName, fields);
+    return await this.requireAppByIdOrPackageName(appName, fields);
   }
 
   async getInfo(appName?: string): Promise<AppDetails> {
@@ -274,29 +274,6 @@ export class AppManagementOperations {
     return app;
   }
 
-  private async requireAppFromSearch(appQuery?: string, fields?: QueryField): Promise<AppDetails> {
-    if (!appQuery) {
-      throw new Error(i18n('App name should be defined'));
-    }
-
-    const matches = (await this.client.searchApps(appQuery, undefined, {limit: 2})).items;
-    const exactMatches = findExactAppMatches(matches, appQuery);
-    const candidates = exactMatches.length ? exactMatches : matches;
-
-    if (candidates.length > 1) {
-      throw new Error(i18n(`App "${appQuery}" is ambiguous`));
-    }
-
-    if (candidates.length === 1) {
-      const app = await this.client.getApp(candidates[0].id, fields);
-      if (app) {
-        return app;
-      }
-    }
-
-    return await this.requireAppByIdOrPackageName(appQuery, fields);
-  }
-
   private async requireProject(projectShortName?: string | null): Promise<ProjectDetails> {
     if (!projectShortName) {
       throw new Error(i18n('Option "--project" is required'));
@@ -361,24 +338,12 @@ export class AppManagementOperations {
   }
 
   private async requireWorkflowPackage(appQuery: string): Promise<AppDetails & {id: string; rules?: AppRule[]}> {
-    const exact = await this.client.getWorkflow(appQuery);
-    if (exact) {
-      return exact;
-    }
-
-    const matches = await this.client.searchWorkflows(appQuery);
-    const exactMatches = findExactAppMatches(matches, appQuery);
-    const candidates = exactMatches.length ? exactMatches : matches;
-
-    if (!candidates.length) {
+    const app = await this.client.getWorkflow(appQuery);
+    if (!app) {
       throw new Error(i18n(`App "${appQuery}" was not found`));
     }
 
-    if (candidates.length > 1) {
-      throw new Error(i18n(`App "${appQuery}" is ambiguous`));
-    }
-
-    return candidates[0];
+    return app;
   }
 
 }
@@ -470,39 +435,4 @@ function requireExactMatch<T>(
 
 function normalizeLookupValue(value: string | undefined): string {
   return (value ?? '').trim().toLowerCase();
-}
-
-function findExactAppMatches<T extends Pick<AppDetails, 'id' | 'name' | 'title'>>(apps: T[], query: string): T[] {
-  const normalizedQuery = normalizeLookupValue(query);
-  const packageQueryValues = packageLookupValues(query);
-  const slugQuery = slugifyLookupValue(query);
-  const idOrNameMatches = apps.filter(app => {
-    return [app.id, app.name].some(value => packageLookupValues(value).some(candidate => packageQueryValues.includes(candidate)));
-  });
-
-  if (idOrNameMatches.length) {
-    return idOrNameMatches;
-  }
-
-  return apps.filter(app => {
-    const title = normalizeLookupValue(app.title);
-    return title === normalizedQuery || slugifyLookupValue(app.title) === slugQuery;
-  });
-}
-
-function packageLookupValues(value: string | undefined): string[] {
-  const normalized = normalizeLookupValue(value);
-  if (!normalized) {
-    return [];
-  }
-
-  const unscoped = normalized.replace(/^@/, '');
-  const packageName = unscoped.includes('/') ? unscoped.slice(unscoped.lastIndexOf('/') + 1) : unscoped;
-  return Array.from(new Set([normalized, unscoped, packageName]));
-}
-
-function slugifyLookupValue(value: string | undefined): string {
-  return normalizeLookupValue(value)
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
 }
