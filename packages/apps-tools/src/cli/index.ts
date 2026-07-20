@@ -12,11 +12,15 @@ import {deleteApp, disable, enable} from './commands/lifecycle.js';
 import {attach, detach} from './commands/project-scope.js';
 import {logs, requirementErrors} from './commands/diagnostics.js';
 import {projectFields, projectInfo, projectList} from './commands/projects.js';
+import {projectApps} from './commands/project-apps.js';
 import {groupList, groupMembers} from './commands/groups.js';
 import {userInfo, userList} from './commands/users.js';
 import {scripts} from './commands/scripts.js';
 import {settings, settingsSet} from './commands/settings.js';
 import {tagSearch} from './commands/tags.js';
+import {usages} from './commands/usages.js';
+import {fieldValues} from './commands/field-values.js';
+import {visibility} from './commands/visibility.js';
 
 const options = {
   download: download,
@@ -25,9 +29,12 @@ const options = {
   search: search,
   info: info,
   scripts: scripts,
+  usages: usages,
   settings: settings,
   'settings-set': settingsSet,
   'tag-search': tagSearch,
+  'field-values': fieldValues,
+  visibility: visibility,
   delete: deleteApp,
   enable: enable,
   disable: disable,
@@ -38,6 +45,7 @@ const options = {
   'project-list': projectList,
   'project-info': projectInfo,
   'project-fields': projectFields,
+  'project-apps': projectApps,
   'group-list': groupList,
   'group-members': groupMembers,
   'user-list': userList,
@@ -63,6 +71,7 @@ export async function run(argv = process.argv) {
     limit: optionalArgString(args.limit),
     settings: optionalArgString(args.settings),
     enabled: optionalArgString(args.enabled),
+    field: optionalArgString(args.field),
     cwd: process.cwd(),
   };
 
@@ -103,6 +112,7 @@ export async function run(argv = process.argv) {
     printLine(i18n('--yaml'), i18n('Print YAML for commands that support it.'));
     printLine(i18n('--skip N'), i18n('Choose how many results to skip in commands that support paging.'));
     printLine(i18n('--limit N'), i18n('Choose how many results to request in commands that support paging.'));
+    printLine(i18n('--field <field>'), i18n('Project custom field ID or name for field-values.'));
     br();
 
     printSection(i18n('General commands'));
@@ -173,13 +183,20 @@ export async function run(argv = process.argv) {
       ],
     });
     printCommand(i18n('info <app>'), {
-      does: i18n('Shows one installed app in the YouTrack instance with enabled state, project usages, rules, and requirement errors.'),
+      does: i18n('Shows bounded app metadata and file keys for one installed app in the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID or package name.'),
       ],
     });
-    printCommand(i18n('scripts <app>'), {
-      does: i18n('Shows package metadata, manifest content, settings schema, entity extensions, and script source files from an installed app in the YouTrack instance.'),
+    printCommand(i18n('scripts <app> <file-key>'), {
+      does: i18n('Shows one manifest, settings, entity extension, or script file from an installed app in the YouTrack instance.'),
+      args: [
+        i18n('<app> is an app ID or package name.'),
+        i18n('<file-key> is listed by info. Use manifest, settings, entityExtensions, or a script ID.'),
+      ],
+    });
+    printCommand(i18n('usages <app>'), {
+      does: i18n('Lists project usage records for one installed app, including nested requirement problems.'),
       args: [
         i18n('<app> is an app ID or package name.'),
       ],
@@ -213,6 +230,13 @@ export async function run(argv = process.argv) {
         i18n('<app> is an app ID or package name.'),
       ],
     });
+    printCommand(i18n('visibility <app> [--project <short-name>]'), {
+      does: i18n('Shows read-only global or project visibility settings for one app.'),
+      args: [
+        i18n('<app> is an app ID or package name.'),
+        i18n('--project <short-name> reads project-scoped app visibility.'),
+      ],
+    });
     br();
 
     printSection(i18n('Instance exploration'));
@@ -231,11 +255,25 @@ export async function run(argv = process.argv) {
         i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
+    printCommand(i18n('project-apps <project>'), {
+      does: i18n('Lists apps attached to one project in the YouTrack instance.'),
+      args: [
+        i18n('<project> is an exact project ID or short name/key.'),
+      ],
+    });
     printCommand(i18n('tag-search <query> [--project <short-name>]'), {
       does: i18n('Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.'),
       args: [
         i18n('<query> is tag name text.'),
         i18n('--project <short-name> narrows tags to one project.'),
+      ],
+    });
+    printCommand(i18n('field-values <query> --project <short-name> --field <field>'), {
+      does: i18n('Searches values for one project custom field.'),
+      args: [
+        i18n('<query> is value text.'),
+        i18n('--project <short-name> selects the project.'),
+        i18n('--field <field> is a field ID or name.'),
       ],
     });
     printCommand(i18n('group-list <query>'), {
@@ -354,9 +392,12 @@ export async function run(argv = process.argv) {
       'search',
       'info',
       'scripts',
+      'usages',
       'settings',
       'settings-set',
       'tag-search',
+      'field-values',
+      'visibility',
       'group-list',
       'group-members',
       'user-list',
@@ -367,6 +408,7 @@ export async function run(argv = process.argv) {
       'detach',
       'logs',
       'requirement-errors',
+      'project-apps',
     ].includes(option.toString());
   }
 

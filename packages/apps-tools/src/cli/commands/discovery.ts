@@ -2,7 +2,14 @@ import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
-import {AppProject, AppRule, formatBoolean, formatProjectLabel, printJson, printYaml} from '../management/types.js';
+import {
+  AppCatalogResult,
+  AppModuleReference,
+  AppRule,
+  formatBoolean,
+  printJson,
+  printYaml,
+} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
 import {printList} from './output.js';
 
@@ -26,7 +33,7 @@ export async function search(config: Config, query?: string): Promise<void> {
 
 export async function info(config: Config, appName?: string): Promise<void> {
   try {
-    const details = await createAppManagementOperations(config).getInfo(appName);
+    const details = await createAppManagementOperations(config).getCatalog(appName);
 
     if (config.json) {
       printJson(details);
@@ -38,24 +45,7 @@ export async function info(config: Config, appName?: string): Promise<void> {
       return;
     }
 
-    console.log(`Name: ${details.name}`);
-    console.log(`ID: ${details.id}`);
-    console.log(`Global enabled: ${formatBoolean(details.globalConfig?.enabled ?? details.enabled)}`);
-
-    if (details.usages) {
-      console.log(`Projects: ${formatList(details.usages.map(usage => formatProject(usage.project ?? {})))}`);
-    }
-
-    if (details.rules) {
-      console.log(`Rules: ${formatList(details.rules.map(formatRule))}`);
-    }
-
-    const problemCount = (details.pluggableObjects ?? []).reduce((count, object) => {
-      return count + (object.usages ?? []).reduce((usageCount, usage) => usageCount + (usage.problems?.length ?? 0), 0);
-    }, 0);
-    if (problemCount) {
-      console.log(`Requirement errors: ${problemCount}`);
-    }
+    printCatalog(details);
   } catch (error) {
     exit(error);
   }
@@ -74,9 +64,100 @@ function formatRule(rule: AppRule): string {
   return rule.id && rule.id !== title ? `${title} (${rule.id})` : title;
 }
 
-function formatProject(project: AppProject): string {
-  const label = formatProjectLabel(project);
-  return project.id && project.id !== label ? `${label} (${project.id})` : label;
+function printCatalog(result: AppCatalogResult): void {
+  const app = result.app;
+  console.log(`Name: ${app.name}`);
+  console.log(`ID: ${app.id}`);
+  console.log(`Title: ${app.title ?? 'unknown'}`);
+  console.log(`Version: ${app.version ?? 'unknown'}`);
+  console.log(`Global enabled: ${formatBoolean(app.globalConfig?.enabled ?? app.enabled)}`);
+  console.log(`Missing global settings: ${formatBoolean(app.globalConfig?.missingRequiredSettings)}`);
+  console.log(`Attachable: ${formatBoolean(app.canBeAttached)}`);
+  console.log(`Marketplace: ${app.marketplaceId ?? (app.fromMarketplace ? 'yes' : 'no')}`);
+  if (app.hasBrokenUsages !== undefined) {
+    console.log(`Has broken usages: ${formatBoolean(app.hasBrokenUsages)}`);
+  }
+
+  if (app.vendor) {
+    console.log(`Vendor: ${[app.vendor.name, app.vendor.email, app.vendor.url].filter(Boolean).join(', ') || 'unknown'}`);
+  }
+
+  console.log(`Tags: ${formatList((app.tags ?? []).map(tag => tag.name ?? 'unknown'))}`);
+  printFiles(result);
+  printModules(result);
+}
+
+function printFiles(result: AppCatalogResult): void {
+  const appFiles = result.files.filter(file => file.type !== 'script');
+  console.log('Files:');
+  if (!appFiles.length) {
+    console.log('  none');
+    return;
+  }
+
+  for (const file of appFiles) {
+    console.log(`  ${file.key} - ${file.label}`);
+  }
+}
+
+function printModules(result: AppCatalogResult): void {
+  console.log(`Modules: ${result.modules.length}`);
+  for (const [type, modules] of groupModulesByType(result.modules)) {
+    printModuleGroup(type, modules);
+  }
+}
+
+function printModuleGroup(label: string, modules: AppModuleReference[]): void {
+  if (!modules.length) {
+    return;
+  }
+
+  console.log(`${label}:`);
+  for (const module of modules) {
+    console.log(`  ${formatModule(module)}`);
+  }
+}
+
+function groupModulesByType(modules: AppModuleReference[]): [string, AppModuleReference[]][] {
+  const groups = new Map<string, AppModuleReference[]>();
+  for (const module of modules) {
+    const type = module.type ?? 'unknown';
+    groups.set(type, [...(groups.get(type) ?? []), module]);
+  }
+
+  return [...groups.entries()];
+}
+
+function formatModule(module: AppModuleReference): string {
+  if (module.type === 'Widget') {
+    return `${module.name}${module.description ? ` - ${module.description}` : ''}`;
+  }
+
+  const type = module.type?.toLowerCase() ?? '';
+  if (type.includes('http')) {
+    const details = [module.scriptId ? `script id: ${module.scriptId}` : undefined].filter(Boolean).join(', ');
+    return details ? `${module.name} (${details})` : module.name;
+  }
+
+  if (isRuleType(type)) {
+    const details = [
+      module.file ? `file: ${module.file}` : undefined,
+      module.scriptId ? `script id: ${module.scriptId}` : undefined,
+    ].filter(Boolean).join(', ');
+    return details ? `${module.name} (${details})` : module.name;
+  }
+
+  const details = [
+    module.file ? `file: ${module.file}` : undefined,
+    module.scriptId ? `script id: ${module.scriptId}` : undefined,
+  ].filter(Boolean).join(', ');
+  const suffix = details ? ` (${details})` : '';
+  const description = module.description ? ` - ${module.description}` : '';
+  return `${module.name}${description}${suffix}`;
+}
+
+function isRuleType(type: string): boolean {
+  return ['action', 'on-schedule', 'state-machine', 'custom-script'].includes(type) || type.includes('rule');
 }
 
 function formatList(values: string[]): string {

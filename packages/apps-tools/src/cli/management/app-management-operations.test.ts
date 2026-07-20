@@ -2,11 +2,14 @@ import {describe, expect, it} from '@jest/globals';
 import {
   AppDetails,
   AppConfiguration,
+  AppUsage,
+  CustomFieldValue,
   LogEntry,
   LogsResponse,
   AppSettingsUpdate,
   IssueFieldsSchema,
   ProjectDetails,
+  ProjectCustomField,
   RuleLogEntry,
   TagDetails,
   UserDetails,
@@ -44,6 +47,62 @@ describe('AppManagementOperations', () => {
 
     expect(result.items).toHaveLength(1);
     expect(gateway.searchRequests).toEqual([undefined]);
+  });
+
+  it('getCatalog returns bounded app details with file keys', async () => {
+    const operations = new AppManagementOperations(fakeGateway({
+      app: appDetails({
+        manifestFile: {id: 'manifest-1'},
+        settingsFile: null,
+        entityExtensionsFile: null,
+        widgets: [{$type: 'Widget', id: '167-1', name: 'Issue widget', indexPath: 'widget/index.html'}],
+        pluggableObjects: [
+          {$type: 'HttpHandlerPluggableObject', id: '150-1', name: 'backend', script: {id: '150-1', name: 'backend'}},
+        ],
+      }),
+    }));
+
+    const result = await operations.getCatalog('some-app');
+
+    expect(result.files.map(file => file.key)).toEqual(['manifest', '150-1']);
+    expect(result.files.find(file => file.type === 'script')?.label).toBe('backend, id: 150-1');
+    expect(result.modules).toEqual([
+      {
+        id: '167-1',
+        name: 'Issue widget',
+        description: undefined,
+        file: 'widget/index.html',
+        type: 'Widget',
+      },
+      {
+        id: '150-1',
+        name: 'backend',
+        description: undefined,
+        file: 'backend',
+        type: 'HttpHandlerPluggableObject',
+        scriptId: '150-1',
+      },
+    ]);
+  });
+
+  it('getFile requires a file key', async () => {
+    const operations = new AppManagementOperations(fakeGateway());
+
+    await expect(operations.getFile('some-app', undefined)).rejects.toThrow('File key is required');
+  });
+
+  it('getFile returns one script body by file key', async () => {
+    const operations = new AppManagementOperations(fakeGateway({
+      app: appDetails({
+        pluggableObjects: [
+          {id: '150-1', name: 'backend', script: {id: '150-1', name: 'backend', script: 'exports.httpHandler = {};'}},
+        ],
+      }),
+    }));
+
+    const result = await operations.getFile('some-app', '150-1');
+
+    expect(result.content).toBe('exports.httpHandler = {};');
   });
 
   it('deleteApp resolves unique app identifiers before deleting', async () => {
@@ -143,6 +202,99 @@ describe('AppManagementOperations', () => {
 
     expect(result.projectIds).toEqual(['0-1']);
     expect(gateway.appUsageUpdates).toEqual([{appId: '148-1', projectIds: ['0-1']}]);
+  });
+
+  it('listUsages resolves app usages with nested requirement problems', async () => {
+    const gateway = fakeGateway({
+      app: appDetails({
+        usages: [{id: '184-2', project: {id: '0-2', shortName: 'JT'}}],
+        pluggableObjects: [
+          {
+            id: '150-1',
+            name: 'backend',
+            usages: [
+              {
+                id: '185-1',
+                configuration: {project: {id: '0-2', shortName: 'JT'}},
+                problems: [{id: 'problem-1', message: 'Missing field', problemKey: 'field-missing'}],
+              },
+            ],
+          },
+        ],
+      }),
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.listUsages('some-app', {skip: 0, limit: 25});
+
+    expect(result.items).toEqual([
+      {
+        id: '184-2',
+        project: {id: '0-2', shortName: 'JT'},
+        problems: [
+          {
+            id: 'problem-1',
+            message: 'Missing field',
+            problemKey: 'field-missing',
+            pluggableObjectId: '150-1',
+            pluggableObjectName: 'backend',
+            pluggableObjectTitle: undefined,
+            pluggableObjectUsageId: '185-1',
+          },
+        ],
+      },
+    ]);
+    expect(gateway.appRequests).toEqual(['some-app']);
+    expect(gateway.appUsageRequests).toEqual([]);
+  });
+
+  it('listProjectApps resolves the project and reads app configurations', async () => {
+    const gateway = fakeGateway({
+      projectApps: [{id: '184-1', app: {id: '148-1', name: 'some-app'}, enabled: true}],
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.listProjectApps('CP', {skip: 0, limit: 25});
+
+    expect(result.items).toEqual([{id: '184-1', app: {id: '148-1', name: 'some-app'}, enabled: true}]);
+    expect(gateway.projectAppRequests).toEqual([{projectId: '0-1', pagination: {skip: 0, limit: 25}}]);
+  });
+
+  it('searchFieldValues filters project field bundle values', async () => {
+    const gateway = fakeGateway({
+      projectCustomFields: [
+        {
+          id: 'pcf-1',
+          field: {id: 'field-1', name: 'Priority'},
+          bundle: {
+            id: 'bundle-1',
+            values: [
+              {id: 'value-1', name: 'High'},
+              {id: 'value-2', name: 'Low'},
+            ],
+          },
+        },
+      ],
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.searchFieldValues('hi', 'CP', 'Priority');
+
+    expect(result.items).toEqual([{id: 'value-1', name: 'High'}]);
+    expect(gateway.projectCustomFieldRequests).toEqual(['0-1']);
+  });
+
+  it('getVisibility reads global app visibility settings', async () => {
+    const operations = new AppManagementOperations(fakeGateway({
+      globalConfig: {
+        id: '94-1',
+        visibilitySettings: {permittedGroups: [{id: 'group-1', name: 'Developers'}]},
+      },
+    }));
+
+    const result = await operations.getVisibility('some-app');
+
+    expect(result.visibilitySettings?.permittedGroups).toEqual([{id: 'group-1', name: 'Developers'}]);
   });
 
   it('getLogs normalizes an empty response to an empty list', async () => {
@@ -337,11 +489,15 @@ interface FakeGateway extends YouTrackAppsGateway {
   globalConfigUpdates: {appId: string; payload: AppSettingsUpdate}[];
   searchRequests: (string | undefined)[];
   appRequests: string[];
+  appInfoRequests: string[];
   appPackageRequests: string[];
+  appUsageRequests: {appId: string; pagination: PaginationOptions}[];
   deleteRequests: string[];
   groupMembersRequests: string[];
   projectFieldsRequests: string[];
   projectRequests: string[];
+  projectAppRequests: {projectId: string; pagination: PaginationOptions}[];
+  projectCustomFieldRequests: string[];
   tagRequests: string[];
   projectTagRequests: {projectId: string; query: string}[];
   ruleLogRequests: {workflowId: string; ruleId: string; options?: PaginationOptions}[];
@@ -356,8 +512,12 @@ interface FakeGateway extends YouTrackAppsGateway {
 function fakeGateway(overrides: {
   app?: AppDetails;
   apps?: AppDetails[];
+  usages?: AppUsage[];
   project?: ProjectDetails;
   projects?: ProjectDetails[];
+  projectApps?: AppConfiguration[];
+  projectCustomFields?: ProjectCustomField[];
+  fieldValues?: CustomFieldValue[];
   projectFields?: IssueFieldsSchema;
   groups?: UserGroup[];
   groupMembers?: UserGroupMembers;
@@ -380,11 +540,15 @@ function fakeGateway(overrides: {
     globalConfigUpdates: [],
     searchRequests: [],
     appRequests: [],
+    appInfoRequests: [],
     appPackageRequests: [],
+    appUsageRequests: [],
     deleteRequests: [],
     groupMembersRequests: [],
     projectFieldsRequests: [],
     projectRequests: [],
+    projectAppRequests: [],
+    projectCustomFieldRequests: [],
     tagRequests: [],
     projectTagRequests: [],
     ruleLogRequests: [],
@@ -405,9 +569,17 @@ function fakeGateway(overrides: {
       gateway.appRequests.push(appName);
       return findApp(overrides.apps ?? [app], appName) ?? null;
     },
+    async getAppInfo(appName: string): Promise<AppDetails | null> {
+      gateway.appInfoRequests.push(appName);
+      return findApp(overrides.apps ?? [app], appName) ?? null;
+    },
     async getAppPackage(appName: string): Promise<AppDetails | null> {
       gateway.appPackageRequests.push(appName);
       return findApp(overrides.apps ?? [app], appName) ?? null;
+    },
+    async listAppUsages(appId: string, pagination: PaginationOptions = {}): Promise<PaginatedResult<AppUsage>> {
+      gateway.appUsageRequests.push({appId, pagination});
+      return page(overrides.usages ?? app.usages ?? []);
     },
     async listProjects(_fields?: unknown, pagination: PaginationOptions = {}): Promise<PaginatedResult<ProjectDetails>> {
       gateway.projectListRequests.push(pagination);
@@ -420,6 +592,14 @@ function fakeGateway(overrides: {
     async getProjectFields(projectId: string): Promise<IssueFieldsSchema> {
       gateway.projectFieldsRequests.push(projectId);
       return overrides.projectFields ?? {type: 'object', properties: {}, required: []};
+    },
+    async listProjectAppConfigurations(projectId: string, pagination: PaginationOptions = {}): Promise<PaginatedResult<AppConfiguration>> {
+      gateway.projectAppRequests.push({projectId, pagination});
+      return page(overrides.projectApps ?? []);
+    },
+    async listProjectCustomFields(projectId: string): Promise<ProjectCustomField[]> {
+      gateway.projectCustomFieldRequests.push(projectId);
+      return overrides.projectCustomFields ?? [];
     },
     async searchTags(query: string): Promise<PaginatedResult<TagDetails>> {
       gateway.tagRequests.push(query);

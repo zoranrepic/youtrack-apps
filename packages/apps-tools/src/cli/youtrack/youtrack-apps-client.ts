@@ -6,12 +6,15 @@ import {createPaginationPlan, PaginatedResult, PaginationOptions} from '../pagin
 import {
   APP_RESOLVE_FIELDS,
   APP_SEARCH_FIELDS,
+  APP_INFO_FIELDS,
   APP_PACKAGE_FIELDS,
   APP_SETTINGS_UPDATE_FIELDS,
+  APP_USAGE_FIELDS,
   APP_USAGE_UPDATE_FIELDS,
   AppConfiguration,
   AppDetails,
   AppSettingsUpdate,
+  AppUsage,
   GLOBAL_CONFIG_FIELDS,
   GROUP_MEMBERS_FIELDS,
   GROUP_SEARCH_FIELDS,
@@ -20,8 +23,11 @@ import {
   LogsResponse,
   normalizeAppId,
   PROJECT_APP_CONFIG_FIELDS,
+  PROJECT_APP_CONFIG_LIST_FIELDS,
+  PROJECT_FIELDS_FIELDS,
   PROJECT_RESOLVE_FIELDS,
   PROJECT_SEARCH_FIELDS,
+  ProjectCustomField,
   ProjectDetails,
   RULE_LOG_FIELDS,
   RuleLogEntry,
@@ -63,10 +69,14 @@ export interface YouTrackAppsGateway {
   listApps(fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>>;
   searchApps(query?: string, fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>>;
   getApp(appName: string, fields?: QueryField): Promise<AppDetails | null>;
+  getAppInfo(appName: string): Promise<AppDetails | null>;
   getAppPackage(appName: string): Promise<AppDetails | null>;
+  listAppUsages(appId: string, pagination?: PaginationOptions): Promise<PaginatedResult<AppUsage>>;
   listProjects(fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<ProjectDetails>>;
   getProject(projectShortName: string): Promise<ProjectDetails | null>;
   getProjectFields(projectKey: string): Promise<IssueFieldsSchema>;
+  listProjectAppConfigurations(projectId: string, pagination?: PaginationOptions): Promise<PaginatedResult<AppConfiguration>>;
+  listProjectCustomFields(projectId: string): Promise<ProjectCustomField[]>;
   searchTags(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
   searchProjectTags(projectId: string, query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
   listGroups(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>>;
@@ -108,9 +118,18 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     return await this.jsonRequest<AppDetails>('GET', `/api/admin/apps/${app}`, {fields}) ?? null;
   }
 
+  async getAppInfo(appName: string): Promise<AppDetails | null> {
+    const app = normalizeAppId(appName);
+    return await this.jsonRequest<AppDetails>('GET', `/api/admin/apps/${app}`, {fields: APP_INFO_FIELDS}) ?? null;
+  }
+
   async getAppPackage(appName: string): Promise<AppDetails | null> {
     const app = normalizeAppId(appName);
     return await this.jsonRequest<AppDetails>('GET', `/api/admin/apps/${app}`, {fields: APP_PACKAGE_FIELDS}) ?? null;
+  }
+
+  async listAppUsages(appId: string, pagination?: PaginationOptions): Promise<PaginatedResult<AppUsage>> {
+    return await this.listRequest<AppUsage>(`/api/admin/apps/${normalizeAppId(appId)}/usages`, APP_USAGE_FIELDS, {}, pagination);
   }
 
   async listProjects(fields: QueryField = PROJECT_SEARCH_FIELDS, pagination?: PaginationOptions): Promise<PaginatedResult<ProjectDetails>> {
@@ -133,6 +152,22 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     });
 
     return parseProjectFieldsToolResponse(response);
+  }
+
+  async listProjectAppConfigurations(projectId: string, pagination?: PaginationOptions): Promise<PaginatedResult<AppConfiguration>> {
+    return await this.listRequest<AppConfiguration>(
+      `/api/admin/projects/${projectId}/appConfigurations`,
+      PROJECT_APP_CONFIG_LIST_FIELDS,
+      {},
+      pagination,
+    );
+  }
+
+  async listProjectCustomFields(projectId: string): Promise<ProjectCustomField[]> {
+    return await this.jsonRequest<ProjectCustomField[]>('GET', `/api/admin/projects/${projectId}/customFields`, {
+      fields: PROJECT_FIELDS_FIELDS,
+      searchParams: {'$top': '-1'},
+    }) ?? [];
   }
 
   async searchTags(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>> {

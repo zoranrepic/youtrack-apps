@@ -12,6 +12,12 @@ export interface AppTag {
   name?: string;
 }
 
+export interface AppVendor {
+  name?: string;
+  url?: string;
+  email?: string;
+}
+
 export interface UserReference {
   id?: string;
   login?: string;
@@ -71,10 +77,12 @@ export interface PluggableObjectUsage {
 }
 
 export interface PluggableObject {
+  $type?: string;
   id?: string;
   name?: string;
   title?: string;
   typeAlias?: string;
+  description?: string | null;
   isGlobal?: boolean;
   script?: AppScript;
   usages?: PluggableObjectUsage[];
@@ -84,14 +92,57 @@ export interface AppScript {
   id?: string;
   name?: string;
   script?: string;
+  traceEnabled?: boolean;
   updated?: number;
   updatedBy?: {
+    id?: string;
     login?: string;
+    name?: string;
   };
 }
 
 export interface AppFileContent {
+  id?: string;
   content?: string;
+  editable?: boolean;
+  updated?: number;
+  updatedBy?: UserReference | null;
+}
+
+export interface WidgetPermission {
+  key?: string;
+  visibleName?: string;
+}
+
+export interface WidgetExtensionPoint {
+  id?: string;
+  type?: string;
+}
+
+export interface AppWidget {
+  $type?: string;
+  id?: string;
+  name?: string;
+  indexPath?: string;
+  iconPath?: string | null;
+  globalConfig?: {
+    enabled?: boolean;
+  };
+  permissions?: WidgetPermission[];
+  extensionPoint?: WidgetExtensionPoint;
+}
+
+export interface AdminWidget {
+  $type?: string;
+  id?: string;
+  key?: string;
+  name?: string;
+  description?: string;
+  appName?: string;
+  appTitle?: string;
+  indexPath?: string;
+  extensionPoint?: string;
+  configurable?: boolean;
 }
 
 export interface RequirementError {
@@ -107,9 +158,19 @@ export interface AppDetails {
   version?: string;
   description?: string;
   tags?: AppTag[];
+  vendor?: AppVendor;
   canBeAttached?: boolean;
   hasWidgetOrHttp?: boolean;
   fromMarketplace?: boolean;
+  marketplaceId?: number;
+  availableUpdateId?: string | number | null;
+  availableUpdateVersion?: string | null;
+  icon?: string | null;
+  darkIcon?: string | null;
+  permanent?: boolean;
+  autoAttach?: boolean;
+  updated?: number;
+  hasBrokenUsages?: boolean;
   manifestFile?: AppFileContent | null;
   settingsFile?: AppFileContent | null;
   entityExtensionsFile?: AppFileContent | null;
@@ -124,6 +185,8 @@ export interface AppDetails {
   requirements?: {
     errors?: RequirementError[];
   };
+  widgets?: AppWidget[];
+  adminWidgets?: AdminWidget[];
   rules?: AppRule[];
   usages?: AppUsage[];
   pluggableObjects?: PluggableObject[];
@@ -136,7 +199,7 @@ export interface ProjectDetails {
 }
 
 export interface VisibilitySettings {
-  permittedUsers?: {id?: string; login?: string}[];
+  permittedUsers?: {id?: string; login?: string; name?: string}[];
   permittedGroups?: {id?: string; name?: string}[];
 }
 
@@ -169,9 +232,29 @@ export interface ProjectCustomField {
   field?: {
     id?: string;
     name?: string;
+    localizedName?: string;
     fieldType?: ProjectFieldType;
   };
+  bundle?: {
+    id?: string;
+    values?: CustomFieldValue[];
+  };
   canBeEmpty?: boolean;
+}
+
+export interface CustomFieldValue {
+  id?: string;
+  name?: string;
+  localizedName?: string;
+  login?: string;
+  fullName?: string;
+  presentation?: string;
+  minutes?: number;
+  color?: {
+    id?: string;
+    foreground?: string;
+    background?: string;
+  };
 }
 
 export interface IssueFieldSchema {
@@ -258,8 +341,55 @@ export interface AppProblem extends RuleProblem {
   projectShortName?: string;
 }
 
+export interface AppUsageProblem extends RuleProblem {
+  pluggableObjectId?: string;
+  pluggableObjectName?: string;
+  pluggableObjectTitle?: string;
+  pluggableObjectUsageId?: string;
+}
+
+export interface AppUsageDiagnostics extends AppUsage {
+  problems: AppUsageProblem[];
+}
+
 export interface SearchResult extends AppDetails {
   matchedRules?: AppRule[];
+}
+
+export interface AppFileReference {
+  key: string;
+  label: string;
+  type: 'manifest' | 'settings' | 'entityExtensions' | 'script';
+  id?: string;
+  name?: string;
+  aliases?: string[];
+}
+
+export interface AppModuleReference {
+  id?: string;
+  name: string;
+  description?: string | null;
+  file?: string;
+  type?: string;
+  scriptId?: string;
+}
+
+export interface AppCatalogResult {
+  app: AppDetails;
+  files: AppFileReference[];
+  modules: AppModuleReference[];
+}
+
+export interface AppFileResult {
+  app: AppDetails;
+  file: AppFileReference;
+  content: string;
+}
+
+export interface VisibilityResult {
+  app: AppDetails;
+  project?: ProjectDetails;
+  visibilitySettings?: VisibilitySettings;
 }
 
 export interface ProjectScopeResult {
@@ -295,6 +425,70 @@ export const APP_RESOLVE_FIELDS: QueryField = [
   {usages: ['id', 'enabled', 'isBroken', 'isActive', 'missingRequiredSettings', {project: ['id', 'name', 'shortName']}]},
 ];
 
+export const APP_INFO_FIELDS: QueryField = [
+  'id',
+  'name',
+  'title',
+  'version',
+  'description',
+  'canBeAttached',
+  'hasWidgetOrHttp',
+  'fromMarketplace',
+  'marketplaceId',
+  'availableUpdateId',
+  'availableUpdateVersion',
+  'icon',
+  'darkIcon',
+  'permanent',
+  'autoAttach',
+  'updated',
+  'hasBrokenUsages',
+  {tags: ['name']},
+  {vendor: ['name', 'url', 'email']},
+  {globalConfig: ['enabled', 'missingRequiredSettings']},
+  {
+    widgets: [
+      '$type',
+      'id',
+      'name',
+      'indexPath',
+      'iconPath',
+      {globalConfig: ['enabled']},
+      {permissions: ['key', 'visibleName']},
+      {extensionPoint: ['id', '$type']},
+    ],
+  },
+  {
+    adminWidgets: [
+      '$type',
+      'id',
+      'key',
+      'name',
+      'description',
+      'appName',
+      'appTitle',
+      'indexPath',
+      'extensionPoint',
+      'configurable',
+    ],
+  },
+  {manifestFile: ['id', 'editable', 'updated']},
+  {settingsFile: ['id', 'editable', 'updated']},
+  {entityExtensionsFile: ['id', 'editable', 'updated']},
+  {
+    pluggableObjects: [
+      '$type',
+      'id',
+      'name',
+      'title',
+      'description',
+      'typeAlias',
+      'isGlobal',
+      {script: ['id', 'name', 'traceEnabled', 'updated', {updatedBy: ['id', 'login', 'name']}]},
+    ],
+  },
+];
+
 export const APP_PACKAGE_FIELDS: QueryField = [
   'id',
   'name',
@@ -310,9 +504,18 @@ export const APP_PACKAGE_FIELDS: QueryField = [
       'title',
       'typeAlias',
       'isGlobal',
-      {script: ['id', 'name', 'script', 'updated', {updatedBy: ['login']}]},
+      {script: ['id', 'name', 'script', 'traceEnabled', 'updated', {updatedBy: ['login']}]},
     ],
   },
+];
+
+export const APP_USAGE_FIELDS: QueryField = [
+  'id',
+  'enabled',
+  'isBroken',
+  'isActive',
+  'missingRequiredSettings',
+  {project: ['id', 'name', 'shortName']},
 ];
 
 export const GLOBAL_CONFIG_FIELDS: QueryField = [
@@ -334,6 +537,15 @@ export const PROJECT_APP_CONFIG_FIELDS: QueryField = [
   'globalSettings',
   'projectSettings',
   {visibilitySettings: [{permittedUsers: ['id', 'login']}, {permittedGroups: ['id', 'name']}]},
+];
+
+export const PROJECT_APP_CONFIG_LIST_FIELDS: QueryField = [
+  'id',
+  {app: ['id', 'name', 'title', {globalConfig: ['enabled', 'missingRequiredSettings']}]},
+  {project: ['id', 'shortName', 'name']},
+  'enabled',
+  'isActive',
+  'missingRequiredSettings',
 ];
 
 export const APP_SETTINGS_UPDATE_FIELDS: QueryField = [
@@ -378,7 +590,31 @@ export const PROJECT_SEARCH_FIELDS: QueryField = ['id', 'shortName'];
 
 export const PROJECT_FIELDS_FIELDS: QueryField = [
   'id',
-  {field: ['name', 'id', {fieldType: ['isBundleType', 'isMultiValue', 'valueType']}]},
+  {
+    field: [
+      'name',
+      'localizedName',
+      'id',
+      {fieldType: ['isBundleType', 'isMultiValue', 'valueType']},
+    ],
+  },
+  {
+    bundle: [
+      'id',
+      {
+        values: [
+          'id',
+          'name',
+          'localizedName',
+          'login',
+          'fullName',
+          'presentation',
+          'minutes',
+          {color: ['id', 'foreground', 'background']},
+        ],
+      },
+    ],
+  },
   'canBeEmpty',
 ];
 

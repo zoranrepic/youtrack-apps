@@ -30,10 +30,13 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app version`
 - `youtrack-app search [query]`
 - `youtrack-app info <app>`
-- `youtrack-app scripts <app>`
+- `youtrack-app scripts <app> <file-key>`
+- `youtrack-app usages <app>`
 - `youtrack-app settings <app> [--project <project-short-name>]`
 - `youtrack-app settings-set <app> [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
 - `youtrack-app tag-search <query> [--project <project-short-name>]`
+- `youtrack-app field-values <query> --project <project-short-name> --field <field>`
+- `youtrack-app visibility <app> [--project <project-short-name>]`
 - `youtrack-app enable <app> [--project <project-short-name>]`
 - `youtrack-app disable <app> [--project <project-short-name>]`
 - `youtrack-app attach <app> --project <project-short-name>`
@@ -43,6 +46,7 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app project-list`
 - `youtrack-app project-info <project>`
 - `youtrack-app project-fields <project>`
+- `youtrack-app project-apps <project>`
 - `youtrack-app group-list <query>`
 - `youtrack-app group-members <group>`
 - `youtrack-app user-list <query>`
@@ -60,7 +64,7 @@ Configure these variables once, or pass `--host` and `--token` to each command. 
 
 ### Pagination
 
-List-style commands fetch the first 50 results by default. This applies to `search`, `tag-search`, `logs` with a script argument, `project-list`, `group-list`, and `user-list`.
+List-style commands fetch the first 50 results by default. This applies to `search`, `usages`, `project-apps`, `field-values`, `tag-search`, `logs` with a script argument, `project-list`, `group-list`, and `user-list`.
 
 
 Use these flags to page through list results or choose the resource page used by exact lookup commands:
@@ -139,16 +143,24 @@ When both `directory` and `--manifest` are provided, the manifest file is used.
 
 `youtrack-app info <app> --host --token`
 
-This command shows app details, including enabled state, attached projects, rules, and requirement errors when available.
+This command shows bounded app details, including enabled state, marketplace metadata, widgets, pluggable object summaries, and file keys for content that can be fetched separately.
 The app is resolved by app ID or package name.
 
 ### Scripts
 
-`youtrack-app scripts <app> --host --token`
+`youtrack-app scripts <app> <file-key> --host --token`
 
-This command shows package metadata, manifest content, settings schema content, entity extension content, and app scripts.
+This command shows exactly one manifest, settings, entity extension, or script file from an installed app.
+The app is resolved by app ID or package name. The `file-key` argument is required and is listed by `youtrack-app info <app>`.
+Use `manifest`, `settings`, or `entityExtensions` for app files. For scripts, pass the script ID exactly as shown in the module list, for example `150-238`.
+Use `--json` when another tool needs the selected file metadata together with the content.
+
+### Usages
+
+`youtrack-app usages <app> --host --token`
+
+This command lists project usage records for an installed app, including the usage ID, project, enabled state, active state, broken state, missing-settings state, and nested requirement problems reported by pluggable object usages.
 The app is resolved by app ID or package name.
-Use `--json` when another tool needs to inspect the raw response.
 
 ### Settings
 
@@ -171,6 +183,18 @@ Pass secret masks such as `<***>` back unchanged to keep existing masked secret 
 `youtrack-app tag-search <query> --host --token [--project <project-short-name>]`
 
 This command searches visible usable tags by query. With `--project`, it returns project-relevant tag suggestions for the project identified by short name.
+
+### Field Values
+
+`youtrack-app field-values <query> --project <project-short-name> --field <field> --host --token`
+
+This command searches values for one project custom field. The project is resolved by exact ID or short name, and `--field` accepts a project custom field ID, field ID, field name, or localized field name.
+
+### Visibility
+
+`youtrack-app visibility <app> --host --token [--project <project-short-name>]`
+
+This command shows read-only app visibility settings. Without `--project`, it reads global app visibility. With `--project`, it reads project-scoped app visibility.
 
 ### Enable and Disable
 
@@ -204,7 +228,7 @@ When `script` is provided, this command prints paged log entries for that script
 
 `youtrack-app requirement-errors <app> --host --token`
 
-This command prints requirement errors reported for an app from broken pluggable object usages.
+This command prints only requirement errors reported for an app from broken pluggable object usages. Use `usages <app>` when you need the errors merged into the project usage view.
 The app is resolved by app ID or package name.
 
 ### Projects
@@ -220,6 +244,10 @@ This command shows project details. The project is resolved by exact project ID 
 `youtrack-app project-fields <project> --host --token`
 
 This command returns the full issue fields JSON schema for a project. The project is resolved by exact project ID or short name/key, ignoring case.
+
+`youtrack-app project-apps <project> --host --token`
+
+This command lists apps attached to a project, including the project app configuration ID and enabled/active/settings state.
 
 ### User Groups
 

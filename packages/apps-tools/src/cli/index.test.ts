@@ -4,12 +4,16 @@ import {search} from './commands/discovery.js';
 import {settings} from './commands/settings.js';
 import {logs} from './commands/diagnostics.js';
 import {deleteApp} from './commands/lifecycle.js';
+import {scripts} from './commands/scripts.js';
+import {fieldValues} from './commands/field-values.js';
 
 nock.back.setMode('record');
 jest.mock('./commands/discovery');
 jest.mock('./commands/settings');
 jest.mock('./commands/diagnostics');
 jest.mock('./commands/lifecycle');
+jest.mock('./commands/scripts');
+jest.mock('./commands/field-values');
 
 describe('index', function () {
   beforeEach(function () {
@@ -86,6 +90,7 @@ describe('index', function () {
       limit: null,
       settings: null,
       enabled: null,
+      field: null,
     };
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
@@ -115,6 +120,7 @@ describe('index', function () {
       limit: null,
       settings: null,
       enabled: null,
+      field: null,
     };
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
@@ -157,6 +163,34 @@ describe('index', function () {
     expect(logs).toHaveBeenCalledWith(
       expect.objectContaining({host: 'foo', token: 'bar', skip: '0', limit: '100'}),
       'my-app action',
+    );
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should pass app and file key args to scripts', function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    require('./index').run(['', '', 'scripts', 'my-app', '150-238', '--host=foo', '--token=bar']);
+
+    expect(scripts).toHaveBeenCalledWith(
+      expect.objectContaining({host: 'foo', token: 'bar'}),
+      'my-app 150-238',
+    );
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should pass project and field args to field-values', function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    require('./index').run(['', '', 'field-values', 'high', '--project=CP', '--field=Priority', '--host=foo', '--token=bar']);
+
+    expect(fieldValues).toHaveBeenCalledWith(
+      expect.objectContaining({host: 'foo', token: 'bar', project: 'CP', field: 'Priority'}),
+      'high',
     );
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();

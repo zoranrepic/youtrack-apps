@@ -228,7 +228,70 @@ describe('YouTrackAppsClient', () => {
     const url = new URL(requests[0].url);
     expect(url.pathname).toBe('/api/admin/apps/my-app');
     expect(url.searchParams.get('fields')).toContain('manifestFile(content)');
-    expect(url.searchParams.get('fields')).toContain('script(id,name,script,updated,updatedBy(login))');
+    expect(url.searchParams.get('fields')).toContain('script(id,name,script,traceEnabled,updated,updatedBy(login))');
+  });
+
+  it('getAppInfo requests bounded app metadata and file identifiers without script bodies', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify({id: '93-1', name: 'my-app'}), {status: 200});
+    });
+
+    await new YouTrackAppsClient(config()).getAppInfo('my-app');
+
+    const url = new URL(requests[0].url);
+    expect(url.pathname).toBe('/api/admin/apps/my-app');
+    expect(url.searchParams.get('fields')).toContain('manifestFile(id,editable,updated)');
+    expect(url.searchParams.get('fields')).toContain('script(id,name,traceEnabled,updated,updatedBy(id,login,name))');
+    expect(url.searchParams.get('fields')).not.toContain('script(id,name,script');
+  });
+
+  it('listAppUsages requests paged app usages', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([{id: '184-1', project: {id: '0-1', shortName: 'CP'}}]), {status: 200});
+    });
+
+    const result = await new YouTrackAppsClient(config()).listAppUsages('my-app', {skip: 10, limit: 5});
+
+    expect(result.items).toHaveLength(1);
+    const url = new URL(requests[0].url);
+    expect(url.pathname).toBe('/api/admin/apps/my-app/usages');
+    expect(url.searchParams.get('$skip')).toBe('10');
+    expect(url.searchParams.get('$top')).toBe('5');
+    expect(url.searchParams.get('fields')).toContain('project(id,name,shortName)');
+  });
+
+  it('listProjectAppConfigurations requests paged app configurations', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([{id: '184-1', app: {id: '93-1', name: 'my-app'}}]), {status: 200});
+    });
+
+    await new YouTrackAppsClient(config()).listProjectAppConfigurations('0-1', {skip: 0, limit: 25});
+
+    const url = new URL(requests[0].url);
+    expect(url.pathname).toBe('/api/admin/projects/0-1/appConfigurations');
+    expect(url.searchParams.get('$top')).toBe('25');
+    expect(url.searchParams.get('fields')).toContain('app(id,name,title,globalConfig(enabled,missingRequiredSettings))');
+  });
+
+  it('listProjectCustomFields requests project fields with bundle values', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(JSON.stringify([]), {status: 200});
+    });
+
+    await new YouTrackAppsClient(config()).listProjectCustomFields('0-1');
+
+    const url = new URL(requests[0].url);
+    expect(url.pathname).toBe('/api/admin/projects/0-1/customFields');
+    expect(url.searchParams.get('$top')).toBe('-1');
+    expect(url.searchParams.get('fields')).toContain('bundle(id,values(');
   });
 
   it('searchTags requests usable tags by query', async () => {
