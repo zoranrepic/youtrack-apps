@@ -92,7 +92,7 @@ export async function run(argv = process.argv) {
     br();
     console.log(i18n('youtrack-app <command> [options]'));
     br();
-    console.log(i18n('Manage, configure, and debug YouTrack apps from an external development environment.'));
+    console.log(i18n('Manage, configure, and debug YouTrack apps/workflows from an external development environment.'));
     console.log(i18n('Configure YOUTRACK_HOST and YOUTRACK_API_TOKEN, or pass --host and --token to each command.'));
     br();
 
