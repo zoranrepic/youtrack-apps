@@ -343,7 +343,23 @@ export async function run(argv = process.argv) {
   }
 
   function shouldJoinCommandArg(option: string | number): boolean {
-    return option === 'search' || option === 'settings' || option === 'settings-set' || option === 'tag-search' || option === 'script-logs';
+    return [
+      'download',
+      'search',
+      'info',
+      'scripts',
+      'settings',
+      'settings-set',
+      'tag-search',
+      'delete',
+      'enable',
+      'disable',
+      'attach',
+      'detach',
+      'logs',
+      'script-logs',
+      'requirement-errors',
+    ].includes(option.toString());
   }
 
   function isCommand(option: string | number | undefined): option is keyof typeof options {

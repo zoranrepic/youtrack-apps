@@ -32,6 +32,33 @@ describe('AppManagementOperations', () => {
     expect(result.items[0].id).toBe('148-1');
   });
 
+  it('deleteApp resolves titles through the shared app resolver before deleting', async () => {
+    const gateway = fakeGateway({
+      apps: [{id: '148-1', name: 'some-app', title: 'Workflow App'}],
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.deleteApp('Workflow App');
+
+    expect(result.id).toBe('148-1');
+    expect(gateway.searchRequests).toEqual(['Workflow App']);
+    expect(gateway.appRequests).toEqual(['148-1']);
+    expect(gateway.deleteRequests).toEqual(['148-1']);
+  });
+
+  it('deleteApp rejects ambiguous title matches before deleting', async () => {
+    const gateway = fakeGateway({
+      apps: [
+        {id: '148-1', name: 'first-app', title: 'Workflow App'},
+        {id: '148-2', name: 'second-app', title: 'Workflow App'},
+      ],
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    await expect(operations.deleteApp('Workflow App')).rejects.toThrow('App "Workflow App" is ambiguous');
+    expect(gateway.deleteRequests).toEqual([]);
+  });
+
   it('setEnabled builds a project configuration update payload', async () => {
     const gateway = fakeGateway();
     const operations = new AppManagementOperations(gateway);
@@ -284,6 +311,7 @@ interface FakeGateway extends YouTrackAppsGateway {
   searchRequests: string[];
   appRequests: string[];
   appPackageRequests: string[];
+  deleteRequests: string[];
   groupMembersRequests: string[];
   projectFieldsRequests: string[];
   projectRequests: string[];
@@ -326,6 +354,7 @@ function fakeGateway(overrides: {
     searchRequests: [],
     appRequests: [],
     appPackageRequests: [],
+    deleteRequests: [],
     groupMembersRequests: [],
     projectFieldsRequests: [],
     projectRequests: [],
@@ -389,7 +418,9 @@ function fakeGateway(overrides: {
       gateway.userRequests.push(userId);
       return overrides.userDetails ?? {email: 'user@example.com', guest: false};
     },
-    async deleteWorkflow(): Promise<void> {},
+    async deleteWorkflow(appId: string): Promise<void> {
+      gateway.deleteRequests.push(appId);
+    },
     async getGlobalConfig(appId: string): Promise<AppConfiguration | null> {
       gateway.globalConfigRequests.push(appId);
       return overrides.globalConfig ?? {id: '94-1', enabled: true};

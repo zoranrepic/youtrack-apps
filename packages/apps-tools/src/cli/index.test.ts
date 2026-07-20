@@ -3,11 +3,13 @@ import nock from 'nock';
 import {list} from './commands/list.js';
 import {settings} from './commands/settings.js';
 import {scriptLogs} from './commands/diagnostics.js';
+import {deleteApp} from './commands/lifecycle.js';
 
 nock.back.setMode('record');
 jest.mock('./commands/list');
 jest.mock('./commands/settings');
 jest.mock('./commands/diagnostics');
+jest.mock('./commands/lifecycle');
 
 describe('index', function () {
   beforeEach(function () {
@@ -133,6 +135,17 @@ describe('index', function () {
     require('./index').run(['', '', 'settings', 'My', 'App', '--host=foo', '--token=bar']);
 
     expect(settings).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar'}), 'My App');
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should join app title arguments for lifecycle commands', function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    require('./index').run(['', '', 'delete', 'My', 'App', '--host=foo', '--token=bar', '--yes']);
+
+    expect(deleteApp).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar', yes: true}), 'My App');
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });

@@ -41,12 +41,16 @@ export class AppManagementOperations {
     return await this.client.searchApps(query, undefined, pagination);
   }
 
+  async resolveApp(appName?: string, fields?: QueryField): Promise<AppDetails> {
+    return await this.requireAppFromSearch(appName, fields);
+  }
+
   async getInfo(appName?: string): Promise<AppDetails> {
-    return await this.requireApp(appName, APP_PROBLEM_FIELDS);
+    return await this.resolveApp(appName, APP_PROBLEM_FIELDS);
   }
 
   async getPackage(appName?: string): Promise<AppDetails> {
-    const resolvedApp = await this.requireAppFromSearch(appName);
+    const resolvedApp = await this.resolveApp(appName);
     const app = await this.client.getAppPackage(resolvedApp.id);
     if (!app) {
       throw new Error(i18n(`App "${appName}" was not found`));
@@ -56,13 +60,13 @@ export class AppManagementOperations {
   }
 
   async deleteApp(appName?: string): Promise<AppDetails> {
-    const app = await this.requireApp(appName);
+    const app = await this.resolveApp(appName);
     await this.client.deleteWorkflow(app.id);
     return app;
   }
 
   async setEnabled(appName: string | undefined, enabled: boolean, projectShortName?: string | null): Promise<EnabledResult> {
-    const app = await this.requireApp(appName);
+    const app = await this.resolveApp(appName);
 
     if (!projectShortName) {
       await this.client.updateGlobalConfig(app.id, {enabled});
@@ -92,7 +96,7 @@ export class AppManagementOperations {
     action: 'attach' | 'detach',
   ): Promise<ProjectScopeResult> {
     const project = await this.requireProject(projectShortName);
-    const app = await this.requireApp(appName);
+    const app = await this.resolveApp(appName);
 
     const currentProjects = (app.usages ?? []).map(usage => usage.project).filter(isProject);
     const nextProjects = action === 'attach'
@@ -105,7 +109,7 @@ export class AppManagementOperations {
 
   async getLogs(appName: string | undefined, top: string | null): Promise<LogEntry[]> {
     const normalizedTop = validateTop(top);
-    const app = await this.requireApp(appName);
+    const app = await this.resolveApp(appName);
     return normalizeLogs(await this.client.getLogs(app.id, normalizedTop ?? undefined));
   }
 
@@ -138,7 +142,7 @@ export class AppManagementOperations {
   }
 
   async getRequirementErrors(appName?: string): Promise<AppProblem[]> {
-    const app = await this.requireApp(appName, APP_PROBLEM_FIELDS);
+    const app = await this.resolveApp(appName, APP_PROBLEM_FIELDS);
     return collectProblems(app);
   }
 
@@ -160,7 +164,7 @@ export class AppManagementOperations {
   }
 
   async getSettings(appName: string | undefined, projectShortName?: string | null): Promise<AppConfiguration> {
-    const app = await this.requireAppFromSearch(appName);
+    const app = await this.resolveApp(appName);
 
     if (!projectShortName) {
       const config = await this.client.getGlobalConfig(app.id);
@@ -187,7 +191,7 @@ export class AppManagementOperations {
       throw new Error(i18n('No settings update was provided'));
     }
 
-    const app = await this.requireAppFromSearch(appName);
+    const app = await this.resolveApp(appName);
 
     if (!projectShortName) {
       const config = await this.client.updateGlobalConfig(app.id, payload);
@@ -253,7 +257,7 @@ export class AppManagementOperations {
     return {...user, ...details};
   }
 
-  private async requireApp(appName?: string, fields?: QueryField): Promise<AppDetails> {
+  private async requireAppByIdOrPackageName(appName?: string, fields?: QueryField): Promise<AppDetails> {
     if (!appName) {
       throw new Error(i18n('App name should be defined'));
     }
@@ -266,7 +270,7 @@ export class AppManagementOperations {
     return app;
   }
 
-  private async requireAppFromSearch(appQuery?: string): Promise<AppDetails> {
+  private async requireAppFromSearch(appQuery?: string, fields?: QueryField): Promise<AppDetails> {
     if (!appQuery) {
       throw new Error(i18n('App name should be defined'));
     }
@@ -280,18 +284,13 @@ export class AppManagementOperations {
     }
 
     if (candidates.length === 1) {
-      const app = await this.client.getApp(candidates[0].id);
+      const app = await this.client.getApp(candidates[0].id, fields);
       if (app) {
         return app;
       }
     }
 
-    const app = await this.client.getApp(appQuery);
-    if (!app) {
-      throw new Error(i18n(`App "${appQuery}" was not found`));
-    }
-
-    return app;
+    return await this.requireAppByIdOrPackageName(appQuery, fields);
   }
 
   private async requireProject(projectShortName?: string | null): Promise<ProjectDetails> {
