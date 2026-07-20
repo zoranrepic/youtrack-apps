@@ -15,13 +15,13 @@ import {
   GLOBAL_CONFIG_FIELDS,
   GROUP_MEMBERS_FIELDS,
   GROUP_SEARCH_FIELDS,
+  IssueFieldsSchema,
   LogEntry,
   LogsResponse,
   normalizeAppId,
   PROJECT_APP_CONFIG_FIELDS,
   PROJECT_RESOLVE_FIELDS,
   PROJECT_SEARCH_FIELDS,
-  ProjectCustomField,
   ProjectDetails,
   RULE_LOG_FIELDS,
   RuleLogEntry,
@@ -52,18 +52,6 @@ interface ToolCallResponse {
   isError?: boolean;
 }
 
-interface IssueFieldsSchema {
-  type?: string;
-  properties?: Record<string, IssueFieldSchema>;
-  required?: unknown[];
-}
-
-interface IssueFieldSchema {
-  type?: unknown;
-  enum?: unknown[];
-  items?: IssueFieldSchema;
-}
-
 export interface ProjectConfigurationPayload {
   id: string;
   app: {id: string};
@@ -78,7 +66,7 @@ export interface YouTrackAppsGateway {
   getAppPackage(appName: string): Promise<AppDetails | null>;
   listProjects(fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<ProjectDetails>>;
   getProject(projectShortName: string): Promise<ProjectDetails | null>;
-  getProjectFields(projectKey: string): Promise<ProjectCustomField[]>;
+  getProjectFields(projectKey: string): Promise<IssueFieldsSchema>;
   searchTags(query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
   searchProjectTags(projectId: string, query: string, pagination?: PaginationOptions): Promise<PaginatedResult<TagDetails>>;
   listGroups(pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>>;
@@ -135,7 +123,7 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
     }) ?? null;
   }
 
-  async getProjectFields(projectKey: string): Promise<ProjectCustomField[]> {
+  async getProjectFields(projectKey: string): Promise<IssueFieldsSchema> {
     const response = await this.jsonRequest<ToolCallResponse>('POST', '/api/ai/tools/call', {
       fields: PROJECT_FIELDS_TOOL_CALL_FIELDS,
       body: {
@@ -364,7 +352,7 @@ function isNotFoundError(error: unknown): boolean {
   return error instanceof Error && error.message.startsWith('[404]');
 }
 
-function parseProjectFieldsToolResponse(response: ToolCallResponse | undefined): ProjectCustomField[] {
+function parseProjectFieldsToolResponse(response: ToolCallResponse | undefined): IssueFieldsSchema {
   const text = response?.content
     ?.map(item => item.text)
     .filter((item): item is string => typeof item === 'string')
@@ -376,54 +364,15 @@ function parseProjectFieldsToolResponse(response: ToolCallResponse | undefined):
   }
 
   if (!text) {
-    return [];
+    return {type: 'object', properties: {}, required: []};
   }
 
   const data = parseJsonText(text);
-  if (Array.isArray(data)) {
-    return data as ProjectCustomField[];
-  }
-
-  if (isRecord(data) && Array.isArray(data.fields)) {
-    return data.fields as ProjectCustomField[];
-  }
-
   if (isIssueFieldsSchema(data)) {
-    return projectFieldsFromSchema(data);
+    return data;
   }
 
-  return [];
-}
-
-function projectFieldsFromSchema(schema: IssueFieldsSchema): ProjectCustomField[] {
-  const requiredFields = new Set(schema.required?.filter((item): item is string => typeof item === 'string'));
-  return Object.entries(schema.properties ?? {}).map(([name, property]) => {
-    return {
-      id: name,
-      field: {
-        id: name,
-        name,
-        fieldType: {
-          isBundleType: hasEnum(property),
-          isMultiValue: property.type === 'array',
-          valueType: valueType(property),
-        },
-      },
-      canBeEmpty: !requiredFields.has(name),
-    };
-  });
-}
-
-function hasEnum(property: IssueFieldSchema): boolean {
-  return Array.isArray(property.enum) || Array.isArray(property.items?.enum);
-}
-
-function valueType(property: IssueFieldSchema): string {
-  if (property.type === 'array') {
-    return typeof property.items?.type === 'string' ? property.items.type : 'array';
-  }
-
-  return typeof property.type === 'string' ? property.type : 'unknown';
+  throw new Error('Project fields schema response is not a JSON schema object');
 }
 
 function parseJsonText(text: string): unknown {

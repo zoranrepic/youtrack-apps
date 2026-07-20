@@ -5,7 +5,7 @@ import {
   LogEntry,
   LogsResponse,
   AppSettingsUpdate,
-  ProjectCustomField,
+  IssueFieldsSchema,
   ProjectDetails,
   RuleLogEntry,
   TagDetails,
@@ -232,15 +232,16 @@ describe('AppManagementOperations', () => {
   });
 
   it('getProjectFields resolves any project key and fetches fields by project short name', async () => {
+    const schema = {type: 'object', properties: {Priority: {type: 'string'}}, required: ['Priority']};
     const gateway = fakeGateway({
       projects: [projectDetails()],
-      projectFields: [{id: 'field-1', field: {id: 'field', name: 'Priority'}, canBeEmpty: false}],
+      projectFields: schema,
     });
     const operations = new AppManagementOperations(gateway);
 
     const result = await operations.getProjectFields('0-1');
 
-    expect(result.fields).toHaveLength(1);
+    expect(result.schema).toEqual(schema);
     expect(gateway.projectFieldsRequests).toEqual(['CP']);
   });
 
@@ -345,7 +346,7 @@ function fakeGateway(overrides: {
   apps?: AppDetails[];
   project?: ProjectDetails;
   projects?: ProjectDetails[];
-  projectFields?: ProjectCustomField[];
+  projectFields?: IssueFieldsSchema;
   groups?: UserGroup[];
   groupMembers?: UserGroupMembers;
   users?: UserSummary[];
@@ -404,9 +405,9 @@ function fakeGateway(overrides: {
       gateway.projectRequests.push(projectShortName);
       return project;
     },
-    async getProjectFields(projectId: string): Promise<ProjectCustomField[]> {
+    async getProjectFields(projectId: string): Promise<IssueFieldsSchema> {
       gateway.projectFieldsRequests.push(projectId);
-      return overrides.projectFields ?? [];
+      return overrides.projectFields ?? {type: 'object', properties: {}, required: []};
     },
     async searchTags(query: string): Promise<PaginatedResult<TagDetails>> {
       gateway.tagRequests.push(query);

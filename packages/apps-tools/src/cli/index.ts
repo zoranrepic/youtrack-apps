@@ -233,7 +233,7 @@ export async function run(argv = process.argv) {
       ],
     });
     printCommand(i18n('project-fields <project>'), {
-      does: i18n('Lists the issue field schema for one project in the YouTrack instance, including custom field types, required fields, and allowed values when available.'),
+      does: i18n('Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.'),
       args: [
         i18n('<project> is an exact project ID, short name, or name.'),
       ],

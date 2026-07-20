@@ -339,47 +339,7 @@ describe('YouTrackAppsClient', () => {
       }), {status: 200});
     });
 
-    await expect(new YouTrackAppsClient(config()).getProjectFields('DEMO')).resolves.toEqual([
-      {
-        id: 'Priority',
-        field: {
-          id: 'Priority',
-          name: 'Priority',
-          fieldType: {
-            isBundleType: true,
-            isMultiValue: false,
-            valueType: 'string',
-          },
-        },
-        canBeEmpty: false,
-      },
-      {
-        id: 'Fix versions',
-        field: {
-          id: 'Fix versions',
-          name: 'Fix versions',
-          fieldType: {
-            isBundleType: false,
-            isMultiValue: true,
-            valueType: 'string',
-          },
-        },
-        canBeEmpty: true,
-      },
-      {
-        id: 'Planned for',
-        field: {
-          id: 'Planned for',
-          name: 'Planned for',
-          fieldType: {
-            isBundleType: true,
-            isMultiValue: true,
-            valueType: 'string',
-          },
-        },
-        canBeEmpty: true,
-      },
-    ]);
+    await expect(new YouTrackAppsClient(config()).getProjectFields('DEMO')).resolves.toEqual(schema);
 
     const url = new URL(requests[0].url);
     expect(requests[0].method).toBe('POST');

@@ -219,7 +219,7 @@ This command shows project details. The project is resolved by exact project ID,
 
 `youtrack-app project-fields <project> --host --token`
 
-This command lists custom fields configured for a project. The project is resolved by exact project ID, short name, or name, ignoring case.
+This command returns the full issue fields JSON schema for a project. The project is resolved by exact project ID, short name, or name, ignoring case.
 
 ### User Groups
 

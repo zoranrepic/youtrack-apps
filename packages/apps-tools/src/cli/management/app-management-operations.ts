@@ -225,8 +225,8 @@ export class AppManagementOperations {
 
   async getProjectFields(projectKey?: string, pagination?: PaginationOptions): Promise<ProjectFieldsResult> {
     const project = await this.requireProjectByKey(projectKey, pagination);
-    const fields = await this.client.getProjectFields(project.shortName ?? project.id);
-    return {project, fields};
+    const schema = await this.client.getProjectFields(project.shortName ?? project.id);
+    return {project, schema};
   }
 
   async listGroups(pagination?: PaginationOptions): Promise<PaginatedResult<UserGroup>> {

@@ -174,6 +174,22 @@ export interface ProjectCustomField {
   canBeEmpty?: boolean;
 }
 
+export interface IssueFieldSchema {
+  type?: string | string[];
+  description?: string;
+  enum?: unknown[];
+  items?: IssueFieldSchema;
+  readOnly?: boolean;
+  [key: string]: unknown;
+}
+
+export interface IssueFieldsSchema {
+  type?: string;
+  properties?: Record<string, IssueFieldSchema>;
+  required?: string[];
+  [key: string]: unknown;
+}
+
 export interface UserGroup {
   id: string;
   name: string;
@@ -206,7 +222,7 @@ export interface UserDetails {
 
 export interface ProjectFieldsResult {
   project: ProjectDetails;
-  fields: ProjectCustomField[];
+  schema: IssueFieldsSchema;
 }
 
 export interface GroupMembersResult {
