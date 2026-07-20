@@ -2,7 +2,7 @@ import {jest, describe, it, expect, beforeEach, afterEach} from '@jest/globals';
 import nock from 'nock';
 import {search} from './commands/discovery.js';
 import {settings} from './commands/settings.js';
-import {scriptLogs} from './commands/diagnostics.js';
+import {logs} from './commands/diagnostics.js';
 import {deleteApp} from './commands/lifecycle.js';
 
 nock.back.setMode('record');
@@ -148,13 +148,13 @@ describe('index', function () {
     expect(process.exit).not.toHaveBeenCalled();
   });
 
-  it('should pass app and script args to script logs', function () {
+  it('should pass app and script args to logs', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    require('./index').run(['', '', 'script-logs', 'my-app', 'action', '--skip=0', '--limit=100', '--host=foo', '--token=bar']);
+    require('./index').run(['', '', 'logs', 'my-app', 'action', '--skip=0', '--limit=100', '--host=foo', '--token=bar']);
 
-    expect(scriptLogs).toHaveBeenCalledWith(
+    expect(logs).toHaveBeenCalledWith(
       expect.objectContaining({host: 'foo', token: 'bar', skip: '0', limit: '100'}),
       'my-app action',
     );

@@ -10,7 +10,7 @@ import {validate} from './validate.js';
 import {info, search} from './commands/discovery.js';
 import {deleteApp, disable, enable} from './commands/lifecycle.js';
 import {attach, detach} from './commands/project-scope.js';
-import {logs, requirementErrors, scriptLogs} from './commands/diagnostics.js';
+import {logs, requirementErrors} from './commands/diagnostics.js';
 import {projectFields, projectInfo, projectList} from './commands/projects.js';
 import {groupList, groupMembers} from './commands/groups.js';
 import {userInfo, userList} from './commands/users.js';
@@ -34,7 +34,6 @@ const options = {
   attach: attach,
   detach: detach,
   logs: logs,
-  'script-logs': scriptLogs,
   'requirement-errors': requirementErrors,
   'project-list': projectList,
   'project-info': projectInfo,
@@ -208,17 +207,11 @@ export async function run(argv = process.argv) {
         i18n('--enabled true|false updates the enabled state.'),
       ],
     });
-    printCommand(i18n('logs <app>'), {
-      does: i18n('Shows recent app-level log entries from the YouTrack instance.'),
+    printCommand(i18n('logs <app> [script]'), {
+      does: i18n('Shows recent app-level log entries, or paged log entries for one script, module, or workflow rule.'),
       args: [
         i18n('<app> is an app ID, package name, or title.'),
-      ],
-    });
-    printCommand(i18n('script-logs <app> <script>'), {
-      does: i18n('Shows paged log entries from the YouTrack instance for one script, module, or workflow rule.'),
-      args: [
-        i18n('<app> is an app ID, package name, or title.'),
-        i18n('<script> is a script, module, rule ID, rule name, or rule title.'),
+        i18n('[script] is a script, module, rule ID, rule name, or rule title.'),
       ],
     });
     printCommand(i18n('requirement-errors <app>'), {
@@ -361,7 +354,6 @@ export async function run(argv = process.argv) {
       'attach',
       'detach',
       'logs',
-      'script-logs',
       'requirement-errors',
     ].includes(option.toString());
   }

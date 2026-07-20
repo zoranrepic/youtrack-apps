@@ -39,8 +39,7 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app disable <app> [--project <project-short-name>]`
 - `youtrack-app attach <app> --project <project-short-name>`
 - `youtrack-app detach <app> --project <project-short-name>`
-- `youtrack-app logs <app>`
-- `youtrack-app script-logs <app> <script>`
+- `youtrack-app logs <app> [script]`
 - `youtrack-app requirement-errors <app>`
 - `youtrack-app project-list`
 - `youtrack-app project-info <project>`
@@ -61,7 +60,7 @@ Configure these variables once, or pass `--host` and `--token` to each command. 
 
 ### Pagination
 
-List-style commands fetch the first 50 results by default. This applies to `search`, `tag-search`, `script-logs`, `project-list`, `group-list`, and `user-list`.
+List-style commands fetch the first 50 results by default. This applies to `search`, `tag-search`, `logs` with a script argument, `project-list`, `group-list`, and `user-list`.
 
 
 Use these flags to page through list results or choose the resource page used by exact lookup commands:
@@ -196,13 +195,11 @@ These commands attach an app to a project or detach it from a project. The proje
 
 ### Logs
 
-`youtrack-app logs <app> --host --token`
+`youtrack-app logs <app> [script] --host --token`
 
 This command prints app log entries. Use `--limit` to limit the number of returned entries.
 
-`youtrack-app script-logs <app> <script> --host --token`
-
-This command prints log entries for a script. The app argument is a package name or ID. The script argument is a script, module, or rule name or ID.
+When `script` is provided, this command prints paged log entries for that script, module, or rule. The app argument is a package name or ID for script logs. The script argument is a script, module, or rule name or ID.
 
 ### Requirement Errors
 
