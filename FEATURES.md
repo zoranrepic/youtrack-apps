@@ -63,3 +63,21 @@ JSON/YAML output where useful.
 **Problem:** Large portion of the `SKILL.md` contents was related to **CLI** commands. While at the same time `packages` have their own `--help` commands for this purpose. 
 
 **Solution:** Move the command explanation from skill sources into the `--help` for each package. This gives us, cleaner `SKILL.md` and more room in context for additional information. Also, we made sure that command calls were constant across the `--help`, by using `npx`. 
+
+
+## Open questions
+
+### Point of having `--backend-only` flag for Enhanced DX apps
+**Question:** Why do we have `--backend-only` flag when scaffolding `enhanced dx` apps?
+
+### TS vs JS default scaffolding
+**Question:** What are the main points of having TS default scaffolding?
+
+### Structure of --help and mirrored commands for both ts and js
+**Question:** Can we achieve consistency across TS and JS commands?
+
+### Wording of `Enhanced DX`
+**Question:** Can it be renamed to `advanced tools` since it indeed provides advanced tooling. In fresh context `Enhanced DX` is not self explanatory in terms of what it provides?
+
+### Consistent command structure in `apps-tools` 
+**Question:** Can we make all commands follow the same pattern like `youtrack-app <entity> <action> [--param value] [--param2 value]`? There will be some non-ordinary cases like `youtrack-app app`. Do we keep this backward comaptible or just bump the major version?
