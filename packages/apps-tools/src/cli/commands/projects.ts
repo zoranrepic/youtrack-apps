@@ -43,7 +43,7 @@ export async function projectInfo(config: Config, projectKey?: string): Promise<
 
 export async function projectFields(config: Config, projectKey?: string): Promise<void> {
   try {
-    const result = await createAppManagementOperations(config).getProjectFields(projectKey);
+    const result = await createAppManagementOperations(config).getProjectFields(projectKey, paginationFromConfig(config));
 
     if (config.yaml) {
       printYaml(result);

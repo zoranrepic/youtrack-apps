@@ -360,10 +360,6 @@ export interface AppUsageDiagnostics extends AppUsage {
   problems: AppUsageProblem[];
 }
 
-export interface SearchResult extends AppDetails {
-  matchedRules?: AppRule[];
-}
-
 export interface AppFileReference {
   key: string;
   label: string;
@@ -412,17 +408,9 @@ export interface EnabledResult {
   project?: ProjectDetails;
 }
 
-export const APP_SEARCH_FIELDS: QueryField = [
+export const APP_LIST_FIELDS: QueryField = [
   'id',
   'name',
-  'title',
-  'version',
-  'description',
-  {tags: ['name']},
-  'canBeAttached',
-  'hasWidgetOrHttp',
-  'fromMarketplace',
-  {globalConfig: ['id', 'enabled', 'missingRequiredSettings']},
 ];
 
 export const APP_RESOLVE_FIELDS: QueryField = [

@@ -57,10 +57,8 @@ App lifecycle:
       --project <short-name> is the project key to remove from app usages.
 
 App details and configuration:
-  search [query]
-    Does: Lists installed apps visible to the token, or resolves one app by package name or ID.
-    Args:
-      [query] is an app package name or ID. When omitted, all visible apps are listed.
+  list [--skip N] [--limit N]
+    Does: Lists installed apps visible to the token.
   info <app>
     Does: Shows bounded app metadata and file keys for one installed app in the YouTrack instance.
     Args:
@@ -70,7 +68,7 @@ App details and configuration:
     Args:
       <app> is an app ID or package name.
       <file-key> is listed by info. Use manifest, settings, entityExtensions, or a script ID.
-  usages <app>
+  usages <app> [--skip N] [--limit N]
     Does: Lists project usage records for one installed app, including nested requirement problems.
     Args:
       <app> is an app ID or package name.
@@ -86,7 +84,7 @@ App details and configuration:
       --project <short-name> writes project settings instead of global settings.
       --settings JSON is a JSON object string.
       --enabled true|false updates the enabled state.
-  logs <app> [script]
+  logs <app> [script] [--skip N] [--limit N]
     Does: Shows recent app-level log entries, or paged log entries for one script, module, or workflow rule.
     Args:
       <app> is an app ID or package name.
@@ -102,44 +100,44 @@ App details and configuration:
       --project <short-name> reads project-scoped app visibility.
 
 Instance exploration:
-  project-list
+  project-list [--skip N] [--limit N]
     Does: Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.
-  project-info <project>
+  project-info <project> [--skip N] [--limit N]
     Does: Shows identifying details for one project in the YouTrack instance.
     Args:
       <project> is an exact project ID or short name/key.
-  project-fields <project>
+  project-fields <project> [--skip N] [--limit N]
     Does: Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.
     Args:
       <project> is an exact project ID or short name/key.
-  project-apps <project>
+  project-apps <project> [--skip N] [--limit N]
     Does: Lists apps attached to one project in the YouTrack instance.
     Args:
       <project> is an exact project ID or short name/key.
-  tag-search <query> [--project <short-name>]
+  tag-search <query> [--project <short-name>] [--skip N] [--limit N]
     Does: Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.
     Args:
       <query> is tag name text.
       --project <short-name> narrows tags to one project.
-  field-values <query> --project <short-name> --field <field>
+  field-values <query> --project <short-name> --field <field> [--skip N] [--limit N]
     Does: Searches values for one project custom field.
     Args:
       <query> is value text.
       --project <short-name> selects the project.
       --field <field> is a field ID or name.
-  group-list [query]
+  group-list [query] [--skip N] [--limit N]
     Does: Searches user groups and project teams in the YouTrack instance with IDs.
     Args:
       [query] is an optional group search filter. When omitted, all visible groups are listed.
-  group-members [group]
+  group-members [group] [--skip N] [--limit N]
     Does: Shows direct members of one user group or project team, or direct members for all paged groups when omitted.
     Args:
       [group] is an optional exact group ID or name.
-  user-list [query]
+  user-list [query] [--skip N] [--limit N]
     Does: Searches users in the YouTrack instance with login, ID, and display name.
     Args:
       [query] is an optional user search filter. When omitted, all visible users are listed.
-  user-info <user>
+  user-info <user> [--skip N] [--limit N]
     Does: Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.
     Args:
       <user> is an exact user ID, login, username, or full name.

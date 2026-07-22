@@ -1,6 +1,6 @@
 import {jest, describe, it, expect, beforeEach, afterEach} from '@jest/globals';
 import nock from 'nock';
-import {search} from './commands/discovery.js';
+import {list} from './commands/discovery.js';
 import {settings} from './commands/settings.js';
 import {logs} from './commands/diagnostics.js';
 import {deleteApp} from './commands/lifecycle.js';
@@ -37,7 +37,7 @@ describe('index', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    require('./index').run(['', '', 'search', '--host=']);
+    require('./index').run(['', '', 'list', '--host=']);
     expect(console.error).toHaveBeenCalledWith('Error: Option "--host" is required');
     expect(process.exit).toHaveBeenCalledWith(1);
   });
@@ -46,7 +46,7 @@ describe('index', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    require('./index').run(['', '', 'search', '--host=foo']);
+    require('./index').run(['', '', 'list', '--host=foo']);
 
     expect(console.error).toHaveBeenCalledWith(
       'Error: Token is required. Please create one at https://foo/users/me?tab=account-security',
@@ -65,7 +65,7 @@ describe('index', function () {
       .get(uri => uri.includes('/api/admin/apps'))
       .reply(200, []);
 
-    require('./index').run(['', '', 'search', '--host=foo', '--token=bar']);
+    require('./index').run(['', '', 'list', '--host=foo', '--token=bar']);
 
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
@@ -95,9 +95,9 @@ describe('index', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    require('./index').run(['', '', 'search', '--host=foo', '--token=bar']);
+    require('./index').run(['', '', 'list', '--host=foo', '--token=bar']);
 
-    expect(search).toHaveBeenCalledWith(expectedCallArgs, undefined);
+    expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });
@@ -125,9 +125,9 @@ describe('index', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    require('./index').run(['', '', 'search', '--host=foo', '--token=bar', '--yaml']);
+    require('./index').run(['', '', 'list', '--host=foo', '--token=bar', '--yaml']);
 
-    expect(search).toHaveBeenCalledWith(expectedCallArgs, undefined);
+    expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });

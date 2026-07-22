@@ -1,7 +1,7 @@
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {Config} from '../../../@types/types.js';
 import {QueryField} from '../../../lib/net/queryfields.js';
-import {createPaginationPlan, emptyPage, PaginatedResult, PaginationOptions} from '../pagination.js';
+import {createPaginationPlan, PaginatedResult, PaginationOptions} from '../pagination.js';
 import {
   AppCatalogResult,
   APP_PROBLEM_FIELDS,
@@ -27,7 +27,6 @@ import {
   PROJECT_RESOLVE_FIELDS,
   ProjectScopeResult,
   RuleLogEntry,
-  SearchResult,
   TagDetails,
   UserGroup,
   UserInfoResult,
@@ -41,17 +40,8 @@ const RESOURCE_RESOLVE_LIMIT = 100;
 export class AppManagementOperations {
   constructor(private readonly client: YouTrackAppsGateway) {}
 
-  async search(query?: string, pagination?: PaginationOptions): Promise<PaginatedResult<SearchResult>> {
-    if (!query) {
-      return await this.client.searchApps(undefined, undefined, pagination);
-    }
-
-    const app = await this.client.getApp(query, undefined);
-    if (!app) {
-      return emptyPage<SearchResult>(pagination);
-    }
-
-    return singleItemPage(app, pagination);
+  async list(pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>> {
+    return await this.client.listApps(undefined, pagination);
   }
 
   async resolveApp(appName?: string, fields?: QueryField): Promise<AppDetails> {
@@ -648,22 +638,6 @@ function pageLocal<T>(items: T[], pagination: PaginationOptions = {}): Paginated
       returned: page.length,
       nextSkip: nextSkip < items.length ? nextSkip : null,
       hasMore: nextSkip < items.length,
-    },
-  };
-}
-
-function singleItemPage<T>(item: T, pagination: PaginationOptions = {}): PaginatedResult<T> {
-  const plan = createPaginationPlan(pagination);
-  const items = plan.skip === 0 && plan.limit > 0 ? [item] : [];
-
-  return {
-    items,
-    pagination: {
-      skip: plan.skip,
-      limit: plan.limit,
-      returned: items.length,
-      nextSkip: null,
-      hasMore: false,
     },
   };
 }

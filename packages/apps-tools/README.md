@@ -28,29 +28,29 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app download <app> [--output DIR] [--overwrite]`
 - `youtrack-app validate [directory] [--manifest FILE] [--schema FILE]`
 - `youtrack-app version`
-- `youtrack-app search [query]`
+- `youtrack-app list [--skip N] [--limit N]`
 - `youtrack-app info <app>`
 - `youtrack-app scripts <app> <file-key>`
-- `youtrack-app usages <app>`
+- `youtrack-app usages <app> [--skip N] [--limit N]`
 - `youtrack-app settings <app> [--project <project-short-name>]`
 - `youtrack-app settings-set <app> [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
-- `youtrack-app tag-search <query> [--project <project-short-name>]`
-- `youtrack-app field-values <query> --project <project-short-name> --field <field>`
+- `youtrack-app tag-search <query> [--project <project-short-name>] [--skip N] [--limit N]`
+- `youtrack-app field-values <query> --project <project-short-name> --field <field> [--skip N] [--limit N]`
 - `youtrack-app visibility <app> [--project <project-short-name>]`
 - `youtrack-app enable <app> [--project <project-short-name>]`
 - `youtrack-app disable <app> [--project <project-short-name>]`
 - `youtrack-app attach <app> --project <project-short-name>`
 - `youtrack-app detach <app> --project <project-short-name>`
-- `youtrack-app logs <app> [script]`
+- `youtrack-app logs <app> [script] [--skip N] [--limit N]`
 - `youtrack-app requirement-errors <app>`
-- `youtrack-app project-list`
-- `youtrack-app project-info <project>`
-- `youtrack-app project-fields <project>`
-- `youtrack-app project-apps <project>`
-- `youtrack-app group-list [query]`
-- `youtrack-app group-members [group]`
-- `youtrack-app user-list [query]`
-- `youtrack-app user-info <user>`
+- `youtrack-app project-list [--skip N] [--limit N]`
+- `youtrack-app project-info <project> [--skip N] [--limit N]`
+- `youtrack-app project-fields <project> [--skip N] [--limit N]`
+- `youtrack-app project-apps <project> [--skip N] [--limit N]`
+- `youtrack-app group-list [query] [--skip N] [--limit N]`
+- `youtrack-app group-members [group] [--skip N] [--limit N]`
+- `youtrack-app user-list [query] [--skip N] [--limit N]`
+- `youtrack-app user-info <user> [--skip N] [--limit N]`
 - `youtrack-app delete <app> [--yes]`
 
 ### Using Environment Variables
@@ -64,7 +64,7 @@ Configure these variables once, or pass `--host` and `--token` to each command. 
 
 ### Pagination
 
-List-style commands fetch the first 50 results by default. This applies to `search`, `usages`, `project-apps`, `field-values`, `tag-search`, `logs` with a script argument, `project-list`, `group-list`, and `user-list`.
+List-style commands fetch the first 50 results by default. This applies to `list`, `usages`, `project-apps`, `field-values`, `tag-search`, `logs` with a script argument, `project-list`, `group-list`, `group-members` without a group argument, and `user-list`.
 
 
 Use these flags to page through list results or choose the resource page used by exact lookup commands:
@@ -74,7 +74,7 @@ Use these flags to page through list results or choose the resource page used by
 | `--skip N` | Start at result offset `N`. |
 | `--limit N` | Request up to `N` results. |
 
-For example, `youtrack-app search --skip 100 --limit 50` requests up to 50 results starting at offset 100.
+For example, `youtrack-app list --skip 100 --limit 50` requests up to 50 results starting at offset 100.
 
 
 When text output is truncated, the CLI prints a hint such as `Showing 50 apps. Use --skip 50 --limit 50 for more.`
@@ -95,11 +95,11 @@ For JSON and YAML output, list-style commands return an object with `items` and 
 
 Skip and limit pagination is intended for browsing. For synchronization against changing datasets, resource-specific cursor, timestamp, or ID filters are more stable when available.
 
-### Search
+### List
 
-`youtrack-app search [query] --host --token`
+`youtrack-app list --host --token [--skip N] [--limit N]`
 
-This command lists apps available in your YouTrack. When `query` is provided, it resolves one app by package name or app ID. To use it, specify the following parameters:
+This command lists apps available in your YouTrack. To use it, specify the following parameters:
 
 | Parameter | Description                                                                                                                                                                               |
 | --------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -157,7 +157,7 @@ Use `--json` when another tool needs the selected file metadata together with th
 
 ### Usages
 
-`youtrack-app usages <app> --host --token`
+`youtrack-app usages <app> --host --token [--skip N] [--limit N]`
 
 This command lists project usage records for an installed app, including the usage ID, project, enabled state, active state, broken state, missing-settings state, and nested requirement problems reported by pluggable object usages.
 The app is resolved by app ID or package name.
@@ -180,13 +180,13 @@ Pass secret masks such as `<***>` back unchanged to keep existing masked secret 
 
 ### Tag Search
 
-`youtrack-app tag-search <query> --host --token [--project <project-short-name>]`
+`youtrack-app tag-search <query> --host --token [--project <project-short-name>] [--skip N] [--limit N]`
 
 This command searches visible usable tags by query. With `--project`, it returns project-relevant tag suggestions for the project identified by short name.
 
 ### Field Values
 
-`youtrack-app field-values <query> --project <project-short-name> --field <field> --host --token`
+`youtrack-app field-values <query> --project <project-short-name> --field <field> --host --token [--skip N] [--limit N]`
 
 This command searches values for one project custom field. The project is resolved by exact ID or short name, and `--field` accepts a project custom field ID, field ID, field name, or localized field name.
 
@@ -217,7 +217,7 @@ The app is resolved by app ID or package name.
 
 ### Logs
 
-`youtrack-app logs <app> [script] --host --token`
+`youtrack-app logs <app> [script] --host --token [--skip N] [--limit N]`
 
 This command prints app log entries. Use `--limit` to limit the number of returned entries.
 The app is resolved by app ID or package name.
@@ -233,39 +233,39 @@ The app is resolved by app ID or package name.
 
 ### Projects
 
-`youtrack-app project-list --host --token`
+`youtrack-app project-list --host --token [--skip N] [--limit N]`
 
 This command lists projects in your YouTrack by short name and ID.
 
-`youtrack-app project-info <project> --host --token`
+`youtrack-app project-info <project> --host --token [--skip N] [--limit N]`
 
 This command shows project details. The project is resolved by exact project ID or short name/key, ignoring case.
 
-`youtrack-app project-fields <project> --host --token`
+`youtrack-app project-fields <project> --host --token [--skip N] [--limit N]`
 
 This command returns the full issue fields JSON schema for a project. The project is resolved by exact project ID or short name/key, ignoring case.
 
-`youtrack-app project-apps <project> --host --token`
+`youtrack-app project-apps <project> --host --token [--skip N] [--limit N]`
 
 This command lists apps attached to a project, including the project app configuration ID and enabled/active/settings state.
 
 ### User Groups
 
-`youtrack-app group-list [query] --host --token`
+`youtrack-app group-list [query] --host --token [--skip N] [--limit N]`
 
 This command lists user groups with their IDs. When `query` is provided, the list is filtered by group text. When omitted, all visible groups are listed.
 
-`youtrack-app group-members [group] --host --token`
+`youtrack-app group-members [group] --host --token [--skip N] [--limit N]`
 
 This command prints the IDs of users that are direct members of a user group. When `group` is provided, it is resolved first as a direct group ID, then by exact group ID or name, ignoring case. When omitted, the command lists direct members for each group in the current page.
 
 ### Users
 
-`youtrack-app user-list [query] --host --token`
+`youtrack-app user-list [query] --host --token [--skip N] [--limit N]`
 
 This command lists users with login, ID, and display name. When `query` is provided, the list is filtered by user text. When omitted, all visible users are listed.
 
-`youtrack-app user-info <user> --host --token`
+`youtrack-app user-info <user> --host --token [--skip N] [--limit N]`
 
 This command shows user details. The user is resolved first as a direct user ID, then by exact user ID, login, name, or full name, ignoring case.
 

@@ -5,7 +5,6 @@ import {createAppManagementOperations} from '../management/app-management-operat
 import {
   AppCatalogResult,
   AppModuleReference,
-  AppRule,
   formatBoolean,
   printJson,
   printYaml,
@@ -13,10 +12,10 @@ import {
 import {paginationFromConfig} from '../pagination.js';
 import {printList} from './output.js';
 
-export async function search(config: Config, query?: string): Promise<void> {
+export async function list(config: Config): Promise<void> {
   try {
     const pagination = paginationFromConfig(config);
-    const result = await createAppManagementOperations(config).search(query, pagination);
+    const result = await createAppManagementOperations(config).list(pagination);
 
     printList({
       config,
@@ -24,7 +23,7 @@ export async function search(config: Config, query?: string): Promise<void> {
       pagination,
       resourceName: 'apps',
       emptyMessage: i18n('No apps found'),
-      formatItem: app => [formatApp(app), ...(app.matchedRules ?? []).map(rule => `  rule: ${formatRule(rule)}`)],
+      formatItem: app => app.name,
     });
   } catch (error) {
     exit(error);
@@ -49,19 +48,6 @@ export async function info(config: Config, appName?: string): Promise<void> {
   } catch (error) {
     exit(error);
   }
-}
-
-function formatApp(app: {id: string; name: string; title?: string}): string {
-  if (app.title && app.title !== app.name) {
-    return `${app.title} (${app.name}, ${app.id})`;
-  }
-
-  return `${app.name} (${app.id})`;
-}
-
-function formatRule(rule: AppRule): string {
-  const title = rule.title ?? rule.name ?? rule.id ?? 'unknown';
-  return rule.id && rule.id !== title ? `${title} (${rule.id})` : title;
 }
 
 function printCatalog(result: AppCatalogResult): void {

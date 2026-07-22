@@ -7,7 +7,7 @@ import {download} from './download.js';
 import {upload} from './upload.js';
 import {resolve} from '../../lib/net/resolve.js';
 import {validate} from './validate.js';
-import {info, search} from './commands/discovery.js';
+import {info, list} from './commands/discovery.js';
 import {deleteApp, disable, enable} from './commands/lifecycle.js';
 import {attach, detach} from './commands/project-scope.js';
 import {logs, requirementErrors} from './commands/diagnostics.js';
@@ -26,7 +26,7 @@ const options = {
   download: download,
   upload: upload,
   validate: validate,
-  search: search,
+  list: list,
   info: info,
   scripts: scripts,
   usages: usages,
@@ -175,11 +175,8 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('App details and configuration'));
-    printCommand(i18n('search [query]'), {
-      does: i18n('Lists installed apps visible to the token, or resolves one app by package name or ID.'),
-      args: [
-        i18n('[query] is an app package name or ID. When omitted, all visible apps are listed.'),
-      ],
+    printCommand(i18n('list [--skip N] [--limit N]'), {
+      does: i18n('Lists installed apps visible to the token.'),
     });
     printCommand(i18n('info <app>'), {
       does: i18n('Shows bounded app metadata and file keys for one installed app in the YouTrack instance.'),
@@ -194,7 +191,7 @@ export async function run(argv = process.argv) {
         i18n('<file-key> is listed by info. Use manifest, settings, entityExtensions, or a script ID.'),
       ],
     });
-    printCommand(i18n('usages <app>'), {
+    printCommand(i18n('usages <app> [--skip N] [--limit N]'), {
       does: i18n('Lists project usage records for one installed app, including nested requirement problems.'),
       args: [
         i18n('<app> is an app ID or package name.'),
@@ -216,7 +213,7 @@ export async function run(argv = process.argv) {
         i18n('--enabled true|false updates the enabled state.'),
       ],
     });
-    printCommand(i18n('logs <app> [script]'), {
+    printCommand(i18n('logs <app> [script] [--skip N] [--limit N]'), {
       does: i18n('Shows recent app-level log entries, or paged log entries for one script, module, or workflow rule.'),
       args: [
         i18n('<app> is an app ID or package name.'),
@@ -239,35 +236,35 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('Instance exploration'));
-    printCommand(i18n('project-list'), {
+    printCommand(i18n('project-list [--skip N] [--limit N]'), {
       does: i18n('Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.'),
     });
-    printCommand(i18n('project-info <project>'), {
+    printCommand(i18n('project-info <project> [--skip N] [--limit N]'), {
       does: i18n('Shows identifying details for one project in the YouTrack instance.'),
       args: [
         i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
-    printCommand(i18n('project-fields <project>'), {
+    printCommand(i18n('project-fields <project> [--skip N] [--limit N]'), {
       does: i18n('Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.'),
       args: [
         i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
-    printCommand(i18n('project-apps <project>'), {
+    printCommand(i18n('project-apps <project> [--skip N] [--limit N]'), {
       does: i18n('Lists apps attached to one project in the YouTrack instance.'),
       args: [
         i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
-    printCommand(i18n('tag-search <query> [--project <short-name>]'), {
+    printCommand(i18n('tag-search <query> [--project <short-name>] [--skip N] [--limit N]'), {
       does: i18n('Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.'),
       args: [
         i18n('<query> is tag name text.'),
         i18n('--project <short-name> narrows tags to one project.'),
       ],
     });
-    printCommand(i18n('field-values <query> --project <short-name> --field <field>'), {
+    printCommand(i18n('field-values <query> --project <short-name> --field <field> [--skip N] [--limit N]'), {
       does: i18n('Searches values for one project custom field.'),
       args: [
         i18n('<query> is value text.'),
@@ -275,25 +272,25 @@ export async function run(argv = process.argv) {
         i18n('--field <field> is a field ID or name.'),
       ],
     });
-    printCommand(i18n('group-list [query]'), {
+    printCommand(i18n('group-list [query] [--skip N] [--limit N]'), {
       does: i18n('Searches user groups and project teams in the YouTrack instance with IDs.'),
       args: [
         i18n('[query] is an optional group search filter. When omitted, all visible groups are listed.'),
       ],
     });
-    printCommand(i18n('group-members [group]'), {
+    printCommand(i18n('group-members [group] [--skip N] [--limit N]'), {
       does: i18n('Shows direct members of one user group or project team, or direct members for all paged groups when omitted.'),
       args: [
         i18n('[group] is an optional exact group ID or name.'),
       ],
     });
-    printCommand(i18n('user-list [query]'), {
+    printCommand(i18n('user-list [query] [--skip N] [--limit N]'), {
       does: i18n('Searches users in the YouTrack instance with login, ID, and display name.'),
       args: [
         i18n('[query] is an optional user search filter. When omitted, all visible users are listed.'),
       ],
     });
-    printCommand(i18n('user-info <user>'), {
+    printCommand(i18n('user-info <user> [--skip N] [--limit N]'), {
       does: i18n('Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.'),
       args: [
         i18n('<user> is an exact user ID, login, username, or full name.'),
@@ -388,7 +385,7 @@ export async function run(argv = process.argv) {
   function shouldJoinCommandArg(option: string | number): boolean {
     return [
       'download',
-      'search',
+      'list',
       'info',
       'scripts',
       'usages',

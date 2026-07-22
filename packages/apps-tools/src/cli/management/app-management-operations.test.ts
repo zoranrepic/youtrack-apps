@@ -22,7 +22,7 @@ import {ProjectConfigurationPayload, YouTrackAppsGateway} from '../youtrack/yout
 import {PaginatedResult, PaginationOptions} from '../pagination.js';
 
 describe('AppManagementOperations', () => {
-  it('search with a query resolves an app by id or package name', async () => {
+  it('list lists apps through the app list endpoint', async () => {
     const gateway = fakeGateway({
       apps: [
         {id: '148-1', name: 'some-app', title: 'Workflow App'},
@@ -30,26 +30,12 @@ describe('AppManagementOperations', () => {
     });
     const operations = new AppManagementOperations(gateway);
 
-    const result = await operations.search('some-app');
+    const result = await operations.list();
 
     expect(result.items).toHaveLength(1);
     expect(result.items[0].id).toBe('148-1');
-    expect(gateway.appRequests).toEqual(['some-app']);
-    expect(gateway.searchRequests).toEqual([]);
-  });
-
-  it('search without a query lists apps through the app search endpoint', async () => {
-    const gateway = fakeGateway({
-      apps: [
-        {id: '148-1', name: 'some-app', title: 'Workflow App'},
-      ],
-    });
-    const operations = new AppManagementOperations(gateway);
-
-    const result = await operations.search();
-
-    expect(result.items).toHaveLength(1);
-    expect(gateway.searchRequests).toEqual([undefined]);
+    expect(gateway.listRequests).toEqual([{}]);
+    expect(gateway.appRequests).toEqual([]);
   });
 
   it('getCatalog returns bounded app details with file keys', async () => {
@@ -117,7 +103,6 @@ describe('AppManagementOperations', () => {
     const result = await operations.deleteApp('some-app');
 
     expect(result.id).toBe('148-1');
-    expect(gateway.searchRequests).toEqual([]);
     expect(gateway.appRequests).toEqual(['some-app']);
     expect(gateway.deleteRequests).toEqual(['148-1']);
   });
@@ -129,7 +114,6 @@ describe('AppManagementOperations', () => {
     const operations = new AppManagementOperations(gateway);
 
     await expect(operations.deleteApp('Workflow App')).rejects.toThrow('App "Workflow App" was not found');
-    expect(gateway.searchRequests).toEqual([]);
     expect(gateway.deleteRequests).toEqual([]);
   });
 
@@ -164,7 +148,6 @@ describe('AppManagementOperations', () => {
     const result = await operations.getSettings('some-app', null);
 
     expect(result.id).toBe('94-1');
-    expect(gateway.searchRequests).toEqual([]);
     expect(gateway.appRequests).toEqual(['some-app']);
     expect(gateway.globalConfigRequests).toEqual(['148-1']);
   });
@@ -524,6 +507,7 @@ describe('AppManagementOperations', () => {
     const pagination = {skip: 100, limit: 25};
 
     await operations.getProjectInfo('CP', pagination);
+    await operations.getProjectFields('CP', pagination);
     await operations.getGroupMembers('Developers', pagination);
     await operations.getUserInfo('root', pagination);
 
@@ -538,7 +522,7 @@ interface FakeGateway extends YouTrackAppsGateway {
   projectConfigurationUpdates: {projectId: string; usageId: string; payload: ProjectConfigurationPayload | AppSettingsUpdate}[];
   globalConfigRequests: string[];
   globalConfigUpdates: {appId: string; payload: AppSettingsUpdate}[];
-  searchRequests: (string | undefined)[];
+  listRequests: PaginationOptions[];
   appRequests: string[];
   appInfoRequests: string[];
   appPackageRequests: string[];
@@ -589,7 +573,7 @@ function fakeGateway(overrides: {
     projectConfigurationUpdates: [],
     globalConfigRequests: [],
     globalConfigUpdates: [],
-    searchRequests: [],
+    listRequests: [],
     appRequests: [],
     appInfoRequests: [],
     appPackageRequests: [],
@@ -609,11 +593,8 @@ function fakeGateway(overrides: {
     projectListRequests: [],
     groupListRequests: [],
     userListRequests: [],
-    async listApps(): Promise<PaginatedResult<AppDetails>> {
-      return page(overrides.apps ?? [app]);
-    },
-    async searchApps(query?: string): Promise<PaginatedResult<AppDetails>> {
-      gateway.searchRequests.push(query);
+    async listApps(_fields?: unknown, pagination: PaginationOptions = {}): Promise<PaginatedResult<AppDetails>> {
+      gateway.listRequests.push(pagination);
       return page(overrides.apps ?? [app]);
     },
     async getApp(appName: string): Promise<AppDetails | null> {

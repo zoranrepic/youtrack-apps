@@ -5,7 +5,7 @@ import {resolve} from '../../../lib/net/resolve.js';
 import {createPaginationPlan, PaginatedResult, PaginationOptions} from '../pagination.js';
 import {
   APP_RESOLVE_FIELDS,
-  APP_SEARCH_FIELDS,
+  APP_LIST_FIELDS,
   APP_INFO_FIELDS,
   APP_PACKAGE_FIELDS,
   APP_SETTINGS_UPDATE_FIELDS,
@@ -67,7 +67,6 @@ export interface ProjectConfigurationPayload {
 
 export interface YouTrackAppsGateway {
   listApps(fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>>;
-  searchApps(query?: string, fields?: QueryField, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>>;
   getApp(appName: string, fields?: QueryField): Promise<AppDetails | null>;
   getAppInfo(appName: string): Promise<AppDetails | null>;
   getAppPackage(appName: string): Promise<AppDetails | null>;
@@ -98,17 +97,8 @@ export interface YouTrackAppsGateway {
 export class YouTrackAppsClient implements YouTrackAppsGateway {
   constructor(private readonly config: Config) {}
 
-  async listApps(fields: QueryField = APP_SEARCH_FIELDS, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>> {
-    return await this.searchApps(undefined, fields, pagination);
-  }
-
-  async searchApps(
-    query?: string,
-    fields: QueryField = APP_SEARCH_FIELDS,
-    pagination?: PaginationOptions,
-  ): Promise<PaginatedResult<AppDetails>> {
+  async listApps(fields: QueryField = APP_LIST_FIELDS, pagination?: PaginationOptions): Promise<PaginatedResult<AppDetails>> {
     return await this.listRequest<AppDetails>('/api/admin/apps', fields, {
-      ...(query ? {title: query} : {}),
       sort: 'asc',
     }, pagination);
   }

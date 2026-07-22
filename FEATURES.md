@@ -31,7 +31,7 @@ YouTrack UI work or custom REST calls. We avoided relying on YouTrack MCP for
 these common flows because it consumed more tokens than direct CLI commands.
 
 **Solution:** `youtrack-app` now exposes app lifecycle and inspection commands
-for `list`, `search`, `info`, `upload`, `download`, `validate`, `scripts`,
+for `list`, `info`, `upload`, `download`, `validate`, `scripts`,
 `settings`, `settings-set`, `delete`, `enable`, `disable`, `attach`, `detach`,
 `logs`, `script-logs`, and `requirement-errors`. Commands accept
 `YOUTRACK_HOST` and `YOUTRACK_API_TOKEN`, and can emit structured output where
