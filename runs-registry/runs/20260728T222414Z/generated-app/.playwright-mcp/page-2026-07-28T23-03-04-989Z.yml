@@ -1,0 +1,72 @@
+- generic [ref=f32e2]:
+  - generic [ref=f32e8]:
+    - generic [ref=f32e9]:
+      - link [ref=f32e10] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f32e12]:
+        - link [ref=f32e14] [cursor=pointer]:
+          - /url: issues
+          - tooltip "Issues" [ref=f32e15]
+        - link [ref=f32e18] [cursor=pointer]:
+          - /url: dashboard
+          - tooltip "Dashboards" [ref=f32e19]
+        - link [ref=f32e22] [cursor=pointer]:
+          - /url: agiles
+          - tooltip "Agile Boards" [ref=f32e23]
+        - link [ref=f32e26] [cursor=pointer]:
+          - /url: reports
+          - tooltip "Reports" [ref=f32e27]
+        - link [ref=f32e30] [cursor=pointer]:
+          - /url: projects
+          - tooltip "Projects" [ref=f32e31]
+        - link [ref=f32e34] [cursor=pointer]:
+          - /url: articles
+          - tooltip "Knowledge Base" [ref=f32e35]
+        - link [ref=f32e38] [cursor=pointer]:
+          - /url: timesheets
+          - tooltip "Timesheets" [ref=f32e39]
+        - button [ref=f32e44] [cursor=pointer]:
+          - tooltip "More" [ref=f32e45]
+    - generic [ref=f32e48]:
+      - button [ref=f32e50] [cursor=pointer]:
+        - tooltip "Create" [ref=f32e51]
+      - button [ref=f32e55] [cursor=pointer]:
+        - tooltip "Administration" [ref=f32e56]
+      - button [ref=f32e61] [cursor=pointer]:
+        - tooltip "Help" [ref=f32e62]
+      - button [ref=f32e66] [cursor=pointer]:
+        - tooltip "Notifications" [ref=f32e67]
+      - generic "admin" [ref=f32e72] [cursor=pointer]:
+        - button "User avatar admin" [ref=f32e73]:
+          - img "User avatar" [ref=f32e75]
+          - generic [ref=f32e76]: admin
+      - button [ref=f32e77] [cursor=pointer]:
+        - tooltip "Collapse" [ref=f32e78]
+  - generic [ref=f32e82]:
+    - generic [ref=f32e83]: Global Time Logger
+    - article [ref=f32e89]:
+      - dialog [ref=f32e90]:
+        - iframe [active] [ref=f32e91]:
+          - generic [ref=f33e3]:
+            - heading "Global Time Logger" [level=2] [ref=f33e4]
+            - generic [ref=f33e5]:
+              - generic [ref=f33e6]:
+                - generic [ref=f33e7]: Find an issue
+                - textbox "Find an issue" [ref=f33e9]:
+                  - /placeholder: "e.g. Unresolved assignee: me"
+                  - text: DEMO-49
+              - button "Search" [ref=f33e10] [cursor=pointer]
+            - list [ref=f33e11]:
+              - listitem [ref=f33e12]:
+                - button "DEMO-49 YTAPP-REVIEW-20260729-AtLimit" [active] [ref=f33e13] [cursor=pointer]:
+                  - generic [ref=f33e14]: DEMO-49
+                  - generic [ref=f33e15]: YTAPP-REVIEW-20260729-AtLimit
+            - generic [ref=f33e16]:
+              - generic [ref=f33e17]: "Logging to DEMO-49: YTAPP-REVIEW-20260729-AtLimit"
+              - generic [ref=f33e18]:
+                - generic [ref=f33e19]: Spent time (minutes)
+                - spinbutton "Spent time (minutes)" [ref=f33e21]
+              - generic [ref=f33e22]:
+                - generic [ref=f33e23]: Work description
+                - textbox "Work description" [ref=f33e25]
+              - button "Log time" [ref=f33e26] [cursor=pointer]

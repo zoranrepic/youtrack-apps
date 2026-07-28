@@ -1,0 +1,119 @@
+- generic [ref=f30e1]:
+  - generic [ref=f30e2]:
+    - generic [ref=f30e8]:
+      - generic [ref=f30e9]:
+        - link [ref=f30e10] [cursor=pointer]:
+          - /url: /dashboard
+        - generic [ref=f30e12]:
+          - link [ref=f30e14] [cursor=pointer]:
+            - /url: issues
+            - tooltip "Issues" [ref=f30e15]
+          - link [ref=f30e18] [cursor=pointer]:
+            - /url: dashboard
+            - tooltip "Dashboards" [ref=f30e19]
+          - link [ref=f30e22] [cursor=pointer]:
+            - /url: agiles
+            - tooltip "Agile Boards" [ref=f30e23]
+          - link [ref=f30e26] [cursor=pointer]:
+            - /url: reports
+            - tooltip "Reports" [ref=f30e27]
+          - link [ref=f30e30] [cursor=pointer]:
+            - /url: projects
+            - tooltip "Projects" [ref=f30e31]
+          - link [ref=f30e34] [cursor=pointer]:
+            - /url: articles
+            - tooltip "Knowledge Base" [ref=f30e35]
+          - link [ref=f30e38] [cursor=pointer]:
+            - /url: timesheets
+            - tooltip "Timesheets" [ref=f30e39]
+          - button [active] [ref=f30e44] [cursor=pointer]:
+            - tooltip "More" [ref=f30e45]
+      - generic [ref=f30e48]:
+        - button [ref=f30e50] [cursor=pointer]:
+          - tooltip "Create" [ref=f30e51]
+        - button [ref=f30e55] [cursor=pointer]:
+          - tooltip "Administration" [ref=f30e56]
+        - button [ref=f30e61] [cursor=pointer]:
+          - tooltip "Help" [ref=f30e62]
+        - button [ref=f30e66] [cursor=pointer]:
+          - tooltip "Notifications" [ref=f30e67]
+        - generic "admin" [ref=f30e72] [cursor=pointer]:
+          - button "User avatar admin" [ref=f30e73]:
+            - img "User avatar" [ref=f30e75]
+            - generic [ref=f30e76]: admin
+        - button [ref=f30e77] [cursor=pointer]:
+          - tooltip "Collapse" [ref=f30e78]
+    - generic [ref=f30e3]:
+      - generic [ref=f30e82]:
+        - generic [ref=f30e83]:
+          - generic [ref=f30e85]:
+            - link "N YTAPP-REVIEW-20260728T2148Z-NoRel" [ref=f30e86] [cursor=pointer]:
+              - /url: issue/DEMO-47/YTAPP-REVIEW-20260728T2148Z-NoRel
+              - generic [ref=f30e87]: "N"
+              - button "YTAPP-REVIEW-20260728T2148Z-NoRel" [ref=f30e90]
+            - button "Remove issue" [ref=f30e92] [cursor=pointer]
+          - generic [ref=f30e95]:
+            - link "N YTAPP-REVIEW-20260729-AtLimit" [ref=f30e96] [cursor=pointer]:
+              - /url: issue/DEMO-49/YTAPP-REVIEW-20260729-AtLimit
+              - generic [ref=f30e97]: "N"
+              - button "YTAPP-REVIEW-20260729-AtLimit" [ref=f30e100]
+            - button "Remove issue" [ref=f30e102] [cursor=pointer]
+          - generic [ref=f30e105]:
+            - link "N YTAPP-REVIEW-20260729-Monitor" [ref=f30e106] [cursor=pointer]:
+              - /url: issue/DEMO-48/YTAPP-REVIEW-20260729-Monitor
+              - generic [ref=f30e107]: "N"
+              - button "YTAPP-REVIEW-20260729-Monitor" [ref=f30e110]
+            - button "Remove issue" [ref=f30e112] [cursor=pointer]
+          - generic [ref=f30e115]:
+            - link "N YTAPP-REVIEW-20260728T2148Z-Over" [ref=f30e116] [cursor=pointer]:
+              - /url: issue/DEMO-44/YTAPP-REVIEW-20260728T2148Z-Over
+              - generic [ref=f30e117]: "N"
+              - button "YTAPP-REVIEW-20260728T2148Z-Over" [ref=f30e120]
+            - button "Remove issue" [ref=f30e122] [cursor=pointer]
+        - tooltip "Show more recent items" [ref=f30e124]:
+          - button [ref=f30e125] [cursor=pointer]
+      - generic [ref=f30e128]:
+        - generic [ref=f30e129]:
+          - generic [ref=f30e132]:
+            - button "…" [ref=f30e134] [cursor=pointer]
+            - generic [ref=f30e135]: /
+            - combobox "YTAPP-REVIEW-20260728T2148Z DashboardYTAPP-REVIEW-20260728T2148Z Dashboard" [ref=f30e137]:
+              - button "YTAPP-REVIEW-20260728T2148Z DashboardYTAPP-REVIEW-20260728T2148Z Dashboard" [ref=f30e138] [cursor=pointer]
+            - tooltip "More" [ref=f30e141]:
+              - button [ref=f30e143] [cursor=pointer]
+          - generic [ref=f30e147]:
+            - button "New dashboard" [ref=f30e148] [cursor=pointer]
+            - combobox "Select an option" [ref=f30e150] [cursor=pointer]: Add widget
+        - main [ref=f30e154]:
+          - dialog [ref=f30e159]:
+            - generic [ref=f30e160]:
+              - generic [ref=f30e162]:
+                - img "Critical Threshold Configurator"
+                - heading [level=3] [ref=f30e163]:
+                  - tooltip "Critical Threshold Configurator" [ref=f30e164]
+                - button [ref=f30e167] [cursor=pointer]
+              - iframe [ref=f30e173]:
+                - generic [ref=f31e1]: Loading configuration…
+  - grid "Dropdown menu" [ref=f30e185]:
+    - row [ref=f30e186]:
+      - cell [ref=f30e187]
+    - row [ref=f30e189]:
+      - cell [ref=f30e190]:
+        - button [ref=f30e191] [cursor=pointer]:
+          - link [ref=f30e192]:
+            - /url: gantt-charts
+            - tooltip "Gantt Charts" [ref=f30e193]
+    - row [ref=f30e196]:
+      - cell [ref=f30e197]:
+        - button [ref=f30e198] [cursor=pointer]:
+          - link [ref=f30e199]:
+            - /url: whiteboards
+            - tooltip "Whiteboards" [ref=f30e200]
+    - row [ref=f30e203]:
+      - cell [ref=f30e204]:
+        - button [ref=f30e205] [cursor=pointer]:
+          - link [ref=f30e206]:
+            - /url: app/ops-command-center/time-logger
+            - tooltip "Global Time Logger" [ref=f30e207]
+    - row [ref=f30e210]:
+      - cell [ref=f30e211]

@@ -1,0 +1,44 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 1.5);
+  margin: var(--ring-unit);
+}
+
+.default-line {
+  color: var(--ring-secondary-color);
+  font-size: var(--ring-font-size-smaller);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) / 2);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: var(--ring-unit);
+  align-items: center;
+}
+
+.row.header {
+  color: var(--ring-secondary-color);
+  font-size: var(--ring-font-size-smaller);
+}
+
+.actions {
+  display: flex;
+  gap: var(--ring-unit);
+}
+
+.empty {
+  color: var(--ring-secondary-color);
+  font-size: var(--ring-font-size);
+}
+
+.message {
+  color: var(--ring-secondary-color);
+  font-size: var(--ring-font-size);
+}

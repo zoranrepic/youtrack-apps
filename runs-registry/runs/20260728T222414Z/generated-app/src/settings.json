@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Ops Command Center Settings",
+  "description": "Notification, GitHub, and critical time threshold configuration.",
+  "properties": {
+    "notificationEmail": {
+      "type": "string",
+      "title": "Notification Email",
+      "description": "Default recipient for critical time and action emails.",
+      "format": "email"
+    },
+    "senderName": {
+      "type": "string",
+      "title": "Email Sender Name",
+      "description": "Visible sender name for outgoing emails."
+    },
+    "enableEmailAlerts": {
+      "type": "boolean",
+      "title": "Enable Email Alerts",
+      "description": "Send email when a critical threshold is breached."
+    },
+    "defaultCriticalMinutes": {
+      "type": "integer",
+      "title": "Default Critical Minutes",
+      "description": "Fallback critical spent-time limit (minutes) when no per-issue threshold is set.",
+      "minimum": 1
+    },
+    "githubRepo": {
+      "type": "string",
+      "title": "GitHub Repository",
+      "description": "owner/repo used to look up pull requests and action runs."
+    },
+    "githubApiBase": {
+      "type": "string",
+      "title": "GitHub API Base URL",
+      "description": "Base URL of the GitHub REST API."
+    },
+    "githubToken": {
+      "type": "string",
+      "title": "GitHub Token",
+      "description": "Personal access token for the GitHub REST API.",
+      "format": "secret"
+    }
+  },
+  "required": []
+}

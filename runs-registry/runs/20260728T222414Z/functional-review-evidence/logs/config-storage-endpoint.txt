@@ -1,0 +1,2 @@
+{"thresholds":{"DEMO-44":60},"preferences":{"reviewNote":"YTAPP-REVIEW-20260729"},"defaultCriticalMinutes":480}
+HTTP 200

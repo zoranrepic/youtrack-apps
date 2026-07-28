@@ -1,0 +1,1033 @@
+- generic [active] [ref=f34e1]:
+  - generic [ref=f34e2]:
+    - generic [ref=f34e8]:
+      - generic [ref=f34e9]:
+        - link [ref=f34e10] [cursor=pointer]:
+          - /url: /dashboard
+        - generic [ref=f34e12]:
+          - link [ref=f34e14] [cursor=pointer]:
+            - /url: issues
+            - tooltip "Issues" [ref=f34e15]
+          - link [ref=f34e18] [cursor=pointer]:
+            - /url: dashboard
+            - tooltip "Dashboards" [ref=f34e19]
+          - link [ref=f34e22] [cursor=pointer]:
+            - /url: agiles
+            - tooltip "Agile Boards" [ref=f34e23]
+          - link [ref=f34e26] [cursor=pointer]:
+            - /url: reports
+            - tooltip "Reports" [ref=f34e27]
+          - link [ref=f34e30] [cursor=pointer]:
+            - /url: projects
+            - tooltip "Projects" [ref=f34e31]
+          - link [ref=f34e34] [cursor=pointer]:
+            - /url: articles
+            - tooltip "Knowledge Base" [ref=f34e35]
+          - link [ref=f34e38] [cursor=pointer]:
+            - /url: timesheets
+            - tooltip "Timesheets" [ref=f34e39]
+          - button [ref=f34e44] [cursor=pointer]:
+            - tooltip "More" [ref=f34e45]
+      - generic [ref=f34e48]:
+        - button [ref=f34e50] [cursor=pointer]:
+          - tooltip "Create" [ref=f34e51]
+        - button [ref=f34e55] [cursor=pointer]:
+          - tooltip "Administration" [ref=f34e56]
+        - button [ref=f34e61] [cursor=pointer]:
+          - tooltip "Help" [ref=f34e62]
+        - button [ref=f34e66] [cursor=pointer]:
+          - tooltip "Notifications" [ref=f34e67]
+        - generic "admin" [ref=f34e72] [cursor=pointer]:
+          - button "User avatar admin" [ref=f34e73]:
+            - img "User avatar" [ref=f34e75]
+            - generic [ref=f34e76]: admin
+        - button [ref=f34e77] [cursor=pointer]:
+          - tooltip "Collapse" [ref=f34e78]
+    - generic [ref=f34e3]:
+      - generic [ref=f34e82]:
+        - generic [ref=f34e83]:
+          - generic [ref=f34e85]:
+            - link "N YTAPP-REVIEW-20260728T2148Z-NoRel" [ref=f34e86] [cursor=pointer]:
+              - /url: issue/DEMO-47/YTAPP-REVIEW-20260728T2148Z-NoRel
+              - generic [ref=f34e87]: "N"
+              - button "YTAPP-REVIEW-20260728T2148Z-NoRel" [ref=f34e90]
+            - button "Remove issue" [ref=f34e92] [cursor=pointer]
+          - generic [ref=f34e95]:
+            - link "N YTAPP-REVIEW-20260729-AtLimit" [ref=f34e96] [cursor=pointer]:
+              - /url: issue/DEMO-49/YTAPP-REVIEW-20260729-AtLimit
+              - generic [ref=f34e97]: "N"
+              - button "YTAPP-REVIEW-20260729-AtLimit" [ref=f34e100]
+            - button "Remove issue" [ref=f34e102] [cursor=pointer]
+          - generic [ref=f34e105]:
+            - link "N YTAPP-REVIEW-20260729-Monitor" [ref=f34e106] [cursor=pointer]:
+              - /url: issue/DEMO-48/YTAPP-REVIEW-20260729-Monitor
+              - generic [ref=f34e107]: "N"
+              - button "YTAPP-REVIEW-20260729-Monitor" [ref=f34e110]
+            - button "Remove issue" [ref=f34e112] [cursor=pointer]
+          - generic [ref=f34e115]:
+            - link "N YTAPP-REVIEW-20260728T2148Z-Over" [ref=f34e116] [cursor=pointer]:
+              - /url: issue/DEMO-44/YTAPP-REVIEW-20260728T2148Z-Over
+              - generic [ref=f34e117]: "N"
+              - button "YTAPP-REVIEW-20260728T2148Z-Over" [ref=f34e120]
+            - button "Remove issue" [ref=f34e122] [cursor=pointer]
+        - tooltip "Show more recent items" [ref=f34e124]:
+          - button [ref=f34e125] [cursor=pointer]
+      - generic [ref=f34e128]:
+        - generic [ref=f34e129]:
+          - generic [ref=f34e132]:
+            - tooltip "Keep sidebar open" [ref=f34e133]:
+              - button [ref=f34e134] [cursor=pointer]
+            - tooltip "Back to issues" [ref=f34e136]:
+              - link [ref=f34e137] [cursor=pointer]:
+                - /url: issues?backFrom=DEMO-49
+            - generic [ref=f34e139]:
+              - link "Projects" [ref=f34e140] [cursor=pointer]:
+                - /url: projects
+              - generic [ref=f34e141]: /
+              - link "Demo project" [ref=f34e142] [cursor=pointer]:
+                - /url: projects/DEMO
+              - generic [ref=f34e143]: /
+              - link "Issues" [ref=f34e144] [cursor=pointer]:
+                - /url: issues/DEMO
+              - generic [ref=f34e145]: /
+              - generic [ref=f34e146]:
+                - button "Copy ID and summary to clipboard" [ref=f34e149] [cursor=pointer]
+                - link "DEMO-49" [ref=f34e151] [cursor=pointer]:
+                  - /url: issue/DEMO-49/YTAPP-REVIEW-20260729-AtLimit
+          - generic [ref=f34e152]:
+            - generic [ref=f34e155]:
+              - textbox "Search" [ref=f34e156]
+              - button "Enter search request"
+              - button "Search" [ref=f34e158] [cursor=pointer]
+            - generic [ref=f34e162]:
+              - link "New issue" [ref=f34e163] [cursor=pointer]:
+                - /url: newIssue?project=DEMO
+              - combobox "Select an option" [ref=f34e166] [cursor=pointer]
+        - generic [ref=f34e170]:
+          - complementary:
+            - generic [ref=f34e172]:
+              - generic [ref=f34e174] [cursor=pointer]:
+                - button [ref=f34e175]
+                - generic: Drafts
+              - generic [ref=f34e178] [cursor=pointer]:
+                - button [ref=f34e179]
+                - generic: Projects
+              - generic:
+                - generic [ref=f34e182] [cursor=pointer]:
+                  - button [ref=f34e183]
+                  - generic: Tags
+                - generic [ref=f34e185] [cursor=pointer]:
+                  - link [ref=f34e186]:
+                    - /url: tag/10-3-24
+                    - tooltip "10-3"
+                  - generic:
+                    - tooltip "Options"
+                - generic [ref=f34e190] [cursor=pointer]:
+                  - link [ref=f34e191]:
+                    - /url: tag/attention%20needed-3
+                    - tooltip "attention needed"
+                  - generic:
+                    - tooltip "Options"
+                - generic [ref=f34e195] [cursor=pointer]:
+                  - link [ref=f34e196]:
+                    - /url: tag/auto-triage-25
+                    - tooltip "auto-triage"
+                  - generic:
+                    - tooltip "Options"
+                - generic [ref=f34e200] [cursor=pointer]:
+                  - link [ref=f34e201]:
+                    - /url: tag/schedule-test-30
+                    - tooltip "schedule-test"
+                  - generic:
+                    - tooltip "Options"
+                - generic [ref=f34e205] [cursor=pointer]:
+                  - link [ref=f34e206]:
+                    - /url: tag/stale-check-28
+                    - tooltip "stale-check"
+                  - generic:
+                    - tooltip "Options"
+                - generic [ref=f34e210] [cursor=pointer]:
+                  - link [ref=f34e211]:
+                    - /url: tag/Star-2
+                    - tooltip "Star"
+                  - generic:
+                    - tooltip "Options"
+                - generic [ref=f34e214] [cursor=pointer]:
+                  - link [ref=f34e215]:
+                    - /url: tag/waiting-for-cherry-pick-21
+                    - tooltip "waiting-for-cherry-pick"
+                  - generic:
+                    - tooltip "Options"
+              - generic:
+                - generic [ref=f34e220] [cursor=pointer]:
+                  - button [ref=f34e221]
+                  - generic: Saved Searches
+                - generic [ref=f34e223] [cursor=pointer]:
+                  - link [ref=f34e224]:
+                    - /url: search/Assigned%20to%20me-0
+                    - tooltip "Assigned to me" [ref=f34e225]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e226] [cursor=pointer]:
+                  - link [ref=f34e227]:
+                    - /url: search/Commented%20by%20me-1
+                    - tooltip "Commented by me" [ref=f34e228]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e229] [cursor=pointer]:
+                  - link [ref=f34e230]:
+                    - /url: search/Reported%20by%20me-2
+                    - tooltip "Reported by me" [ref=f34e231]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e232] [cursor=pointer]:
+                  - link [ref=f34e233]:
+                    - /url: search/car-board%20(CP)%20Backlog-7
+                    - tooltip "car-board (CP) Backlog" [ref=f34e234]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e235] [cursor=pointer]:
+                  - link [ref=f34e236]:
+                    - /url: search/car-board%20(CP)%20Backlog.1-8
+                    - tooltip "car-board (CP) Backlog.1" [ref=f34e237]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e238] [cursor=pointer]:
+                  - link [ref=f34e239]:
+                    - /url: search/car-board%20(CP)%20Backlog.1.1-10
+                    - tooltip "car-board (CP) Backlog.1.1" [ref=f34e240]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e241] [cursor=pointer]:
+                  - link [ref=f34e242]:
+                    - /url: search/car-board%20(CP)%20Backlog.10-28
+                    - tooltip "car-board (CP) Backlog.10" [ref=f34e243]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e244] [cursor=pointer]:
+                  - link [ref=f34e245]:
+                    - /url: search/car-board%20(CP)%20Backlog.100-211
+                    - tooltip "car-board (CP) Backlog.100" [ref=f34e246]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e247] [cursor=pointer]:
+                  - link [ref=f34e248]:
+                    - /url: search/car-board%20(CP)%20Backlog.1000-2039
+                    - tooltip "car-board (CP) Backlog.1000" [ref=f34e249]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e250] [cursor=pointer]:
+                  - link [ref=f34e251]:
+                    - /url: search/car-board%20(CP)%20Backlog.1001-2041
+                    - tooltip "car-board (CP) Backlog.1001" [ref=f34e252]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e253] [cursor=pointer]:
+                  - link [ref=f34e254]:
+                    - /url: search/car-board%20(CP)%20Backlog.1002-2043
+                    - tooltip "car-board (CP) Backlog.1002" [ref=f34e255]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e256] [cursor=pointer]:
+                  - link [ref=f34e257]:
+                    - /url: search/car-board%20(CP)%20Backlog.1003-2045
+                    - tooltip "car-board (CP) Backlog.1003" [ref=f34e258]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e259] [cursor=pointer]:
+                  - link [ref=f34e260]:
+                    - /url: search/car-board%20(CP)%20Backlog.1004-2047
+                    - tooltip "car-board (CP) Backlog.1004" [ref=f34e261]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e262] [cursor=pointer]:
+                  - link [ref=f34e263]:
+                    - /url: search/car-board%20(CP)%20Backlog.1005-2049
+                    - tooltip "car-board (CP) Backlog.1005" [ref=f34e264]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e265] [cursor=pointer]:
+                  - link [ref=f34e266]:
+                    - /url: search/car-board%20(CP)%20Backlog.1006-2051
+                    - tooltip "car-board (CP) Backlog.1006" [ref=f34e267]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e268] [cursor=pointer]:
+                  - link [ref=f34e269]:
+                    - /url: search/car-board%20(CP)%20Backlog.1007-2053
+                    - tooltip "car-board (CP) Backlog.1007" [ref=f34e270]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e271] [cursor=pointer]:
+                  - link [ref=f34e272]:
+                    - /url: search/car-board%20(CP)%20Backlog.1008-2055
+                    - tooltip "car-board (CP) Backlog.1008" [ref=f34e273]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e274] [cursor=pointer]:
+                  - link [ref=f34e275]:
+                    - /url: search/car-board%20(CP)%20Backlog.1009-2057
+                    - tooltip "car-board (CP) Backlog.1009" [ref=f34e276]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e277] [cursor=pointer]:
+                  - link [ref=f34e278]:
+                    - /url: search/car-board%20(CP)%20Backlog.101-213
+                    - tooltip "car-board (CP) Backlog.101" [ref=f34e279]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e280] [cursor=pointer]:
+                  - link [ref=f34e281]:
+                    - /url: search/car-board%20(CP)%20Backlog.1010-2059
+                    - tooltip "car-board (CP) Backlog.1010" [ref=f34e282]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e283] [cursor=pointer]:
+                  - link [ref=f34e284]:
+                    - /url: search/car-board%20(CP)%20Backlog.1011-2061
+                    - tooltip "car-board (CP) Backlog.1011" [ref=f34e285]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e286] [cursor=pointer]:
+                  - link [ref=f34e287]:
+                    - /url: search/car-board%20(CP)%20Backlog.1012-2063
+                    - tooltip "car-board (CP) Backlog.1012" [ref=f34e288]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e289] [cursor=pointer]:
+                  - link [ref=f34e290]:
+                    - /url: search/car-board%20(CP)%20Backlog.1013-2065
+                    - tooltip "car-board (CP) Backlog.1013" [ref=f34e291]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e292] [cursor=pointer]:
+                  - link [ref=f34e293]:
+                    - /url: search/car-board%20(CP)%20Backlog.1014-2067
+                    - tooltip "car-board (CP) Backlog.1014" [ref=f34e294]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e295] [cursor=pointer]:
+                  - link [ref=f34e296]:
+                    - /url: search/car-board%20(CP)%20Backlog.1015-2069
+                    - tooltip "car-board (CP) Backlog.1015" [ref=f34e297]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e298] [cursor=pointer]:
+                  - link [ref=f34e299]:
+                    - /url: search/car-board%20(CP)%20Backlog.1016-2071
+                    - tooltip "car-board (CP) Backlog.1016" [ref=f34e300]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e301] [cursor=pointer]:
+                  - link [ref=f34e302]:
+                    - /url: search/car-board%20(CP)%20Backlog.1017-2073
+                    - tooltip "car-board (CP) Backlog.1017" [ref=f34e303]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e304] [cursor=pointer]:
+                  - link [ref=f34e305]:
+                    - /url: search/car-board%20(CP)%20Backlog.1018-2075
+                    - tooltip "car-board (CP) Backlog.1018" [ref=f34e306]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e307] [cursor=pointer]:
+                  - link [ref=f34e308]:
+                    - /url: search/car-board%20(CP)%20Backlog.1019-2077
+                    - tooltip "car-board (CP) Backlog.1019" [ref=f34e309]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e310] [cursor=pointer]:
+                  - link [ref=f34e311]:
+                    - /url: search/car-board%20(CP)%20Backlog.102-215
+                    - tooltip "car-board (CP) Backlog.102" [ref=f34e312]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e313] [cursor=pointer]:
+                  - link [ref=f34e314]:
+                    - /url: search/car-board%20(CP)%20Backlog.1020-2079
+                    - tooltip "car-board (CP) Backlog.1020" [ref=f34e315]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e316] [cursor=pointer]:
+                  - link [ref=f34e317]:
+                    - /url: search/car-board%20(CP)%20Backlog.1021-2081
+                    - tooltip "car-board (CP) Backlog.1021" [ref=f34e318]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e319] [cursor=pointer]:
+                  - link [ref=f34e320]:
+                    - /url: search/car-board%20(CP)%20Backlog.1022-2083
+                    - tooltip "car-board (CP) Backlog.1022" [ref=f34e321]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e322] [cursor=pointer]:
+                  - link [ref=f34e323]:
+                    - /url: search/car-board%20(CP)%20Backlog.1023-2085
+                    - tooltip "car-board (CP) Backlog.1023" [ref=f34e324]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e325] [cursor=pointer]:
+                  - link [ref=f34e326]:
+                    - /url: search/car-board%20(CP)%20Backlog.1024-2087
+                    - tooltip "car-board (CP) Backlog.1024" [ref=f34e327]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e328] [cursor=pointer]:
+                  - link [ref=f34e329]:
+                    - /url: search/car-board%20(CP)%20Backlog.1025-2089
+                    - tooltip "car-board (CP) Backlog.1025" [ref=f34e330]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e331] [cursor=pointer]:
+                  - link [ref=f34e332]:
+                    - /url: search/car-board%20(CP)%20Backlog.1026-2091
+                    - tooltip "car-board (CP) Backlog.1026" [ref=f34e333]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e334] [cursor=pointer]:
+                  - link [ref=f34e335]:
+                    - /url: search/car-board%20(CP)%20Backlog.1027-2093
+                    - tooltip "car-board (CP) Backlog.1027" [ref=f34e336]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e337] [cursor=pointer]:
+                  - link [ref=f34e338]:
+                    - /url: search/car-board%20(CP)%20Backlog.1028-2095
+                    - tooltip "car-board (CP) Backlog.1028" [ref=f34e339]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e340] [cursor=pointer]:
+                  - link [ref=f34e341]:
+                    - /url: search/car-board%20(CP)%20Backlog.1029-2097
+                    - tooltip "car-board (CP) Backlog.1029" [ref=f34e342]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e343] [cursor=pointer]:
+                  - link [ref=f34e344]:
+                    - /url: search/car-board%20(CP)%20Backlog.103-217
+                    - tooltip "car-board (CP) Backlog.103" [ref=f34e345]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e346] [cursor=pointer]:
+                  - link [ref=f34e347]:
+                    - /url: search/car-board%20(CP)%20Backlog.1030-2099
+                    - tooltip "car-board (CP) Backlog.1030" [ref=f34e348]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e349] [cursor=pointer]:
+                  - link [ref=f34e350]:
+                    - /url: search/car-board%20(CP)%20Backlog.1031-2101
+                    - tooltip "car-board (CP) Backlog.1031" [ref=f34e351]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e352] [cursor=pointer]:
+                  - link [ref=f34e353]:
+                    - /url: search/car-board%20(CP)%20Backlog.1032-2103
+                    - tooltip "car-board (CP) Backlog.1032" [ref=f34e354]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e355] [cursor=pointer]:
+                  - link [ref=f34e356]:
+                    - /url: search/car-board%20(CP)%20Backlog.1033-2105
+                    - tooltip "car-board (CP) Backlog.1033" [ref=f34e357]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e358] [cursor=pointer]:
+                  - link [ref=f34e359]:
+                    - /url: search/car-board%20(CP)%20Backlog.1034-2107
+                    - tooltip "car-board (CP) Backlog.1034" [ref=f34e360]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e361] [cursor=pointer]:
+                  - link [ref=f34e362]:
+                    - /url: search/car-board%20(CP)%20Backlog.1035-2109
+                    - tooltip "car-board (CP) Backlog.1035" [ref=f34e363]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e364] [cursor=pointer]:
+                  - link [ref=f34e365]:
+                    - /url: search/car-board%20(CP)%20Backlog.1036-2111
+                    - tooltip "car-board (CP) Backlog.1036" [ref=f34e366]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e367] [cursor=pointer]:
+                  - link [ref=f34e368]:
+                    - /url: search/car-board%20(CP)%20Backlog.1037-2113
+                    - tooltip "car-board (CP) Backlog.1037" [ref=f34e369]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e370] [cursor=pointer]:
+                  - link [ref=f34e371]:
+                    - /url: search/car-board%20(CP)%20Backlog.1038-2115
+                    - tooltip "car-board (CP) Backlog.1038" [ref=f34e372]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e373] [cursor=pointer]:
+                  - link [ref=f34e374]:
+                    - /url: search/car-board%20(CP)%20Backlog.1039-2117
+                    - tooltip "car-board (CP) Backlog.1039" [ref=f34e375]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e376] [cursor=pointer]:
+                  - link [ref=f34e377]:
+                    - /url: search/car-board%20(CP)%20Backlog.104-219
+                    - tooltip "car-board (CP) Backlog.104" [ref=f34e378]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e379] [cursor=pointer]:
+                  - link [ref=f34e380]:
+                    - /url: search/car-board%20(CP)%20Backlog.1040-2119
+                    - tooltip "car-board (CP) Backlog.1040" [ref=f34e381]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e382] [cursor=pointer]:
+                  - link [ref=f34e383]:
+                    - /url: search/car-board%20(CP)%20Backlog.1041-2121
+                    - tooltip "car-board (CP) Backlog.1041" [ref=f34e384]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e385] [cursor=pointer]:
+                  - link [ref=f34e386]:
+                    - /url: search/car-board%20(CP)%20Backlog.1042-2123
+                    - tooltip "car-board (CP) Backlog.1042" [ref=f34e387]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e388] [cursor=pointer]:
+                  - link [ref=f34e389]:
+                    - /url: search/car-board%20(CP)%20Backlog.1043-2125
+                    - tooltip "car-board (CP) Backlog.1043" [ref=f34e390]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e391] [cursor=pointer]:
+                  - link [ref=f34e392]:
+                    - /url: search/car-board%20(CP)%20Backlog.1044-2127
+                    - tooltip "car-board (CP) Backlog.1044" [ref=f34e393]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e394] [cursor=pointer]:
+                  - link [ref=f34e395]:
+                    - /url: search/car-board%20(CP)%20Backlog.1045-2129
+                    - tooltip "car-board (CP) Backlog.1045" [ref=f34e396]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e397] [cursor=pointer]:
+                  - link [ref=f34e398]:
+                    - /url: search/car-board%20(CP)%20Backlog.1046-2131
+                    - tooltip "car-board (CP) Backlog.1046" [ref=f34e399]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e400] [cursor=pointer]:
+                  - link [ref=f34e401]:
+                    - /url: search/car-board%20(CP)%20Backlog.1047-2133
+                    - tooltip "car-board (CP) Backlog.1047" [ref=f34e402]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e403] [cursor=pointer]:
+                  - link [ref=f34e404]:
+                    - /url: search/car-board%20(CP)%20Backlog.1048-2135
+                    - tooltip "car-board (CP) Backlog.1048" [ref=f34e405]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e406] [cursor=pointer]:
+                  - link [ref=f34e407]:
+                    - /url: search/car-board%20(CP)%20Backlog.1049-2137
+                    - tooltip "car-board (CP) Backlog.1049" [ref=f34e408]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e409] [cursor=pointer]:
+                  - link [ref=f34e410]:
+                    - /url: search/car-board%20(CP)%20Backlog.105-221
+                    - tooltip "car-board (CP) Backlog.105" [ref=f34e411]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e412] [cursor=pointer]:
+                  - link [ref=f34e413]:
+                    - /url: search/car-board%20(CP)%20Backlog.1050-2139
+                    - tooltip "car-board (CP) Backlog.1050" [ref=f34e414]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e415] [cursor=pointer]:
+                  - link [ref=f34e416]:
+                    - /url: search/car-board%20(CP)%20Backlog.1051-2141
+                    - tooltip "car-board (CP) Backlog.1051" [ref=f34e417]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e418] [cursor=pointer]:
+                  - link [ref=f34e419]:
+                    - /url: search/car-board%20(CP)%20Backlog.1052-2143
+                    - tooltip "car-board (CP) Backlog.1052" [ref=f34e420]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e421] [cursor=pointer]:
+                  - link [ref=f34e422]:
+                    - /url: search/car-board%20(CP)%20Backlog.1053-2145
+                    - tooltip "car-board (CP) Backlog.1053" [ref=f34e423]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e424] [cursor=pointer]:
+                  - link [ref=f34e425]:
+                    - /url: search/car-board%20(CP)%20Backlog.1054-2147
+                    - tooltip "car-board (CP) Backlog.1054" [ref=f34e426]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e427] [cursor=pointer]:
+                  - link [ref=f34e428]:
+                    - /url: search/car-board%20(CP)%20Backlog.1055-2149
+                    - tooltip "car-board (CP) Backlog.1055" [ref=f34e429]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e430] [cursor=pointer]:
+                  - link [ref=f34e431]:
+                    - /url: search/car-board%20(CP)%20Backlog.1056-2151
+                    - tooltip "car-board (CP) Backlog.1056" [ref=f34e432]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e433] [cursor=pointer]:
+                  - link [ref=f34e434]:
+                    - /url: search/car-board%20(CP)%20Backlog.1057-2153
+                    - tooltip "car-board (CP) Backlog.1057" [ref=f34e435]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e436] [cursor=pointer]:
+                  - link [ref=f34e437]:
+                    - /url: search/car-board%20(CP)%20Backlog.1058-2155
+                    - tooltip "car-board (CP) Backlog.1058" [ref=f34e438]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e439] [cursor=pointer]:
+                  - link [ref=f34e440]:
+                    - /url: search/car-board%20(CP)%20Backlog.1059-2157
+                    - tooltip "car-board (CP) Backlog.1059" [ref=f34e441]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e442] [cursor=pointer]:
+                  - link [ref=f34e443]:
+                    - /url: search/car-board%20(CP)%20Backlog.106-223
+                    - tooltip "car-board (CP) Backlog.106" [ref=f34e444]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e445] [cursor=pointer]:
+                  - link [ref=f34e446]:
+                    - /url: search/car-board%20(CP)%20Backlog.1060-2159
+                    - tooltip "car-board (CP) Backlog.1060" [ref=f34e447]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e448] [cursor=pointer]:
+                  - link [ref=f34e449]:
+                    - /url: search/car-board%20(CP)%20Backlog.1061-2161
+                    - tooltip "car-board (CP) Backlog.1061" [ref=f34e450]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e451] [cursor=pointer]:
+                  - link [ref=f34e452]:
+                    - /url: search/car-board%20(CP)%20Backlog.1062-2163
+                    - tooltip "car-board (CP) Backlog.1062" [ref=f34e453]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e454] [cursor=pointer]:
+                  - link [ref=f34e455]:
+                    - /url: search/car-board%20(CP)%20Backlog.1063-2165
+                    - tooltip "car-board (CP) Backlog.1063" [ref=f34e456]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e457] [cursor=pointer]:
+                  - link [ref=f34e458]:
+                    - /url: search/car-board%20(CP)%20Backlog.1064-2167
+                    - tooltip "car-board (CP) Backlog.1064" [ref=f34e459]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e460] [cursor=pointer]:
+                  - link [ref=f34e461]:
+                    - /url: search/car-board%20(CP)%20Backlog.1065-2169
+                    - tooltip "car-board (CP) Backlog.1065" [ref=f34e462]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e463] [cursor=pointer]:
+                  - link [ref=f34e464]:
+                    - /url: search/car-board%20(CP)%20Backlog.1066-2171
+                    - tooltip "car-board (CP) Backlog.1066" [ref=f34e465]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e466] [cursor=pointer]:
+                  - link [ref=f34e467]:
+                    - /url: search/car-board%20(CP)%20Backlog.1067-2173
+                    - tooltip "car-board (CP) Backlog.1067" [ref=f34e468]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e469] [cursor=pointer]:
+                  - link [ref=f34e470]:
+                    - /url: search/car-board%20(CP)%20Backlog.1068-2175
+                    - tooltip "car-board (CP) Backlog.1068" [ref=f34e471]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e472] [cursor=pointer]:
+                  - link [ref=f34e473]:
+                    - /url: search/car-board%20(CP)%20Backlog.1069-2177
+                    - tooltip "car-board (CP) Backlog.1069" [ref=f34e474]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e475] [cursor=pointer]:
+                  - link [ref=f34e476]:
+                    - /url: search/car-board%20(CP)%20Backlog.107-225
+                    - tooltip "car-board (CP) Backlog.107" [ref=f34e477]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e478] [cursor=pointer]:
+                  - link [ref=f34e479]:
+                    - /url: search/car-board%20(CP)%20Backlog.1070-2179
+                    - tooltip "car-board (CP) Backlog.1070" [ref=f34e480]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e481] [cursor=pointer]:
+                  - link [ref=f34e482]:
+                    - /url: search/car-board%20(CP)%20Backlog.1071-2181
+                    - tooltip "car-board (CP) Backlog.1071" [ref=f34e483]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e484] [cursor=pointer]:
+                  - link [ref=f34e485]:
+                    - /url: search/car-board%20(CP)%20Backlog.1072-2183
+                    - tooltip "car-board (CP) Backlog.1072" [ref=f34e486]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e487] [cursor=pointer]:
+                  - link [ref=f34e488]:
+                    - /url: search/car-board%20(CP)%20Backlog.1073-2185
+                    - tooltip "car-board (CP) Backlog.1073" [ref=f34e489]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e490] [cursor=pointer]:
+                  - link [ref=f34e491]:
+                    - /url: search/car-board%20(CP)%20Backlog.1074-2187
+                    - tooltip "car-board (CP) Backlog.1074" [ref=f34e492]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e493] [cursor=pointer]:
+                  - link [ref=f34e494]:
+                    - /url: search/car-board%20(CP)%20Backlog.1075-2189
+                    - tooltip "car-board (CP) Backlog.1075" [ref=f34e495]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e496] [cursor=pointer]:
+                  - link [ref=f34e497]:
+                    - /url: search/car-board%20(CP)%20Backlog.1076-2191
+                    - tooltip "car-board (CP) Backlog.1076" [ref=f34e498]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e499] [cursor=pointer]:
+                  - link [ref=f34e500]:
+                    - /url: search/car-board%20(CP)%20Backlog.1077-2193
+                    - tooltip "car-board (CP) Backlog.1077" [ref=f34e501]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e502] [cursor=pointer]:
+                  - link [ref=f34e503]:
+                    - /url: search/car-board%20(CP)%20Backlog.1078-2195
+                    - tooltip "car-board (CP) Backlog.1078" [ref=f34e504]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e505] [cursor=pointer]:
+                  - link [ref=f34e506]:
+                    - /url: search/car-board%20(CP)%20Backlog.1079-2197
+                    - tooltip "car-board (CP) Backlog.1079" [ref=f34e507]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e508] [cursor=pointer]:
+                  - link [ref=f34e509]:
+                    - /url: search/car-board%20(CP)%20Backlog.108-227
+                    - tooltip "car-board (CP) Backlog.108" [ref=f34e510]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e511] [cursor=pointer]:
+                  - link [ref=f34e512]:
+                    - /url: search/car-board%20(CP)%20Backlog.1080-2199
+                    - tooltip "car-board (CP) Backlog.1080" [ref=f34e513]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e514] [cursor=pointer]:
+                  - link [ref=f34e515]:
+                    - /url: search/car-board%20(CP)%20Backlog.1081-2201
+                    - tooltip "car-board (CP) Backlog.1081" [ref=f34e516]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e517] [cursor=pointer]:
+                  - link [ref=f34e518]:
+                    - /url: search/car-board%20(CP)%20Backlog.1082-2203
+                    - tooltip "car-board (CP) Backlog.1082" [ref=f34e519]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+                - generic [ref=f34e520] [cursor=pointer]:
+                  - link [ref=f34e521]:
+                    - /url: search/car-board%20(CP)%20Backlog.1083-2205
+                    - tooltip "car-board (CP) Backlog.1083" [ref=f34e522]
+                  - generic:
+                    - generic:
+                      - tooltip "Options"
+          - article [ref=f34e524]:
+            - generic [ref=f34e526]:
+              - generic [ref=f34e527]:
+                - generic [ref=f34e528]:
+                  - generic [ref=f34e531]:
+                    - generic [ref=f34e532]:
+                      - generic [ref=f34e533]:
+                        - tooltip "28 Jul 2026 22:55" [ref=f34e534]: Created by
+                        - link "admin" [ref=f34e536] [cursor=pointer]:
+                          - /url: https://exploration.youtrack.cloud/users/admin
+                        - tooltip "28 Jul 2026 22:55" [ref=f34e537]: 9 minutes ago
+                      - generic [ref=f34e538]:
+                        - tooltip "28 Jul 2026 22:55" [ref=f34e539]: Updated by
+                        - link "admin" [ref=f34e541] [cursor=pointer]:
+                          - /url: https://exploration.youtrack.cloud/users/admin
+                        - tooltip "28 Jul 2026 22:55" [ref=f34e542]: 9 minutes ago
+                    - combobox "Select an option" [ref=f34e546] [cursor=pointer]:
+                      - generic [ref=f34e547]: Visible to issue readers
+                  - generic [ref=f34e550]:
+                    - generic:
+                      - tooltip "Unstar issue":
+                        - button "Unstar issue" [ref=f34e551] [cursor=pointer]
+                    - generic [ref=f34e553]:
+                      - button [ref=f34e556] [cursor=pointer]:
+                        - heading "YTAPP-REVIEW-20260729-AtLimit" [level=1] [ref=f34e557]
+                      - generic [ref=f34e559]:
+                        - tooltip "Edit issue" [ref=f34e560]:
+                          - button "Edit issue" [ref=f34e561] [cursor=pointer]
+                        - tooltip "Add tag" [ref=f34e564]:
+                          - combobox "Select an option" [ref=f34e565] [cursor=pointer]
+                        - tooltip "AI Assistant" [ref=f34e568]:
+                          - button [ref=f34e569] [cursor=pointer]
+                        - button "Add links" [ref=f34e572] [cursor=pointer]
+                        - tooltip "Show more" [ref=f34e574]:
+                          - button "Show more" [ref=f34e576] [cursor=pointer]
+                - generic [ref=f34e578]:
+                  - paragraph [ref=f34e583]: "Boundary test: spent exactly equals threshold 480."
+                  - generic [ref=f34e584]:
+                    - generic [ref=f34e585]:
+                      - button [ref=f34e586]:
+                        - img "Issue Relation Visualizer" [ref=f34e588]
+                        - tooltip "Issue Relation Visualizer" [ref=f34e589]
+                      - dialog [ref=f34e590]:
+                        - iframe [ref=f34e591]:
+                          - generic [ref=f35e1]: This issue has no linked issues.
+                    - generic [ref=f34e592]:
+                      - button [ref=f34e593]:
+                        - img "GitHub Action Tracker" [ref=f34e595]
+                        - tooltip "GitHub Action Tracker" [ref=f34e596]
+                      - dialog [ref=f34e597]:
+                        - iframe [ref=f34e598]:
+                          - generic [ref=f36e1]: No pull requests in zoranrepic/ytapp-review-20260728t2148z reference undefined.
+                  - generic [ref=f34e599]:
+                    - generic [ref=f34e600]:
+                      - button "Comments" [ref=f34e601] [cursor=pointer]
+                      - button "Spent time" [ref=f34e603] [cursor=pointer]
+                      - button "Change history" [ref=f34e605] [cursor=pointer]
+                      - button [ref=f34e609] [cursor=pointer]
+                    - generic [ref=f34e612]:
+                      - tabpanel [ref=f34e614]:
+                        - generic [ref=f34e619]:
+                          - generic [ref=f34e620]:
+                            - link "admin" [ref=f34e623] [cursor=pointer]:
+                              - /url: https://exploration.youtrack.cloud/users/admin
+                            - generic "online" [ref=f34e624]
+                            - tooltip "28 Jul 2026 22:55" [ref=f34e625]:
+                              - generic [ref=f34e626]: Updated 9 minutes ago
+                          - generic [ref=f34e629]:
+                            - generic [ref=f34e630]: 8h00m
+                            - generic [ref=f34e632]: 28 Jul 2026
+                            - generic [ref=f34e633]: No work type
+                            - paragraph [ref=f34e637]: YTAPP-REVIEW-20260729 at-limit boundary seed
+                      - tabpanel [ref=f34e639]:
+                        - generic [ref=f34e640]:
+                          - img "User avatar" [ref=f34e643]
+                          - generic [ref=f34e644]:
+                            - generic [ref=f34e645]:
+                              - generic [ref=f34e646]: YouTrack Workflow
+                              - generic "offline" [ref=f34e647]
+                              - tooltip "28 Jul 2026 22:56" [ref=f34e648]:
+                                - generic [ref=f34e649]: Commented 8 minutes ago
+                            - paragraph [ref=f34e653]:
+                              - strong [ref=f34e654]: Critical time monitor
+                              - text: ": Spent time 480 min vs critical limit 480 min: CRITICAL."
+                    - generic [ref=f34e657]:
+                      - img "User avatar" [ref=f34e660]
+                      - paragraph [ref=f34e665]: Write a comment, @mention people
+              - complementary [ref=f34e666]:
+                - generic [ref=f34e668]:
+                  - tooltip "You can't vote for an issue that you reported" [ref=f34e671]:
+                    - button [disabled] [ref=f34e672]
+                  - generic [ref=f34e674]:
+                    - generic "Watchers" [ref=f34e675]:
+                      - combobox "Select an option" [ref=f34e676] [cursor=pointer]: "1"
+                    - tooltip "Unstar issue" [ref=f34e677]:
+                      - button "Unstar issue" [ref=f34e678] [cursor=pointer]
+                - generic [ref=f34e682]:
+                  - generic "Project" [ref=f34e684]:
+                    - generic [ref=f34e685]:
+                      - generic [ref=f34e686]: Project
+                      - generic [ref=f34e687]:
+                        - combobox "Demo project" [ref=f34e691] [cursor=pointer]
+                        - img "User avatar" [ref=f34e695]
+                  - generic "Priority" [ref=f34e697]:
+                    - generic [ref=f34e698]:
+                      - generic [ref=f34e699]: Priority
+                      - generic [ref=f34e700]:
+                        - combobox "Normal" [ref=f34e704] [cursor=pointer]
+                        - generic [ref=f34e706]: "N"
+                  - generic "State" [ref=f34e709]:
+                    - generic [ref=f34e710]:
+                      - generic [ref=f34e711]: State
+                      - generic [ref=f34e712]:
+                        - combobox "To do" [ref=f34e716] [cursor=pointer]
+                        - generic [ref=f34e718]: T
+                  - generic "Assignee" [ref=f34e721]:
+                    - generic [ref=f34e722]:
+                      - generic [ref=f34e723]: Assignee
+                      - combobox "Select an option" [ref=f34e728] [cursor=pointer]:
+                        - generic [ref=f34e729]: Unassigned
+                  - generic "Subsystem" [ref=f34e731]:
+                    - generic [ref=f34e732]:
+                      - generic [ref=f34e733]: Subsystem
+                      - combobox "Select an option" [ref=f34e738] [cursor=pointer]:
+                        - generic [ref=f34e739]: No Subsystem
+                  - generic "Fix versions" [ref=f34e741]:
+                    - generic [ref=f34e742]:
+                      - generic [ref=f34e743]: Fix versions
+                      - combobox "Select an option" [ref=f34e748] [cursor=pointer]:
+                        - generic [ref=f34e749]: Unscheduled
+                  - generic "Affected versions" [ref=f34e751]:
+                    - generic [ref=f34e752]:
+                      - generic [ref=f34e753]: Affected versions
+                      - combobox "Select an option" [ref=f34e758] [cursor=pointer]:
+                        - generic [ref=f34e759]: Unknown
+                  - generic "Fixed in build" [ref=f34e761]:
+                    - generic [ref=f34e762]:
+                      - generic [ref=f34e763]: Fixed in build
+                      - combobox "Select an option" [ref=f34e768] [cursor=pointer]:
+                        - generic [ref=f34e769]: Next Build
+                  - generic "Due Date" [ref=f34e771]:
+                    - generic [ref=f34e772]:
+                      - generic [ref=f34e773]: Due Date
+                      - button "No due date" [ref=f34e777] [cursor=pointer]
+                  - generic "Estimation" [ref=f34e779]:
+                    - generic [ref=f34e780]:
+                      - generic [ref=f34e781]: Estimation
+                      - button "Estimation" [ref=f34e785] [cursor=pointer]:
+                        - generic [ref=f34e786]: "?"
+                  - generic "Spent time" [ref=f34e788]:
+                    - generic [ref=f34e789]:
+                      - generic [ref=f34e790]: Spent time
+                      - button "Spent time" [ref=f34e794] [cursor=pointer]:
+                        - generic [ref=f34e795]: 1d
+                  - generic "template" [ref=f34e799]:
+                    - generic [ref=f34e800]:
+                      - generic [ref=f34e801]: template
+                      - button "template" [ref=f34e805] [cursor=pointer]:
+                        - generic [ref=f34e806]: "?"
+                  - generic "Type" [ref=f34e808]:
+                    - generic [ref=f34e809]:
+                      - generic [ref=f34e810]: Type
+                      - combobox "Bug" [ref=f34e815] [cursor=pointer]
+                  - generic [ref=f34e819] [cursor=pointer]:
+                    - generic [ref=f34e820]: Boards
+                    - button "No visible boards" [ref=f34e822]
+  - generic [ref=f34e956]:
+    - text: Action rule send-status-email applied
+    - button "close alert" [ref=f34e958] [cursor=pointer]

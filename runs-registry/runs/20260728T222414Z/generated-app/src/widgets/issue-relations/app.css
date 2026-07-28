@@ -1,0 +1,49 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+  margin: calc(var(--ring-unit) / 2);
+}
+
+.empty {
+  color: var(--ring-secondary-color);
+  font-size: var(--ring-font-size);
+}
+
+.edge {
+  stroke: var(--ring-line-color);
+  stroke-width: 1.5;
+}
+
+.edge-label {
+  fill: var(--ring-secondary-color);
+  font-size: 10px;
+}
+
+.node {
+  cursor: pointer;
+}
+
+.node-circle {
+  fill: var(--ring-content-background-color);
+  stroke: var(--ring-main-color);
+  stroke-width: 2;
+}
+
+.node-circle.resolved {
+  stroke: var(--ring-success-color);
+}
+
+.node-circle.center {
+  fill: var(--ring-main-color);
+  stroke: var(--ring-main-color);
+}
+
+.node-label {
+  fill: var(--ring-text-color);
+  font-size: 11px;
+}
+
+.center-label {
+  fill: var(--ring-white-text-color);
+}

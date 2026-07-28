@@ -1,0 +1,95 @@
+- generic [ref=f12e2]:
+  - generic [ref=f12e8]:
+    - generic [ref=f12e9]:
+      - link [ref=f12e10] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f12e12]:
+        - link [ref=f12e14] [cursor=pointer]:
+          - /url: issues
+          - tooltip "Issues" [ref=f12e15]
+        - link [ref=f12e18] [cursor=pointer]:
+          - /url: dashboard
+          - tooltip "Dashboards" [ref=f12e19]
+        - link [ref=f12e22] [cursor=pointer]:
+          - /url: agiles
+          - tooltip "Agile Boards" [ref=f12e23]
+        - link [ref=f12e26] [cursor=pointer]:
+          - /url: reports
+          - tooltip "Reports" [ref=f12e27]
+        - link [ref=f12e30] [cursor=pointer]:
+          - /url: projects
+          - tooltip "Projects" [ref=f12e31]
+        - link [ref=f12e34] [cursor=pointer]:
+          - /url: articles
+          - tooltip "Knowledge Base" [ref=f12e35]
+        - link [ref=f12e38] [cursor=pointer]:
+          - /url: timesheets
+          - tooltip "Timesheets" [ref=f12e39]
+        - button [ref=f12e44] [cursor=pointer]:
+          - tooltip "More" [ref=f12e45]
+    - generic [ref=f12e48]:
+      - button [ref=f12e50] [cursor=pointer]:
+        - tooltip "Create" [ref=f12e51]
+      - button [ref=f12e55] [cursor=pointer]:
+        - tooltip "Administration" [ref=f12e56]
+      - button [ref=f12e61] [cursor=pointer]:
+        - tooltip "Help" [ref=f12e62]
+      - button [ref=f12e66] [cursor=pointer]:
+        - tooltip "Notifications" [ref=f12e67]
+      - generic "admin" [ref=f12e72] [cursor=pointer]:
+        - button "User avatar admin" [ref=f12e73]:
+          - img "User avatar" [ref=f12e75]
+          - generic [ref=f12e76]: admin
+      - button [ref=f12e77] [cursor=pointer]:
+        - tooltip "Collapse" [ref=f12e78]
+  - generic [ref=f12e3]:
+    - generic [ref=f12e82]:
+      - generic [ref=f12e83]:
+        - generic [ref=f12e85]:
+          - link "N YTAPP-REVIEW-20260728T2148Z-Logger" [ref=f12e86] [cursor=pointer]:
+            - /url: issue/DEMO-41/YTAPP-REVIEW-20260728T2148Z-Logger
+            - generic [ref=f12e87]: "N"
+            - button "YTAPP-REVIEW-20260728T2148Z-Logger" [ref=f12e90]
+          - button "Remove issue" [ref=f12e92] [cursor=pointer]
+        - generic [ref=f12e95]:
+          - link "N YTAPP-REVIEW-20260728T2148Z-Graph" [ref=f12e96] [cursor=pointer]:
+            - /url: issue/DEMO-46/YTAPP-REVIEW-20260728T2148Z-Graph
+            - generic [ref=f12e97]: "N"
+            - button "YTAPP-REVIEW-20260728T2148Z-Graph" [ref=f12e100]
+          - button "Remove issue" [ref=f12e102] [cursor=pointer]
+        - generic [ref=f12e105]:
+          - link "N YTAPP-REVIEW-20260728T2148Z-Over" [ref=f12e106] [cursor=pointer]:
+            - /url: issue/DEMO-44/YTAPP-REVIEW-20260728T2148Z-Over
+            - generic [ref=f12e107]: "N"
+            - button "YTAPP-REVIEW-20260728T2148Z-Over" [ref=f12e110]
+          - button "Remove issue" [ref=f12e112] [cursor=pointer]
+        - generic [ref=f12e115]:
+          - link "N YTAPP-REVIEW-20260728T2148Z-AtLimit" [ref=f12e116] [cursor=pointer]:
+            - /url: issue/DEMO-43/YTAPP-REVIEW-20260728T2148Z-AtLimit
+            - generic [ref=f12e117]: "N"
+            - button "YTAPP-REVIEW-20260728T2148Z-AtLimit" [ref=f12e120]
+          - button "Remove issue" [ref=f12e122] [cursor=pointer]
+      - tooltip "Show more recent items" [ref=f12e124]:
+        - button [ref=f12e125] [cursor=pointer]
+    - generic [ref=f12e128]:
+      - generic [ref=f12e129]:
+        - generic [ref=f12e132]:
+          - button "…" [ref=f12e134] [cursor=pointer]
+          - generic [ref=f12e135]: /
+          - combobox "YTAPP-REVIEW-20260728T2148Z DashboardYTAPP-REVIEW-20260728T2148Z Dashboard" [ref=f12e137]:
+            - button "YTAPP-REVIEW-20260728T2148Z DashboardYTAPP-REVIEW-20260728T2148Z Dashboard" [ref=f12e138] [cursor=pointer]
+          - tooltip "More" [ref=f12e141]:
+            - button [ref=f12e143] [cursor=pointer]
+        - generic [ref=f12e147]:
+          - button "New dashboard" [ref=f12e148] [cursor=pointer]
+          - combobox "Critical Threshold Configurator" [ref=f12e286] [cursor=pointer]: Add widget
+      - main [ref=f12e154]:
+        - dialog [ref=f12e291]:
+          - generic [ref=f12e292]:
+            - generic [ref=f12e294]:
+              - img "Critical Threshold Configurator"
+              - heading [level=3] [ref=f12e295]:
+                - tooltip "Critical Threshold Configurator" [ref=f12e296]
+              - button [ref=f12e299] [cursor=pointer]
+            - iframe [ref=f12e305]:
+              - generic [ref=f13e1]: Loading configuration…

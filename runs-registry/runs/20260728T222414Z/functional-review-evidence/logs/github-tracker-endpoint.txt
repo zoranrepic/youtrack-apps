@@ -1,0 +1,8 @@
+# GitHub Action Tracker endpoint responses (token/repo redacted where needed)
+## DEMO-41 (issue key exactly matches PR #1 title)
+{"configured":true,"repo":"zoranrepic/ytapp-review-20260728t2148z","pullRequests":[]}
+HTTP 200
+## Note: backend response omits 'issue' field => ctx.issue.idReadable is undefined
+## Direct GitHub search WITH valid token returns the PR:
+  total_count= 1
+   PR #1 YTAPP-REVIEW-20260728T2148Z DEMO-41 functional review pull request

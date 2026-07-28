@@ -1,0 +1,32 @@
+Critical Time Monitor (R-BE-02) — live execution timeline
+==========================================================
+Test issues (prefixed YTAPP-REVIEW-20260729):
+  DEMO-48  "YTAPP-REVIEW-20260729-Monitor"  (below-limit -> over-limit transition)
+  DEMO-49  "YTAPP-REVIEW-20260729-AtLimit"  (exactly-at-limit boundary)
+
+Global default critical limit (settings.defaultCriticalMinutes) = 480 min.
+Per-issue thresholds were NOT resolvable (see finding: thresholds keyed by
+issue.idReadable which is undefined for Issue), so global default applied to all.
+
+DEMO-48 seed/bump timeline (UTC):
+  22:54:47  work item +30 min  (total 30, below limit)
+  22:55:38  work item +500 min (total 530, over limit)
+
+Monitor comment alerts posted on DEMO-48 (cron '0 * * * * ?', every minute):
+  [22:55:00Z] **Critical time monitor**: Spent time 30 min vs critical limit 480 min: OK.
+  [22:56:00Z] **Critical time monitor**: Spent time 530 min vs critical limit 480 min: CRITICAL.
+  (no comment at 22:57 -> status unchanged CRITICAL -> no duplicate alert / no spam)
+
+DEMO-49 (seeded exactly 480 min at 22:55:35):
+  [22:56:00Z] **Critical time monitor**: Spent time 480 min vs critical limit 480 min: CRITICAL.
+  -> confirms boundary is inclusive (spent >= limit => CRITICAL at exactly the limit).
+
+App log lines (console.log) confirm the same runs and expose the issue-key bug:
+  22:55:00,235Z INFO [critical-time-monitor.js] Critical time monitor: undefined - Spent time 30 min vs critical limit 480 min: OK.
+  (issue key logged as "undefined" because code uses issue.idReadable; Issue's readable id is issue.id)
+
+Observations:
+ - Two executions ~1 min apart confirmed (F13): 22:55:00 and 22:56:00.
+ - Below-limit -> OK comment (F14). Over-limit -> CRITICAL comment with spent/limit/status (F16).
+ - At-limit -> CRITICAL (F15), inclusive boundary.
+ - Status-change gating prevents duplicate alerts (F17): no comment while status stayed CRITICAL.

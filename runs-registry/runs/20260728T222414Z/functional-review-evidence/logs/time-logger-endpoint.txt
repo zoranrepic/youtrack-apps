@@ -1,0 +1,4 @@
+# Time Tracking Service (log-time) endpoint
+POST /api/extensionEndpoints/ops-command-center/time-tracking/log-time {issueId:DEMO-38,minutes:25}
+Response: HTTP 500
+{"error":"server_error","error_description":"Can't find instance method Issue.addWorkItem() with 4 parameters"}
