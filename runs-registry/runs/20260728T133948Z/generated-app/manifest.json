@@ -1,0 +1,56 @@
+{
+  "name": "issue-operations-suite",
+  "title": "Issue Operations Suite",
+  "description": "Issue relations, GitHub action tracking, global time logging, and critical time monitoring.",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "vendor": {
+    "name": "YouTrack Operations",
+    "url": "https://www.jetbrains.com/youtrack"
+  },
+  "icon": "icon.svg",
+  "version": "1.0.0",
+  "minYouTrackVersion": "2026.1.0",
+  "widgets": [
+
+    {
+      "key": "issue-relations",
+      "name": "Issue Relation Visualizer",
+      "indexPath": "issue-relations/index.html",
+      "extensionPoint": "ISSUE_BELOW_SUMMARY",
+      "iconPath": "issue-relations/widget-icon.svg",
+      "description": "Visualize issue relationships and dependencies.",
+      "expectedDimensions": {
+        "width": 900,
+        "height": 360
+      }
+    },
+    {
+      "key": "github-actions",
+      "name": "GitHub Action Tracker",
+      "indexPath": "github-actions/index.html",
+      "extensionPoint": "ISSUE_ABOVE_ACTIVITY_STREAM",
+      "iconPath": "github-actions/widget-icon.svg",
+      "description": "Show pull requests and workflow actions linked to this issue.",
+      "expectedDimensions": {
+        "width": 900,
+        "height": 320
+      }
+    },
+    {
+      "key": "time-logger",
+      "name": "Global Time Logger",
+      "indexPath": "time-logger/index.html",
+      "extensionPoint": "MAIN_MENU_ITEM",
+      "iconPath": "time-logger/widget-icon.svg",
+      "description": "Select an issue and log spent time."
+    },
+    {
+      "key": "critical-thresholds",
+      "name": "Critical Threshold Configurator",
+      "indexPath": "critical-thresholds/index.html",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "iconPath": "critical-thresholds/widget-icon.svg",
+      "description": "Configure critical time-spent limits."
+    }
+  ]
+}

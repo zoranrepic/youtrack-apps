@@ -1,0 +1,56 @@
+
+> issue-operations-suite@0.0.0 lint
+> eslint --report-unused-disable-directives --max-warnings 0
+
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T133948Z/generated-app/src/time-tracking.js
+   1:18   error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  40:113  error  No magic number: 100                     no-magic-numbers
+  56:135  error  No magic number: 480                     no-magic-numbers
+  57:132  error  No magic number: 80                      no-magic-numbers
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T133948Z/generated-app/src/widgets/critical-thresholds/app.tsx
+  13:5    error  Expected 'undefined' and instead saw 'void'  no-void
+  25:10   error  Missing parentheses around multilines JSX    react/jsx-wrap-multilines
+  27:177  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+  28:184  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+  29:160  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+  30:36   error  Expected 'undefined' and instead saw 'void'  no-void
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T133948Z/generated-app/src/widgets/github-actions/app.tsx
+  13:5   error  Expected 'undefined' and instead saw 'void'  no-void
+  22:10  error  Missing parentheses around multilines JSX    react/jsx-wrap-multilines
+  24:29  error  Missing parentheses around multilines JSX    react/jsx-wrap-multilines
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T133948Z/generated-app/src/widgets/issue-relations/app.tsx
+  14:5   error  Expected 'undefined' and instead saw 'void'  no-void
+  21:10  error  Missing parentheses around multilines JSX    react/jsx-wrap-multilines
+  23:33  error  Missing parentheses around multilines JSX    react/jsx-wrap-multilines
+  23:64  error  Do not use Array index in keys               react/no-array-index-key
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T133948Z/generated-app/src/widgets/time-logger/app.tsx
+  22:10   error  Missing parentheses around multilines JSX    react/jsx-wrap-multilines
+  24:116  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+  25:116  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+  26:106  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+  27:36   error  Expected 'undefined' and instead saw 'void'  no-void
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T133948Z/generated-app/src/workflows/critical-time-monitor.js
+   1:18   error  A `require()` style import is forbidden                       @typescript-eslint/no-require-imports
+   3:1    error  'exports' is not defined                                      no-undef
+   7:3    error  Method 'action' has a complexity of 13. Maximum allowed is 7  complexity
+   9:126  error  No magic number: 480                                          no-magic-numbers
+  10:133  error  No magic number: 80                                           no-magic-numbers
+  12:20   error  Do not nest ternary expressions                               no-nested-ternary
+  12:108  error  No magic number: 100                                          no-magic-numbers
+  34:27   error  Unexpected unnamed function                                   func-names
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T133948Z/generated-app/src/workflows/email-action.js
+   1:18  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   3:1   error  'exports' is not defined                 no-undef
+  11:60  error  No magic number: 480                     no-magic-numbers
+  22:27  error  Unexpected unnamed function              func-names
+
+✖ 34 problems (34 errors, 0 warnings)
+  12 errors and 0 warnings potentially fixable with the `--fix` option.
+

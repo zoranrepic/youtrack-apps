@@ -1,0 +1,592 @@
+- generic [ref=f2e2]:
+  - generic [ref=f2e8]:
+    - generic [ref=f2e9]:
+      - link [ref=f2e10] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f2e12]:
+        - link [ref=f2e13] [cursor=pointer]:
+          - /url: issues
+          - tooltip "Issues" [ref=f2e14]
+        - link [ref=f2e17] [cursor=pointer]:
+          - /url: dashboard
+          - tooltip "Dashboards" [ref=f2e18]
+        - link [ref=f2e21] [cursor=pointer]:
+          - /url: agiles
+          - tooltip "Agile Boards" [ref=f2e22]
+        - link [ref=f2e25] [cursor=pointer]:
+          - /url: reports
+          - tooltip "Reports" [ref=f2e26]
+        - link [ref=f2e29] [cursor=pointer]:
+          - /url: projects
+          - tooltip "Projects" [ref=f2e30]
+        - link [ref=f2e33] [cursor=pointer]:
+          - /url: articles
+          - tooltip "Knowledge Base" [ref=f2e34]
+        - link [ref=f2e37] [cursor=pointer]:
+          - /url: timesheets
+          - tooltip "Timesheets" [ref=f2e38]
+        - button [ref=f2e43] [cursor=pointer]:
+          - tooltip "More" [ref=f2e44]
+    - generic [ref=f2e47]:
+      - button [ref=f2e49] [cursor=pointer]:
+        - tooltip "Create" [ref=f2e50]
+      - button [ref=f2e54] [cursor=pointer]:
+        - tooltip "Administration" [ref=f2e55]
+      - button [ref=f2e60] [cursor=pointer]:
+        - tooltip "Help" [ref=f2e61]
+      - button [ref=f2e65] [cursor=pointer]:
+        - tooltip "Notifications" [ref=f2e66]
+      - generic "admin" [ref=f2e71] [cursor=pointer]:
+        - button "User avatar admin" [ref=f2e72]:
+          - img "User avatar" [ref=f2e74]
+          - generic [ref=f2e75]: admin
+      - button [ref=f2e76] [cursor=pointer]:
+        - tooltip "Collapse" [ref=f2e77]
+  - generic [ref=f2e81]:
+    - generic [ref=f2e82]:
+      - generic [ref=f2e84]:
+        - generic [ref=f2e85]: Apps
+        - button "Hide description" [ref=f2e86] [cursor=pointer]
+      - button [ref=f2e91] [cursor=pointer]
+    - article [ref=f2e95]:
+      - generic [ref=f2e96]:
+        - generic [ref=f2e98]:
+          - generic [ref=f2e100]:
+            - text: Apps in YouTrack let you customize the appearance of YouTrack, add UI widgets, forms, and extra pages, implement complex automation, and enhance your work experience with YouTrack. This page lets you add apps from the marketplace to your YouTrack and manage added apps.
+            - link "Learn more →" [ref=f2e101] [cursor=pointer]:
+              - /url: https://www.jetbrains.com/help/youtrack/cloud/2026.1/admin-apps.html
+          - tooltip "Hide description" [ref=f2e102]:
+            - button "Close" [ref=f2e103] [cursor=pointer]
+        - generic [ref=f2e105]:
+          - button "Download" [ref=f2e107] [cursor=pointer]
+          - generic [ref=f2e108]:
+            - generic [ref=f2e109]:
+              - button "All" [ref=f2e110] [cursor=pointer]
+              - button "From Marketplace" [ref=f2e111] [cursor=pointer]
+            - generic [ref=f2e112]:
+              - button "Toggle options popup" [ref=f2e113] [cursor=pointer]
+              - combobox "Select an option" [ref=f2e117]
+            - textbox "Filter by name" [ref=f2e120]
+      - generic [ref=f2e121]:
+        - generic [ref=f2e122]:
+          - table [ref=f2e124]:
+            - rowgroup [ref=f2e125]:
+              - row [ref=f2e126]:
+                - columnheader "Name" [ref=f2e127]
+                - columnheader "Status" [ref=f2e128]
+                - columnheader "Last Updated" [ref=f2e129]
+                - columnheader [ref=f2e130]
+            - rowgroup [ref=f2e131]:
+              - row [ref=f2e132]:
+                - cell "AI Tools AI Tool" [ref=f2e133]:
+                  - generic [ref=f2e136]:
+                    - generic [ref=f2e137]: AI Tools
+                    - generic [ref=f2e139]: AI Tool
+                - cell "Active" [ref=f2e141]
+                - cell "7 May 2026 17:37" [ref=f2e142]
+                - cell [ref=f2e143]:
+                  - button "Show more" [ref=f2e145] [cursor=pointer]
+              - row [ref=f2e147]:
+                - cell "Article Feedback HTTP, Widget" [ref=f2e148]:
+                  - generic [ref=f2e150]:
+                    - generic [ref=f2e151]: Article Feedback
+                    - generic [ref=f2e153]: HTTP, Widget
+                - cell "Active" [ref=f2e155]
+                - cell "20 Jan 2026 09:17" [ref=f2e156]
+                - cell [ref=f2e157]:
+                  - button "Show more" [ref=f2e159] [cursor=pointer]
+              - row [ref=f2e161]:
+                - cell "Assignee Visibility auto-attach Workflow" [ref=f2e162]:
+                  - generic [ref=f2e165]:
+                    - generic [ref=f2e166]:
+                      - generic [ref=f2e167]: Assignee Visibility
+                      - button "auto-attach" [ref=f2e170]
+                    - generic [ref=f2e172]: Workflow
+                - cell "Active" [ref=f2e174]
+                - cell "21 Dec 2025 22:03" [ref=f2e175]
+                - cell [ref=f2e176]:
+                  - button "Show more" [ref=f2e178] [cursor=pointer]
+              - row [ref=f2e180]:
+                - cell "Bugzilla Migration Manager Import" [ref=f2e181]:
+                  - generic [ref=f2e183]:
+                    - generic [ref=f2e184]: Bugzilla Migration Manager
+                    - generic [ref=f2e186]: Import
+                - cell "Active" [ref=f2e188]
+                - cell "7 May 2026 17:37" [ref=f2e189]
+                - cell [ref=f2e190]:
+                  - button "Show more" [ref=f2e192] [cursor=pointer]
+              - row [ref=f2e194]:
+                - cell "Clear Fix Versions Workflow" [ref=f2e195]:
+                  - generic [ref=f2e198]:
+                    - generic [ref=f2e199]: Clear Fix Versions
+                    - generic [ref=f2e201]: Workflow
+                - cell "Active" [ref=f2e203]
+                - cell "21 Dec 2025 22:03" [ref=f2e204]
+                - cell [ref=f2e205]:
+                  - button "Show more" [ref=f2e207] [cursor=pointer]
+              - row [ref=f2e209]:
+                - cell "Clone Article auto-attach Workflow" [ref=f2e210]:
+                  - generic [ref=f2e213]:
+                    - generic [ref=f2e214]:
+                      - generic [ref=f2e215]: Clone Article
+                      - button "auto-attach" [ref=f2e218]
+                    - generic [ref=f2e220]: Workflow
+                - cell "Active" [ref=f2e222]
+                - cell "21 Dec 2025 22:03" [ref=f2e223]
+                - cell [ref=f2e224]:
+                  - button "Show more" [ref=f2e226] [cursor=pointer]
+              - row [ref=f2e228]:
+                - cell "Clone Issue auto-attach Workflow" [ref=f2e229]:
+                  - generic [ref=f2e232]:
+                    - generic [ref=f2e233]:
+                      - generic [ref=f2e234]: Clone Issue
+                      - button "auto-attach" [ref=f2e237]
+                    - generic [ref=f2e239]: Workflow
+                - cell "Active" [ref=f2e241]
+                - cell "21 Dec 2025 22:03" [ref=f2e242]
+                - cell [ref=f2e243]:
+                  - button "Show more" [ref=f2e245] [cursor=pointer]
+              - row [ref=f2e247]:
+                - cell "Comments Workflow" [ref=f2e248]:
+                  - generic [ref=f2e251]:
+                    - generic [ref=f2e252]: Comments
+                    - generic [ref=f2e254]: Workflow
+                - cell "Active" [ref=f2e256]
+                - cell "21 Dec 2025 22:03" [ref=f2e257]
+                - cell [ref=f2e258]:
+                  - button "Show more" [ref=f2e260] [cursor=pointer]
+              - row [ref=f2e262]:
+                - cell "Confluence Migration Manager Import" [ref=f2e263]:
+                  - generic [ref=f2e265]:
+                    - generic [ref=f2e266]: Confluence Migration Manager
+                    - generic [ref=f2e268]: Import
+                - cell "Active" [ref=f2e270]
+                - cell "7 May 2026 17:37" [ref=f2e271]
+                - cell [ref=f2e272]:
+                  - button "Show more" [ref=f2e274] [cursor=pointer]
+              - row [ref=f2e276]:
+                - cell "Default Description Workflow" [ref=f2e277]:
+                  - generic [ref=f2e280]:
+                    - generic [ref=f2e281]: Default Description
+                    - generic [ref=f2e283]: Workflow
+                - cell "Active" [ref=f2e285]
+                - cell "21 Dec 2025 22:03" [ref=f2e286]
+                - cell [ref=f2e287]:
+                  - button "Show more" [ref=f2e289] [cursor=pointer]
+              - row [ref=f2e291]:
+                - cell "Demo client Import" [ref=f2e292]:
+                  - generic [ref=f2e294]:
+                    - generic [ref=f2e295]: Demo client
+                    - generic [ref=f2e297]: Import
+                - cell "Active" [ref=f2e299]
+                - cell "7 May 2026 17:37" [ref=f2e300]
+                - cell [ref=f2e301]:
+                  - button "Show more" [ref=f2e303] [cursor=pointer]
+              - row [ref=f2e305]:
+                - cell "Dependencies Workflow" [ref=f2e306]:
+                  - generic [ref=f2e309]:
+                    - generic [ref=f2e310]: Dependencies
+                    - generic [ref=f2e312]: Workflow
+                - cell "Active" [ref=f2e314]
+                - cell "21 Dec 2025 22:03" [ref=f2e315]
+                - cell [ref=f2e316]:
+                  - button "Show more" [ref=f2e318] [cursor=pointer]
+              - row [ref=f2e320]:
+                - cell "Document List Widget update available Widget" [ref=f2e321]:
+                  - generic [ref=f2e323]:
+                    - generic [ref=f2e324]:
+                      - generic [ref=f2e325]: Document List Widget
+                      - button "update available" [ref=f2e329]
+                    - generic [ref=f2e331]: Widget
+                - cell "Active" [ref=f2e333]
+                - cell [ref=f2e334]
+                - cell [ref=f2e335]:
+                  - button "Show more" [ref=f2e337] [cursor=pointer]
+              - row [ref=f2e339]:
+                - cell "Due Date Workflow" [ref=f2e340]:
+                  - generic [ref=f2e343]:
+                    - generic [ref=f2e344]: Due Date
+                    - generic [ref=f2e346]: Workflow
+                - cell "Active" [ref=f2e348]
+                - cell "21 Dec 2025 22:03" [ref=f2e349]
+                - cell [ref=f2e350]:
+                  - button "Show more" [ref=f2e352] [cursor=pointer]
+              - row [ref=f2e354]:
+                - cell "Duplicates auto-attach Workflow" [ref=f2e355]:
+                  - generic [ref=f2e358]:
+                    - generic [ref=f2e359]:
+                      - generic [ref=f2e360]: Duplicates
+                      - button "auto-attach" [ref=f2e363]
+                    - generic [ref=f2e365]: Workflow
+                - cell "Active" [ref=f2e367]
+                - cell "21 Dec 2025 22:03" [ref=f2e368]
+                - cell [ref=f2e369]:
+                  - button "Show more" [ref=f2e371] [cursor=pointer]
+              - row [ref=f2e373]:
+                - cell "Forgotten Attachments Workflow" [ref=f2e374]:
+                  - generic [ref=f2e377]:
+                    - generic [ref=f2e378]: Forgotten Attachments
+                    - generic [ref=f2e380]: Workflow
+                - cell "Active" [ref=f2e382]
+                - cell "21 Dec 2025 22:03" [ref=f2e383]
+                - cell [ref=f2e384]:
+                  - button "Show more" [ref=f2e386] [cursor=pointer]
+              - row [ref=f2e388]:
+                - cell "GitHub Issues Migration Manager Import" [ref=f2e389]:
+                  - generic [ref=f2e391]:
+                    - generic [ref=f2e392]: GitHub Issues Migration Manager
+                    - generic [ref=f2e394]: Import
+                - cell "Active" [ref=f2e396]
+                - cell "21 Dec 2025 22:03" [ref=f2e397]
+                - cell [ref=f2e398]:
+                  - button "Show more" [ref=f2e400] [cursor=pointer]
+              - row [ref=f2e402]:
+                - cell "GitLab Migration Manager Import" [ref=f2e403]:
+                  - generic [ref=f2e405]:
+                    - generic [ref=f2e406]: GitLab Migration Manager
+                    - generic [ref=f2e408]: Import
+                - cell "Active" [ref=f2e410]
+                - cell "7 May 2026 17:37" [ref=f2e411]
+                - cell [ref=f2e412]:
+                  - button "Show more" [ref=f2e414] [cursor=pointer]
+              - row [ref=f2e416]:
+                - cell "Helpdesk Workflow" [ref=f2e417]:
+                  - generic [ref=f2e420]:
+                    - generic [ref=f2e421]: Helpdesk
+                    - generic [ref=f2e423]: Workflow
+                - cell "Active" [ref=f2e425]
+                - cell "21 Dec 2025 22:03" [ref=f2e426]
+                - cell [ref=f2e427]:
+                  - button "Show more" [ref=f2e429] [cursor=pointer]
+              - row [ref=f2e431]:
+                - cell "Import from Google Sheets Import" [ref=f2e432]:
+                  - generic [ref=f2e434]:
+                    - generic [ref=f2e435]: Import from Google Sheets
+                    - generic [ref=f2e437]: Import
+                - cell "Active" [ref=f2e439]
+                - cell "7 May 2026 17:37" [ref=f2e440]
+                - cell [ref=f2e441]:
+                  - button "Show more" [ref=f2e443] [cursor=pointer]
+              - row [ref=f2e445]:
+                - cell "In Progress Work Timer Workflow" [ref=f2e446]:
+                  - generic [ref=f2e449]:
+                    - generic [ref=f2e450]: In Progress Work Timer
+                    - generic [ref=f2e452]: Workflow
+                - cell "Active" [ref=f2e454]
+                - cell "21 Dec 2025 22:03" [ref=f2e455]
+                - cell [ref=f2e456]:
+                  - button "Show more" [ref=f2e458] [cursor=pointer]
+              - row [ref=f2e460]:
+                - cell "Issue Dashboard Widgets update available Widget" [ref=f2e461]:
+                  - generic [ref=f2e463]:
+                    - generic [ref=f2e464]:
+                      - generic [ref=f2e465]: Issue Dashboard Widgets
+                      - button "update available" [ref=f2e469]
+                    - generic [ref=f2e471]: Widget
+                - cell "Inactive" [ref=f2e473]
+                - cell [ref=f2e474]
+                - cell [ref=f2e475]:
+                  - button "Show more" [ref=f2e477] [cursor=pointer]
+              - row [active] [ref=f2e479]:
+                - cell "Issue Operations Suite Workflow, HTTP, Widget" [ref=f2e480]:
+                  - generic [ref=f2e482]:
+                    - generic [ref=f2e483]: Issue Operations Suite
+                    - generic [ref=f2e485]: Workflow, HTTP, Widget
+                - cell "Active" [ref=f2e487]
+                - cell "28 Jul 2026 13:43 by admin" [ref=f2e488]:
+                  - text: 28 Jul 2026 13:43
+                  - generic [ref=f2e489]: by admin
+                - cell [ref=f2e490]:
+                  - button "Show more" [ref=f2e492] [cursor=pointer]
+              - row [ref=f2e494]:
+                - cell "Issue Property Combinations Workflow" [ref=f2e495]:
+                  - generic [ref=f2e498]:
+                    - generic [ref=f2e499]: Issue Property Combinations
+                    - generic [ref=f2e501]: Workflow
+                - cell "Active" [ref=f2e503]
+                - cell "21 Dec 2025 22:03" [ref=f2e504]
+                - cell [ref=f2e505]:
+                  - button "Show more" [ref=f2e507] [cursor=pointer]
+              - row [ref=f2e509]:
+                - cell "Issue Tracker Suite Workflow, HTTP, Widget" [ref=f2e510]:
+                  - generic [ref=f2e512]:
+                    - generic [ref=f2e513]: Issue Tracker Suite
+                    - generic [ref=f2e515]: Workflow, HTTP, Widget
+                - cell "Active" [ref=f2e517]
+                - cell "28 Jul 2026 13:36 by admin" [ref=f2e518]:
+                  - text: 28 Jul 2026 13:36
+                  - generic [ref=f2e519]: by admin
+                - cell [ref=f2e520]:
+                  - button "Show more" [ref=f2e522] [cursor=pointer]
+              - row [ref=f2e524]:
+                - cell "JetBrains Space Migration Manager Import" [ref=f2e525]:
+                  - generic [ref=f2e527]:
+                    - generic [ref=f2e528]: JetBrains Space Migration Manager
+                    - generic [ref=f2e530]: Import
+                - cell "Active" [ref=f2e532]
+                - cell "21 Dec 2025 22:03" [ref=f2e533]
+                - cell [ref=f2e534]:
+                  - button "Show more" [ref=f2e536] [cursor=pointer]
+              - row [ref=f2e538]:
+                - cell "Jira Migration Manager Import" [ref=f2e539]:
+                  - generic [ref=f2e541]:
+                    - generic [ref=f2e542]: Jira Migration Manager
+                    - generic [ref=f2e544]: Import
+                - cell "Active" [ref=f2e546]
+                - cell "7 May 2026 17:37" [ref=f2e547]
+                - cell [ref=f2e548]:
+                  - button "Show more" [ref=f2e550] [cursor=pointer]
+              - row [ref=f2e552]:
+                - cell "Kanban Workflow" [ref=f2e553]:
+                  - generic [ref=f2e556]:
+                    - generic [ref=f2e557]: Kanban
+                    - generic [ref=f2e559]: Workflow
+                - cell "Active" [ref=f2e561]
+                - cell "21 Dec 2025 22:03" [ref=f2e562]
+                - cell [ref=f2e563]:
+                  - button "Show more" [ref=f2e565] [cursor=pointer]
+              - row [ref=f2e567]:
+                - cell "MantisBT Migration Manager Import" [ref=f2e568]:
+                  - generic [ref=f2e570]:
+                    - generic [ref=f2e571]: MantisBT Migration Manager
+                    - generic [ref=f2e573]: Import
+                - cell "Active" [ref=f2e575]
+                - cell "21 Dec 2025 22:03" [ref=f2e576]
+                - cell [ref=f2e577]:
+                  - button "Show more" [ref=f2e579] [cursor=pointer]
+              - row [ref=f2e581]:
+                - cell "monday.com Migration Manager Import" [ref=f2e582]:
+                  - generic [ref=f2e584]:
+                    - generic [ref=f2e585]: monday.com Migration Manager
+                    - generic [ref=f2e587]: Import
+                - cell "Active" [ref=f2e589]
+                - cell "21 Dec 2025 22:03" [ref=f2e590]
+                - cell [ref=f2e591]:
+                  - button "Show more" [ref=f2e593] [cursor=pointer]
+              - row [ref=f2e595]:
+                - cell "Notify Reporter to Approve Fix Workflow" [ref=f2e596]:
+                  - generic [ref=f2e599]:
+                    - generic [ref=f2e600]: Notify Reporter to Approve Fix
+                    - generic [ref=f2e602]: Workflow
+                - cell "Active" [ref=f2e604]
+                - cell "21 Dec 2025 22:03" [ref=f2e605]
+                - cell [ref=f2e606]:
+                  - button "Show more" [ref=f2e608] [cursor=pointer]
+              - row [ref=f2e610]:
+                - cell "Notify When Dependency Resolved Workflow" [ref=f2e611]:
+                  - generic [ref=f2e614]:
+                    - generic [ref=f2e615]: Notify When Dependency Resolved
+                    - generic [ref=f2e617]: Workflow
+                - cell "Active" [ref=f2e619]
+                - cell "21 Dec 2025 22:03" [ref=f2e620]
+                - cell [ref=f2e621]:
+                  - button "Show more" [ref=f2e623] [cursor=pointer]
+              - row [ref=f2e625]:
+                - cell "One Vote Comment auto-attach Workflow" [ref=f2e626]:
+                  - generic [ref=f2e629]:
+                    - generic [ref=f2e630]:
+                      - generic [ref=f2e631]: One Vote Comment
+                      - button "auto-attach" [ref=f2e634]
+                    - generic [ref=f2e636]: Workflow
+                - cell "Active" [ref=f2e638]
+                - cell "21 Dec 2025 22:03" [ref=f2e639]
+                - cell [ref=f2e640]:
+                  - button "Show more" [ref=f2e642] [cursor=pointer]
+              - row [ref=f2e644]:
+                - cell "Pomodoro Timer Workflow" [ref=f2e645]:
+                  - generic [ref=f2e648]:
+                    - generic [ref=f2e649]: Pomodoro Timer
+                    - generic [ref=f2e651]: Workflow
+                - cell "Active" [ref=f2e653]
+                - cell "21 Dec 2025 22:03" [ref=f2e654]
+                - cell [ref=f2e655]:
+                  - button "Show more" [ref=f2e657] [cursor=pointer]
+              - row [ref=f2e659]:
+                - cell "Process Spam Workflow" [ref=f2e660]:
+                  - generic [ref=f2e663]:
+                    - generic [ref=f2e664]: Process Spam
+                    - generic [ref=f2e666]: Workflow
+                - cell "Active" [ref=f2e668]
+                - cell "21 Dec 2025 22:03" [ref=f2e669]
+                - cell [ref=f2e670]:
+                  - button "Show more" [ref=f2e672] [cursor=pointer]
+              - row [ref=f2e674]:
+                - cell "Profanity Blocker Workflow" [ref=f2e675]:
+                  - generic [ref=f2e678]:
+                    - generic [ref=f2e679]: Profanity Blocker
+                    - generic [ref=f2e681]: Workflow
+                - cell "Active" [ref=f2e683]
+                - cell "21 Dec 2025 22:03" [ref=f2e684]
+                - cell [ref=f2e685]:
+                  - button "Show more" [ref=f2e687] [cursor=pointer]
+              - row [ref=f2e689]:
+                - cell "Project Team Dashboard Widgets Widget" [ref=f2e690]:
+                  - generic [ref=f2e692]:
+                    - generic [ref=f2e693]: Project Team Dashboard Widgets
+                    - generic [ref=f2e695]: Widget
+                - cell "Inactive" [ref=f2e697]
+                - cell [ref=f2e698]
+                - cell [ref=f2e699]:
+                  - button "Show more" [ref=f2e701] [cursor=pointer]
+              - row [ref=f2e703]:
+                - cell "Quick Notes Widget" [ref=f2e704]:
+                  - generic [ref=f2e706]:
+                    - generic [ref=f2e707]: Quick Notes
+                    - generic [ref=f2e709]: Widget
+                - cell "Active" [ref=f2e711]
+                - cell [ref=f2e712]
+                - cell [ref=f2e713]:
+                  - button "Show more" [ref=f2e715] [cursor=pointer]
+              - row [ref=f2e717]:
+                - cell "Redmine Migration Manager Import" [ref=f2e718]:
+                  - generic [ref=f2e720]:
+                    - generic [ref=f2e721]: Redmine Migration Manager
+                    - generic [ref=f2e723]: Import
+                - cell "Active" [ref=f2e725]
+                - cell "21 Dec 2025 22:03" [ref=f2e726]
+                - cell [ref=f2e727]:
+                  - button "Show more" [ref=f2e729] [cursor=pointer]
+              - row [ref=f2e731]:
+                - cell "Referred Issues Workflow" [ref=f2e732]:
+                  - generic [ref=f2e735]:
+                    - generic [ref=f2e736]: Referred Issues
+                    - generic [ref=f2e738]: Workflow
+                - cell "Active" [ref=f2e740]
+                - cell "21 Dec 2025 22:03" [ref=f2e741]
+                - cell [ref=f2e742]:
+                  - button "Show more" [ref=f2e744] [cursor=pointer]
+              - row [ref=f2e746]:
+                - cell "Replace Links Workflow" [ref=f2e747]:
+                  - generic [ref=f2e750]:
+                    - generic [ref=f2e751]: Replace Links
+                    - generic [ref=f2e753]: Workflow
+                - cell "Active" [ref=f2e755]
+                - cell "21 Dec 2025 22:03" [ref=f2e756]
+                - cell [ref=f2e757]:
+                  - button "Show more" [ref=f2e759] [cursor=pointer]
+              - row [ref=f2e761]:
+                - cell "Report Widget update available Widget" [ref=f2e762]:
+                  - generic [ref=f2e764]:
+                    - generic [ref=f2e765]:
+                      - generic [ref=f2e766]: Report Widget
+                      - button "update available" [ref=f2e770]
+                    - generic [ref=f2e772]: Widget
+                - cell "Inactive" [ref=f2e774]
+                - cell [ref=f2e775]
+                - cell [ref=f2e776]:
+                  - button "Show more" [ref=f2e778] [cursor=pointer]
+              - row [ref=f2e780]:
+                - cell "Scrum Workflow" [ref=f2e781]:
+                  - generic [ref=f2e784]:
+                    - generic [ref=f2e785]: Scrum
+                    - generic [ref=f2e787]: Workflow
+                - cell "Active" [ref=f2e789]
+                - cell "21 Dec 2025 22:03" [ref=f2e790]
+                - cell [ref=f2e791]:
+                  - button "Show more" [ref=f2e793] [cursor=pointer]
+              - row [ref=f2e795]:
+                - cell "Scrum_2 Workflow" [ref=f2e796]:
+                  - generic [ref=f2e799]:
+                    - generic [ref=f2e800]: Scrum_2
+                    - generic [ref=f2e802]: Workflow
+                - cell "Active" [ref=f2e804]
+                - cell "21 Dec 2025 22:03" [ref=f2e805]
+                - cell [ref=f2e806]:
+                  - button "Show more" [ref=f2e808] [cursor=pointer]
+              - row [ref=f2e810]:
+                - cell "Set Fix Versions Workflow" [ref=f2e811]:
+                  - generic [ref=f2e814]:
+                    - generic [ref=f2e815]: Set Fix Versions
+                    - generic [ref=f2e817]: Workflow
+                - cell "Active" [ref=f2e819]
+                - cell "21 Dec 2025 22:03" [ref=f2e820]
+                - cell [ref=f2e821]:
+                  - button "Show more" [ref=f2e823] [cursor=pointer]
+              - row [ref=f2e825]:
+                - cell "SLA Priority Workflow" [ref=f2e826]:
+                  - generic [ref=f2e829]:
+                    - generic [ref=f2e830]: SLA Priority
+                    - generic [ref=f2e832]: Workflow
+                - cell "Active" [ref=f2e834]
+                - cell "21 Dec 2025 22:03" [ref=f2e835]
+                - cell [ref=f2e836]:
+                  - button "Show more" [ref=f2e838] [cursor=pointer]
+              - row [ref=f2e840]:
+                - cell "Slack Notifications Workflow" [ref=f2e841]:
+                  - generic [ref=f2e844]:
+                    - generic [ref=f2e845]: Slack Notifications
+                    - generic [ref=f2e847]: Workflow
+                - cell "Active" [ref=f2e849]
+                - cell "21 Dec 2025 22:03" [ref=f2e850]
+                - cell [ref=f2e851]:
+                  - button "Show more" [ref=f2e853] [cursor=pointer]
+              - row [ref=f2e855]:
+                - cell "smth Workflow" [ref=f2e856]:
+                  - generic [ref=f2e859]:
+                    - generic [ref=f2e860]: smth
+                    - generic [ref=f2e862]: Workflow
+                - cell "Active" [ref=f2e864]
+                - cell "30 Apr 2026 10:59 by admin" [ref=f2e865]:
+                  - text: 30 Apr 2026 10:59
+                  - generic [ref=f2e866]: by admin
+                - cell [ref=f2e867]:
+                  - button "Show more" [ref=f2e869] [cursor=pointer]
+              - row [ref=f2e871]:
+                - cell "Stopwatch-style Work Timer Workflow" [ref=f2e872]:
+                  - generic [ref=f2e875]:
+                    - generic [ref=f2e876]: Stopwatch-style Work Timer
+                    - generic [ref=f2e878]: Workflow
+                - cell "Active" [ref=f2e880]
+                - cell "21 Dec 2025 22:03" [ref=f2e881]
+                - cell [ref=f2e882]:
+                  - button "Show more" [ref=f2e884] [cursor=pointer]
+              - row [ref=f2e886]:
+                - cell "Subsystem Assignee auto-attach Workflow" [ref=f2e887]:
+                  - generic [ref=f2e890]:
+                    - generic [ref=f2e891]:
+                      - generic [ref=f2e892]: Subsystem Assignee
+                      - button "auto-attach" [ref=f2e895]
+                    - generic [ref=f2e897]: Workflow
+                - cell "Active" [ref=f2e899]
+                - cell "21 Dec 2025 22:03" [ref=f2e900]
+                - cell [ref=f2e901]:
+                  - button "Show more" [ref=f2e903] [cursor=pointer]
+          - generic [ref=f2e906]:
+            - generic [ref=f2e907]:
+              - generic [ref=f2e908]: Previous
+              - button [ref=f2e910] [cursor=pointer]
+            - generic [ref=f2e914]:
+              - button "1" [ref=f2e915] [cursor=pointer]
+              - button "2" [ref=f2e916] [cursor=pointer]
+        - complementary [ref=f2e917]:
+          - generic [ref=f2e918]:
+            - button "Hide details" [ref=f2e919] [cursor=pointer]
+            - generic [ref=f2e921]:
+              - generic [ref=f2e924] [cursor=pointer]:
+                - checkbox "Active" [checked] [ref=f2e926]
+                - generic [ref=f2e928]: Active
+              - generic [ref=f2e932]:
+                - generic [ref=f2e933]:
+                  - heading "Issue Operations Suite" [level=2] [ref=f2e934]
+                  - button "Show more" [ref=f2e936] [cursor=pointer]
+                - generic [ref=f2e938]:
+                  - text: by
+                  - link "YouTrack Operations" [ref=f2e940] [cursor=pointer]:
+                    - /url: https://www.jetbrains.com/youtrack
+              - generic [ref=f2e941]:
+                - text: Added on 28 Jul 2026 13:43
+                - generic [ref=f2e942]: by admin
+              - generic [ref=f2e943]:
+                - generic [ref=f2e945]:
+                  - button "Description" [ref=f2e946]
+                  - button [ref=f2e949] [cursor=pointer]
+                  - button "Projects1" [ref=f2e953] [cursor=pointer]
+                  - button "Technical Details" [ref=f2e957] [cursor=pointer]
+                - generic [ref=f2e960]:
+                  - generic [ref=f2e961] [cursor=pointer]:
+                    - button "Workflow" [disabled]
+                  - generic [ref=f2e962] [cursor=pointer]:
+                    - button "HTTP" [disabled]
+                  - generic [ref=f2e963] [cursor=pointer]:
+                    - button "Widget" [disabled]
+                - paragraph [ref=f2e966]: Issue relations, GitHub action tracking, global time logging, and critical time monitoring.

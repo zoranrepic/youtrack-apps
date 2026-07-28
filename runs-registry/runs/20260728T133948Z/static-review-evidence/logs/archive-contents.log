@@ -1,0 +1,38 @@
+Archive:  issue-operations-suite.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+      482  07-28-2026 15:44   backend.js
+     1656  07-28-2026 15:44   critical-time-monitor.js
+      790  07-28-2026 15:44   email-action.js
+      523  07-28-2026 15:44   entity-extensions.json
+      993  07-28-2026 15:44   icon.svg
+     1835  07-28-2026 15:44   manifest.json
+     1287  07-28-2026 15:44   settings.json
+     2641  07-28-2026 15:44   time-tracking.js
+        0  07-28-2026 15:44   widgets/
+        0  07-28-2026 15:44   widgets/time-logger/
+      571  07-28-2026 15:44   widgets/time-logger/index.html
+      993  07-28-2026 15:44   widgets/time-logger/widget-icon.svg
+        0  07-28-2026 15:44   widgets/issue-relations/
+      489  07-28-2026 15:44   widgets/issue-relations/index.html
+      993  07-28-2026 15:44   widgets/issue-relations/widget-icon.svg
+        0  07-28-2026 15:44   widgets/critical-thresholds/
+      587  07-28-2026 15:44   widgets/critical-thresholds/index.html
+      993  07-28-2026 15:44   widgets/critical-thresholds/widget-icon.svg
+        0  07-28-2026 15:44   widgets/assets/
+      210  07-28-2026 15:44   widgets/assets/timeLogger-4Yjovtt6.css
+     1495  07-28-2026 15:44   widgets/assets/criticalThresholds-omNEpyXe.js
+    14010  07-28-2026 15:44   widgets/assets/button-v6WZsspm.js
+     1264  07-28-2026 15:44   widgets/assets/timeLogger-DfDd9hk5.js
+      237  07-28-2026 15:44   widgets/assets/githubActions-Bu-PAYPS.css
+     1263  07-28-2026 15:44   widgets/assets/githubActions-C-88u8ZW.js
+     1009  07-28-2026 15:44   widgets/assets/issueRelations-DJeEHOqW.js
+      286  07-28-2026 15:44   widgets/assets/criticalThresholds-NFHOgEx7.css
+      392  07-28-2026 15:44   widgets/assets/issueRelations--NOQdz9s.css
+   189116  07-28-2026 15:44   widgets/assets/controls-height-DtxBn3Vi.css
+   144785  07-28-2026 15:44   widgets/assets/controls-height-iDv2o1Tz.js
+        0  07-28-2026 15:44   widgets/github-actions/
+      487  07-28-2026 15:44   widgets/github-actions/index.html
+      993  07-28-2026 15:44   widgets/github-actions/widget-icon.svg
+---------                     -------
+   370380                     33 files

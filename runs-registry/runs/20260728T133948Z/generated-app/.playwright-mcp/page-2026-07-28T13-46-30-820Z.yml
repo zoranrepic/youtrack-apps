@@ -1,0 +1,64 @@
+- generic [ref=f25e2]:
+  - generic [ref=f25e8]:
+    - generic [ref=f25e9]:
+      - link [ref=f25e10] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f25e12]:
+        - link [ref=f25e14] [cursor=pointer]:
+          - /url: issues
+          - tooltip "Issues" [ref=f25e15]
+        - link [ref=f25e18] [cursor=pointer]:
+          - /url: dashboard
+          - tooltip "Dashboards" [ref=f25e19]
+        - link [ref=f25e22] [cursor=pointer]:
+          - /url: agiles
+          - tooltip "Agile Boards" [ref=f25e23]
+        - link [ref=f25e26] [cursor=pointer]:
+          - /url: reports
+          - tooltip "Reports" [ref=f25e27]
+        - link [ref=f25e30] [cursor=pointer]:
+          - /url: projects
+          - tooltip "Projects" [ref=f25e31]
+        - link [ref=f25e34] [cursor=pointer]:
+          - /url: articles
+          - tooltip "Knowledge Base" [ref=f25e35]
+        - link [ref=f25e38] [cursor=pointer]:
+          - /url: timesheets
+          - tooltip "Timesheets" [ref=f25e39]
+        - button [ref=f25e44] [cursor=pointer]:
+          - tooltip "More" [ref=f25e45]
+    - generic [ref=f25e48]:
+      - button [ref=f25e50] [cursor=pointer]:
+        - tooltip "Create" [ref=f25e51]
+      - button [ref=f25e55] [cursor=pointer]:
+        - tooltip "Administration" [ref=f25e56]
+      - button [ref=f25e61] [cursor=pointer]:
+        - tooltip "Help" [ref=f25e62]
+      - button [ref=f25e66] [cursor=pointer]:
+        - tooltip "Notifications" [ref=f25e67]
+      - generic "admin" [ref=f25e72] [cursor=pointer]:
+        - button "User avatar admin" [ref=f25e73]:
+          - img "User avatar" [ref=f25e75]
+          - generic [ref=f25e76]: admin
+      - button [ref=f25e77] [cursor=pointer]:
+        - tooltip "Collapse" [ref=f25e78]
+  - generic [ref=f25e82]:
+    - generic [ref=f25e83]: Global Time Logger
+    - article [ref=f25e89]:
+      - dialog [ref=f25e90]:
+        - iframe [active] [ref=f25e91]:
+          - generic [ref=f26e3]:
+            - heading "Global Time Logger" [level=2] [ref=f26e4]
+            - generic [ref=f26e5]:
+              - text: Issue ID
+              - textbox "Issue ID" [ref=f26e6]:
+                - /placeholder: DEMO-1
+                - text: DEMO-37
+            - generic [ref=f26e7]:
+              - text: Minutes
+              - spinbutton "Minutes" [ref=f26e8]: "0"
+            - generic [ref=f26e9]:
+              - text: Description
+              - textbox "Description" [ref=f26e10]: YTAPP-REVIEW-INVALID-ZERO
+            - button "Log time" [active] [ref=f26e11] [cursor=pointer]
+            - generic [ref=f26e12]: Time entry could not be saved. Check the issue ID and your permissions.
