@@ -1,5 +1,3 @@
-youtrack-app
-
 youtrack-app <command> [options]
 
 Manage, configure, and debug YouTrack apps/workflows from an external development environment.

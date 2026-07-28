@@ -1,5 +1,3 @@
-create-youtrack-app --help
-
 Create YouTrack App
 
 Scaffold a YouTrack app or add features to the current app.

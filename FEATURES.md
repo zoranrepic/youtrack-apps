@@ -81,3 +81,11 @@ JSON/YAML output where useful.
 
 ### Consistent command structure in `apps-tools` 
 **Question:** Can we make all commands follow the same pattern like `youtrack-app <entity> <action> [--param value] [--param2 value]`? There will be some non-ordinary cases like `youtrack-app app`. Do we keep this backward comaptible or just bump the major version?
+
+
+### Release of the preview version
+**Question:** Currently our system consists of `youtrack-apps` forked repository and `youtrack-app-agent-kit` repository which holds the `SKILL` resource files. We aim to release a preview version of the `skill` system. 
+Notes:
+- `SKILL` is configured to use the `forked` version of `youtrack-apps` - implies merging features into original repo under some `beta` (tbd)
+- we need to release internally - skill is up to date with latest API 
+- we need to release to design partners - skill is up to date to latest released API
