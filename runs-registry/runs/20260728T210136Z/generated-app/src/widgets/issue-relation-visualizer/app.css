@@ -1,0 +1,10 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+  margin: calc(var(--ring-unit) / 2);
+}
+.title {display:flex; align-items:center; gap:12px; font-weight:600;}
+.graph {display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:16px; border:1px solid var(--ring-borders-color); border-radius:4px;}
+.node, .card {padding:10px; border-radius:4px; border:1px solid var(--ring-borders-color);}
+.primary {background:var(--ring-selected-background-color);}.edge {display:flex; align-items:center; gap:8px;}.badge {margin-left:8px; padding:2px 6px; border-radius:8px; background:var(--ring-selected-background-color);}small {display:block; margin-top:6px; color:var(--ring-secondary-color);}.logger {max-width:620px;}.logger label {display:flex; flex-direction:column; gap:4px; font-weight:600;}.logger input {padding:7px; border:1px solid var(--ring-borders-color); border-radius:3px;}.result {padding:8px; background:var(--ring-selected-background-color);}.error {color:var(--ring-error-color);}

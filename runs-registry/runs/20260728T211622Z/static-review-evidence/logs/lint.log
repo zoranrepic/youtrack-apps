@@ -1,0 +1,134 @@
+
+> issue-ops-suite@0.0.0 lint
+> eslint --report-unused-disable-directives --max-warnings 0
+
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T211622Z/generated-app/src/global-backend.js
+    9:18  error  A `require()` style import is forbidden                                        @typescript-eslint/no-require-imports
+   20:1   error  Function 'parseDurationToMinutes' has a complexity of 8. Maximum allowed is 7  complexity
+   34:27  error  No magic number: 5                                                             no-magic-numbers
+   34:31  error  No magic number: 8                                                             no-magic-numbers
+   34:35  error  No magic number: 60                                                            no-magic-numbers
+   34:42  error  No magic number: 8                                                             no-magic-numbers
+   34:46  error  No magic number: 60                                                            no-magic-numbers
+   41:57  error  No magic number: 2                                                             no-magic-numbers
+   53:24  error  No magic number: 5                                                             no-magic-numbers
+   53:28  error  No magic number: 8                                                             no-magic-numbers
+   53:32  error  No magic number: 60                                                            no-magic-numbers
+   53:43  error  No magic number: 8                                                             no-magic-numbers
+   53:47  error  No magic number: 60                                                            no-magic-numbers
+   53:58  error  No magic number: 60                                                            no-magic-numbers
+   56:17  error  Unexpected unnamed function                                                    func-names
+   69:27  error  Unexpected unnamed function                                                    func-names
+   91:1   error  Function 'readConfig' has a complexity of 12. Maximum allowed is 7             complexity
+   96:5   error  Unexpected console statement                                                   no-console
+  102:14  error  'e' is defined but never used                                                  @typescript-eslint/no-unused-vars
+  103:7   error  Unexpected console statement                                                   no-console
+  142:69  error  No magic number: 100                                                           no-magic-numbers
+  162:7   error  Method 'handle' has a complexity of 15. Maximum allowed is 7                   complexity
+  166:18  error  'e' is defined but never used                                                  @typescript-eslint/no-unused-vars
+  209:80  error  Unexpected unnamed function                                                    func-names
+  226:9   error  Unexpected console statement                                                   no-console
+  270:7   error  Method 'handle' has a complexity of 34. Maximum allowed is 7                   complexity
+  274:18  error  'e' is defined but never used                                                  @typescript-eslint/no-unused-vars
+  312:61  error  No magic number: 100                                                           no-magic-numbers
+  385:11  error  Unexpected console statement                                                   no-console
+  390:9   error  Unexpected console statement                                                   no-console
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T211622Z/generated-app/src/issue-backend.js
+    8:14  error  A `require()` style import is forbidden                         @typescript-eslint/no-require-imports
+   29:34  error  Unexpected unnamed function                                     func-names
+   42:1   error  Function 'getJson' has a complexity of 8. Maximum allowed is 7  complexity
+   58:12  error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+   74:63  error  No magic number: 7                                              no-magic-numbers
+  113:11  error  Identifier 'per_page' is not in camel case                      camelcase
+  116:11  error  Unexpected console statement                                    no-console
+  129:52  error  Unexpected unnamed function                                     func-names
+  138:54  error  Unexpected unnamed function                                     func-names
+  138:54  error  Function has a complexity of 13. Maximum allowed is 7           complexity
+  146:86  error  No magic number: 7                                              no-magic-numbers
+  158:15  error  Identifier 'per_page' is not in camel case                      camelcase
+  175:9   error  Unexpected console statement                                    no-console
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T211622Z/generated-app/src/widgets/critical-threshold-configurator/app.tsx
+  57:50  error  Arrow function has a complexity of 10. Maximum allowed is 7  complexity
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T211622Z/generated-app/src/widgets/github-action-tracker/app.tsx
+   52:1   error  Function 'runStatus' has a complexity of 12. Maximum allowed is 7  complexity
+   81:50  error  Arrow function has a complexity of 17. Maximum allowed is 7        complexity
+  129:30  error  Arrow function has a complexity of 10. Maximum allowed is 7        complexity
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T211622Z/generated-app/src/widgets/global-time-logger/app.tsx
+   32:50  error  Arrow function has a complexity of 11. Maximum allowed is 7  complexity
+   52:26  error  No magic number: 2                                           no-magic-numbers
+   73:5   error  Arrow function expected no return value                      consistent-return
+  139:49  error  No magic number: 2                                           no-magic-numbers
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T211622Z/generated-app/src/widgets/issue-relation-visualizer/app.tsx
+   13:33  error  No magic number: 2                                           no-magic-numbers
+   14:34  error  No magic number: 2                                           no-magic-numbers
+   73:41  error  No magic number: 2                                           no-magic-numbers
+   73:65  error  No magic number: 2                                           no-magic-numbers
+   73:77  error  No magic number: 2                                           no-magic-numbers
+   74:31  error  No magic number: 0.35                                        no-magic-numbers
+   90:50  error  Arrow function has a complexity of 14. Maximum allowed is 7  complexity
+  123:5   error  Arrow function expected no return value                      consistent-return
+  179:48  error  No magic number: 2                                           no-magic-numbers
+  180:48  error  No magic number: 2                                           no-magic-numbers
+  185:27  error  No magic number: 4                                           no-magic-numbers
+  196:42  error  No magic number: 2                                           no-magic-numbers
+  197:43  error  No magic number: 2                                           no-magic-numbers
+  202:46  error  No magic number: 4                                           no-magic-numbers
+  224:42  error  No magic number: 2                                           no-magic-numbers
+  225:43  error  No magic number: 2                                           no-magic-numbers
+  230:44  error  No magic number: 4                                           no-magic-numbers
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T211622Z/generated-app/src/workflows/critical-time-monitor.js
+    7:18  error  A `require()` style import is forbidden                             @typescript-eslint/no-require-imports
+    8:23  error  A `require()` style import is forbidden                             @typescript-eslint/no-require-imports
+   25:24  error  No magic number: 5                                                  no-magic-numbers
+   25:28  error  No magic number: 8                                                  no-magic-numbers
+   25:32  error  No magic number: 60                                                 no-magic-numbers
+   25:43  error  No magic number: 8                                                  no-magic-numbers
+   25:47  error  No magic number: 60                                                 no-magic-numbers
+   25:58  error  No magic number: 60                                                 no-magic-numbers
+   28:17  error  Unexpected unnamed function                                         func-names
+   41:27  error  Unexpected unnamed function                                         func-names
+   48:1   error  Function 'readConfig' has a complexity of 10. Maximum allowed is 7  complexity
+   53:5   error  Unexpected console statement                                        no-console
+   59:14  error  'e' is defined but never used                                       @typescript-eslint/no-unused-vars
+   60:7   error  Unexpected console statement                                        no-console
+   96:69  error  No magic number: 100                                                no-magic-numbers
+  106:40  error  Unexpected unnamed function                                         func-names
+  113:48  error  No magic number: 100                                                no-magic-numbers
+  123:1   error  'exports' is not defined                                            no-undef
+  132:3   error  Method 'action' has a complexity of 10. Maximum allowed is 7        complexity
+  146:72  error  No magic number: 60                                                 no-magic-numbers
+  146:77  error  No magic number: 1000                                               no-magic-numbers
+  160:5   error  Unexpected console statement                                        no-console
+  167:7   error  Unexpected console statement                                        no-console
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T211622Z/generated-app/src/workflows/email-action.js
+    7:18  error  A `require()` style import is forbidden                            @typescript-eslint/no-require-imports
+    8:23  error  A `require()` style import is forbidden                            @typescript-eslint/no-require-imports
+    9:18  error  A `require()` style import is forbidden                            @typescript-eslint/no-require-imports
+   25:24  error  No magic number: 5                                                 no-magic-numbers
+   25:28  error  No magic number: 8                                                 no-magic-numbers
+   25:32  error  No magic number: 60                                                no-magic-numbers
+   25:43  error  No magic number: 8                                                 no-magic-numbers
+   25:47  error  No magic number: 60                                                no-magic-numbers
+   25:58  error  No magic number: 60                                                no-magic-numbers
+   28:17  error  Unexpected unnamed function                                        func-names
+   41:27  error  Unexpected unnamed function                                        func-names
+   48:1   error  Function 'readConfig' has a complexity of 9. Maximum allowed is 7  complexity
+   53:5   error  Unexpected console statement                                       no-console
+   59:14  error  'e' is defined but never used                                      @typescript-eslint/no-unused-vars
+   60:7   error  Unexpected console statement                                       no-console
+   91:69  error  No magic number: 100                                               no-magic-numbers
+  101:40  error  Unexpected unnamed function                                        func-names
+  106:1   error  'exports' is not defined                                           no-undef
+  124:70  error  No magic number: 100                                               no-magic-numbers
+  147:5   error  Unexpected console statement                                       no-console
+
+✖ 111 problems (111 errors, 0 warnings)
+

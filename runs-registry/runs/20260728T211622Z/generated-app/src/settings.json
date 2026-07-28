@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Issue Ops Suite Settings",
+  "description": "Configure notification recipients, critical spent-time boundaries, and the GitHub repository used for action tracking.",
+  "properties": {
+    "notificationEmails": {
+      "type": "string",
+      "title": "Notification recipients",
+      "description": "Comma-separated email addresses that receive critical spent-time alerts and manual email actions.",
+      "maxLength": 2000
+    },
+    "notificationsEnabled": {
+      "type": "boolean",
+      "title": "Send notifications",
+      "description": "Turn off to keep monitoring and logging without sending any email."
+    },
+    "criticalSpentTimeMinutes": {
+      "type": "integer",
+      "title": "Critical spent-time limit (minutes)",
+      "description": "Default critical boundary for total spent time. Per-issue and per-project overrides set in the Critical Threshold Configurator take precedence.",
+      "minimum": 1,
+      "maximum": 100000
+    },
+    "warningPercentage": {
+      "type": "integer",
+      "title": "Warning threshold (% of limit)",
+      "description": "Total spent time at or above this percentage of the critical limit reports the WARNING status.",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "alertRepeatMinutes": {
+      "type": "integer",
+      "title": "Alert repeat interval (minutes)",
+      "description": "Minimum number of minutes between two alerts for the same issue.",
+      "minimum": 1,
+      "maximum": 100000
+    },
+    "githubRepository": {
+      "type": "string",
+      "title": "GitHub repository",
+      "description": "Repository in owner/name form that is scanned for pull requests referencing the issue ID.",
+      "maxLength": 200
+    },
+    "githubApiBaseUrl": {
+      "type": "string",
+      "title": "GitHub API base URL",
+      "description": "Base URL of the GitHub REST API. Use https://api.github.com for github.com.",
+      "maxLength": 200
+    },
+    "githubToken": {
+      "type": "string",
+      "title": "GitHub token",
+      "description": "Personal access token with read access to pull requests and actions.",
+      "format": "secret"
+    }
+  },
+  "required": []
+}

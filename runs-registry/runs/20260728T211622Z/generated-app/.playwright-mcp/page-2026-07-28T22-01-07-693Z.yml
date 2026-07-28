@@ -1,0 +1,148 @@
+- generic [ref=f19e1]:
+  - generic [ref=f19e2]:
+    - generic [ref=f19e8]:
+      - generic [ref=f19e9]:
+        - link [ref=f19e10] [cursor=pointer]:
+          - /url: /dashboard
+        - generic [ref=f19e12]:
+          - link [ref=f19e14] [cursor=pointer]:
+            - /url: issues
+            - tooltip "Issues" [ref=f19e15]
+          - link [ref=f19e18] [cursor=pointer]:
+            - /url: dashboard
+            - tooltip "Dashboards" [ref=f19e19]
+          - link [ref=f19e22] [cursor=pointer]:
+            - /url: agiles
+            - tooltip "Agile Boards" [ref=f19e23]
+          - link [ref=f19e26] [cursor=pointer]:
+            - /url: reports
+            - tooltip "Reports" [ref=f19e27]
+          - link [ref=f19e30] [cursor=pointer]:
+            - /url: projects
+            - tooltip "Projects" [ref=f19e31]
+          - link [ref=f19e34] [cursor=pointer]:
+            - /url: articles
+            - tooltip "Knowledge Base" [ref=f19e35]
+          - link [ref=f19e38] [cursor=pointer]:
+            - /url: timesheets
+            - tooltip "Timesheets" [ref=f19e39]
+          - button [ref=f19e44] [cursor=pointer]:
+            - tooltip "More" [ref=f19e45]
+      - generic [ref=f19e48]:
+        - button [ref=f19e50] [cursor=pointer]:
+          - tooltip "Create" [ref=f19e51]
+        - button [ref=f19e55] [cursor=pointer]:
+          - tooltip "Administration" [ref=f19e56]
+        - button [ref=f19e61] [cursor=pointer]:
+          - tooltip "Help" [ref=f19e62]
+        - button [ref=f19e66] [cursor=pointer]:
+          - tooltip "Notifications" [ref=f19e67]
+        - generic "admin" [ref=f19e72] [cursor=pointer]:
+          - button "User avatar admin" [ref=f19e73]:
+            - img "User avatar" [ref=f19e75]
+            - generic [ref=f19e76]: admin
+        - button [ref=f19e77] [cursor=pointer]:
+          - tooltip "Collapse" [ref=f19e78]
+    - generic [ref=f19e3]:
+      - generic [ref=f19e82]:
+        - generic [ref=f19e83]:
+          - generic [ref=f19e85]:
+            - link "N YTAPP-REVIEW-20260728T2148Z-Logger" [ref=f19e86] [cursor=pointer]:
+              - /url: issue/DEMO-41/YTAPP-REVIEW-20260728T2148Z-Logger
+              - generic [ref=f19e87]: "N"
+              - button "YTAPP-REVIEW-20260728T2148Z-Logger" [ref=f19e90]
+            - button "Remove issue" [ref=f19e92] [cursor=pointer]
+          - generic [ref=f19e95]:
+            - link "N Create a demo project" [ref=f19e96] [cursor=pointer]:
+              - /url: issue/DEMO-4/Create-a-demo-project
+              - generic [ref=f19e97]: "N"
+              - button "Create a demo project" [ref=f19e100]
+            - button "Remove issue" [ref=f19e102] [cursor=pointer]
+          - generic [ref=f19e105]:
+            - link "N YTAPP-REVIEW-20260728T2148Z-NoRel" [ref=f19e106] [cursor=pointer]:
+              - /url: issue/DEMO-47/YTAPP-REVIEW-20260728T2148Z-NoRel
+              - generic [ref=f19e107]: "N"
+              - button "YTAPP-REVIEW-20260728T2148Z-NoRel" [ref=f19e110]
+            - button "Remove issue" [ref=f19e112] [cursor=pointer]
+          - generic [ref=f19e115]:
+            - link "N YTAPP-REVIEW-20260728T2148Z-Graph" [ref=f19e116] [cursor=pointer]:
+              - /url: issue/DEMO-46/YTAPP-REVIEW-20260728T2148Z-Graph
+              - generic [ref=f19e117]: "N"
+              - button "YTAPP-REVIEW-20260728T2148Z-Graph" [ref=f19e120]
+            - button "Remove issue" [ref=f19e122] [cursor=pointer]
+        - tooltip "Show more recent items" [ref=f19e124]:
+          - button [ref=f19e125] [cursor=pointer]
+      - generic [ref=f19e128]:
+        - generic [ref=f19e129]:
+          - generic [ref=f19e132]:
+            - link "Dashboards" [ref=f19e133] [cursor=pointer]:
+              - /url: dashboard
+            - generic [ref=f19e134]: /
+            - combobox "YTAPP-REVIEW-20260728T2148Z DashboardYTAPP-REVIEW-20260728T2148Z Dashboard" [ref=f19e204]:
+              - button "YTAPP-REVIEW-20260728T2148Z DashboardYTAPP-REVIEW-20260728T2148Z Dashboard" [ref=f19e205] [cursor=pointer]
+            - tooltip "More" [ref=f19e140]:
+              - button [ref=f19e142] [cursor=pointer]
+          - generic [ref=f19e146]:
+            - button "New dashboard" [ref=f19e147] [cursor=pointer]
+            - combobox "Select an option" [expanded] [ref=f19e149] [cursor=pointer]: Add widget
+        - main [ref=f19e153]:
+          - generic [ref=f19e224]:
+            - heading "This dashboard is empty" [level=1] [ref=f19e225]
+            - generic [ref=f19e226]: Use this space to track information relevant to your projects and tasks. Click the “Add widget” button to get started.
+  - generic [ref=f19e236]:
+    - textbox "Filter widgets by name" [active] [ref=f19e241]:
+      - grid "List" [ref=f19e243]:
+        - row [ref=f19e244]:
+          - cell [ref=f19e245]
+        - row [selected] [ref=f19e247]:
+          - cell [ref=f19e248]:
+            - button "User avatar Document List Widget JetBrains s.r.o. Displays lists of issues and articles on customizable tabs." [ref=f19e250] [cursor=pointer]:
+              - generic [ref=f19e251]:
+                - img "User avatar" [ref=f19e255]
+                - generic "Document List Widget" [ref=f19e256]
+                - generic [ref=f19e257]: JetBrains s.r.o.
+                - tooltip "Displays lists of issues and articles on customizable tabs." [ref=f19e259]
+        - row [ref=f19e261]:
+          - cell [ref=f19e262]:
+            - button "User avatar Quick Notes JetBrains s.r.o. Display messages on a YouTrack dashboard using Markdown syntax to format your text." [ref=f19e264] [cursor=pointer]:
+              - generic [ref=f19e265]:
+                - img "User avatar" [ref=f19e269]
+                - generic "Quick Notes" [ref=f19e270]
+                - generic [ref=f19e271]: JetBrains s.r.o.
+                - tooltip "Display messages on a YouTrack dashboard using Markdown syntax to format your text." [ref=f19e273]
+        - row [ref=f19e275]:
+          - cell [ref=f19e276]:
+            - button "User avatar Personal Time Tracking JetBrains s.r.o. Display daily and cumulative totals for spent time that you have added to issues in YouTrack." [ref=f19e278] [cursor=pointer]:
+              - generic [ref=f19e279]:
+                - img "User avatar" [ref=f19e283]
+                - generic "Personal Time Tracking" [ref=f19e284]
+                - generic [ref=f19e285]: JetBrains s.r.o.
+                - tooltip "Display daily and cumulative totals for spent time that you have added to issues in YouTrack." [ref=f19e287]
+        - row [ref=f19e289]:
+          - cell [ref=f19e290]:
+            - button "User avatar Time Tracking Report JetBrains s.r.o. Display a report that tracks the amount of time spent working on issues in one or more YouTrack projects. This widget presents this data in the time report or timesheet report format." [ref=f19e292] [cursor=pointer]:
+              - generic [ref=f19e293]:
+                - img "User avatar" [ref=f19e297]
+                - generic "Time Tracking Report" [ref=f19e298]
+                - generic [ref=f19e299]: JetBrains s.r.o.
+                - tooltip "Display a report that tracks the amount of time spent working on issues in one or more YouTrack projects. This widget presents this data in the time report or timesheet report format." [ref=f19e301]
+        - row [ref=f19e303]:
+          - cell [ref=f19e304]:
+            - button "User avatar Work Item Exporter JetBrains s.r.o. Export work item data from YouTrack in CSV and Excel format." [ref=f19e306] [cursor=pointer]:
+              - generic [ref=f19e307]:
+                - img "User avatar" [ref=f19e311]
+                - generic "Work Item Exporter" [ref=f19e312]
+                - generic [ref=f19e313]: JetBrains s.r.o.
+                - tooltip "Export work item data from YouTrack in CSV and Excel format." [ref=f19e315]
+        - row [ref=f19e317]:
+          - cell [ref=f19e318]:
+            - button "User avatar Critical Threshold Configurator Issue Ops Define critical spent-time limits for issues and projects." [ref=f19e320] [cursor=pointer]:
+              - generic [ref=f19e321]:
+                - img "User avatar" [ref=f19e325]
+                - generic "Critical Threshold Configurator" [ref=f19e326]
+                - generic [ref=f19e327]: Issue Ops
+                - tooltip "Define critical spent-time limits for issues and projects." [ref=f19e329]
+        - row [ref=f19e331]:
+          - cell [ref=f19e332]
+    - link "Browse JetBrains Marketplace…" [ref=f19e336] [cursor=pointer]:
+      - /url: https://plugins.jetbrains.com/youtrack

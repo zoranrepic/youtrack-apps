@@ -1,0 +1,66 @@
+- generic [ref=f5e2]:
+  - generic [ref=f5e8]:
+    - generic [ref=f5e9]:
+      - link [ref=f5e10] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f5e12]:
+        - link [ref=f5e14] [cursor=pointer]:
+          - /url: issues
+          - tooltip "Issues" [ref=f5e15]
+        - link [ref=f5e18] [cursor=pointer]:
+          - /url: dashboard
+          - tooltip "Dashboards" [ref=f5e19]
+        - link [ref=f5e22] [cursor=pointer]:
+          - /url: agiles
+          - tooltip "Agile Boards" [ref=f5e23]
+        - link [ref=f5e26] [cursor=pointer]:
+          - /url: reports
+          - tooltip "Reports" [ref=f5e27]
+        - link [ref=f5e30] [cursor=pointer]:
+          - /url: projects
+          - tooltip "Projects" [ref=f5e31]
+        - link [ref=f5e34] [cursor=pointer]:
+          - /url: articles
+          - tooltip "Knowledge Base" [ref=f5e35]
+        - link [ref=f5e38] [cursor=pointer]:
+          - /url: timesheets
+          - tooltip "Timesheets" [ref=f5e39]
+        - button [ref=f5e44] [cursor=pointer]:
+          - tooltip "More" [ref=f5e45]
+    - generic [ref=f5e48]:
+      - button [ref=f5e50] [cursor=pointer]:
+        - tooltip "Create" [ref=f5e51]
+      - button [ref=f5e55] [cursor=pointer]:
+        - tooltip "Administration" [ref=f5e56]
+      - button [ref=f5e61] [cursor=pointer]:
+        - tooltip "Help" [ref=f5e62]
+      - button [ref=f5e66] [cursor=pointer]:
+        - tooltip "Notifications" [ref=f5e67]
+      - generic "admin" [ref=f5e72] [cursor=pointer]:
+        - button "User avatar admin" [ref=f5e73]:
+          - img "User avatar" [ref=f5e75]
+          - generic [ref=f5e76]: admin
+      - button [ref=f5e77] [cursor=pointer]:
+        - tooltip "Collapse" [ref=f5e78]
+  - generic [ref=f5e128]:
+    - generic [ref=f5e129]: Global Time Logger
+    - article [ref=f5e922]:
+      - dialog [ref=f5e923]:
+        - iframe [active] [ref=f5e924]:
+          - generic [ref=f8e3]:
+            - heading "Global Time Logger" [level=2] [ref=f8e4]
+            - generic [ref=f8e5]:
+              - text: Issue ID
+              - textbox "Issue ID" [ref=f8e6]:
+                - /placeholder: DEMO-1
+                - text: DEMO-37
+            - generic [ref=f8e7]:
+              - text: Minutes
+              - spinbutton "Minutes" [ref=f8e8]: "1"
+            - generic [ref=f8e9]:
+              - text: Description
+              - textbox "Description" [ref=f8e10]:
+                - /placeholder: What was done?
+                - text: YTAPP-REVIEW-20260728 valid logger test
+            - button "Log spent time" [active] [ref=f8e11] [cursor=pointer]
+            - generic [ref=f8e12]: Logged 1 minutes to DEMO-37.

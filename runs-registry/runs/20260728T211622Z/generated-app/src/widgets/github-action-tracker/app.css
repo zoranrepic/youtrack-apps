@@ -1,0 +1,92 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+  margin: calc(var(--ring-unit) / 2);
+}
+
+.gh-header {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--ring-unit) * 1.5);
+}
+
+.gh-pull {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) / 2);
+  border-top: 1px solid var(--ring-line-color);
+  padding-top: var(--ring-unit);
+}
+
+.gh-pull__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ring-unit);
+}
+
+.gh-state {
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  background-color: var(--ring-tag-background-color);
+  color: var(--ring-secondary-color);
+}
+
+.gh-state_open {
+  color: var(--ring-success-color);
+}
+
+.gh-state_merged {
+  color: var(--ring-main-color);
+}
+
+.gh-state_closed {
+  color: var(--ring-error-color);
+}
+
+.gh-runs {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+
+.gh-runs th,
+.gh-runs td {
+  border-bottom: 1px solid var(--ring-line-color);
+  padding: 2px 6px 2px 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.gh-runs th {
+  color: var(--ring-secondary-color);
+  font-weight: normal;
+}
+
+.gh-status {
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 11px;
+}
+
+.gh-status_success {
+  background-color: var(--ring-success-color);
+  color: var(--ring-white-text-color);
+}
+
+.gh-status_failure {
+  background-color: var(--ring-error-color);
+  color: var(--ring-white-text-color);
+}
+
+.gh-status_progress {
+  background-color: var(--ring-warning-color);
+  color: var(--ring-text-color);
+}
+
+.gh-status_neutral {
+  background-color: var(--ring-tag-background-color);
+  color: var(--ring-secondary-color);
+}

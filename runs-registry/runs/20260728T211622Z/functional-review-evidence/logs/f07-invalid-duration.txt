@@ -1,0 +1,5 @@
+=== work items on DEMO-41 after invalid (-30) submission ===
+[]=== direct endpoint checks for 0 / negative / non-numeric durations ===
+duration=0 -> {"error":"duration must be a positive number of minutes or a period such as \"2h 30m\"."} [HTTP 400]
+duration=-30 -> {"error":"duration must be a positive number of minutes or a period such as \"2h 30m\"."} [HTTP 400]
+duration=abc -> {"error":"duration must be a positive number of minutes or a period such as \"2h 30m\"."} [HTTP 400]

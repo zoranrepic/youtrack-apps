@@ -1,0 +1,2 @@
+# Comparison of pre- and post-review sha256 dumps (both sorted): no differences.
+# 28 files: src/**, manifest.json, package.json - all hashes identical.

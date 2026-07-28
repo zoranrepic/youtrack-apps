@@ -1,0 +1,9 @@
+Total messages: 2 (Errors: 1, Warnings: 1)
+Returning 1 messages for level "error"
+
+TypeError: Cannot read properties of undefined (reading 'scope')
+    at l.fetchApp (https://exploration.youtrack.cloud/static/simplified/57079.a893338c.js:3928:1105)
+    at l.callLocalApi (https://exploration.youtrack.cloud/static/simplified/62581.22839fc6.js:1:2753504)
+    at l.onMessageListener (https://exploration.youtrack.cloud/static/simplified/62581.22839fc6.js:1:2752286)
+    at https://exploration.youtrack.cloud/static/simplified/62581.22839fc6.js:1:2752096
+    at n (https://exploration.youtrack.cloud/static/simplified/62581.22839fc6.js:7:541)

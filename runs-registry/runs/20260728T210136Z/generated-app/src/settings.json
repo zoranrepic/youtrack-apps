@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Issue Operations Hub settings",
+  "description": "GitHub access and critical-time notification defaults.",
+  "properties": {
+    "githubRepository": {"type": "string", "title": "GitHub repository", "description": "Repository in owner/name form used to find pull requests.", "x-scope": "GLOBAL"},
+    "githubToken": {"type": "string", "title": "GitHub token", "description": "Optional token for private repositories and higher API limits.", "format": "secret", "x-scope": "GLOBAL"},
+    "notificationEmails": {"type": "string", "title": "Critical-time recipients", "description": "Comma-separated email recipients for critical-time alerts.", "x-scope": "GLOBAL"},
+    "defaultCriticalLimitMinutes": {"type": "integer", "title": "Default critical limit (minutes)", "description": "Used when an issue has no individual limit.", "minimum": 1, "x-scope": "PROJECT"},
+    "notificationsEnabled": {"type": "boolean", "title": "Enable critical-time notifications", "x-scope": "PROJECT"}
+  },
+  "required": ["defaultCriticalLimitMinutes"]
+}

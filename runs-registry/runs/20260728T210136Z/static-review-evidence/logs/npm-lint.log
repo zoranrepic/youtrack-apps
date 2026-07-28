@@ -1,0 +1,55 @@
+
+> issue-operations-hub@0.0.0 lint
+> eslint --report-unused-disable-directives --max-warnings 0
+
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T210136Z/generated-app/src/github-action-service.js
+   3:14   error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   7:3    error  Unexpected unnamed method 'handle'       func-names
+  17:35   error  Expected { after 'if' condition          curly
+  19:40   error  No magic number: 200                     no-magic-numbers
+  23:49   error  Unexpected unnamed function              func-names
+  23:112  error  Unexpected unnamed function              func-names
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T210136Z/generated-app/src/time-tracking-service.js
+   3:18  error  A `require()` style import is forbidden                       @typescript-eslint/no-require-imports
+   7:3   error  Unexpected unnamed method 'handle'                            func-names
+   7:3   error  Method 'handle' has a complexity of 11. Maximum allowed is 7  complexity
+  17:37  error  Expected { after 'if' condition                               curly
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T210136Z/generated-app/src/widgets/critical-threshold-configurator/app.tsx
+  7:183  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+  7:322  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T210136Z/generated-app/src/widgets/github-action-tracker/app.tsx
+  8:21  error  Expected 'undefined' and instead saw 'void'  no-void
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T210136Z/generated-app/src/widgets/global-time-logger/app.tsx
+  7:170  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+  7:282  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+  7:413  error  A space is forbidden before closing bracket  react/jsx-tag-spacing
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T210136Z/generated-app/src/widgets/issue-relation-visualizer/app.tsx
+  8:21   error  Expected 'undefined' and instead saw 'void'  no-void
+  9:403  error  Do not use Array index in keys               react/no-array-index-key
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T210136Z/generated-app/src/workflows/critical-time-monitor.js
+   1:18  error  A `require()` style import is forbidden                      @typescript-eslint/no-require-imports
+   2:23  error  A `require()` style import is forbidden                      @typescript-eslint/no-require-imports
+   4:1   error  'exports' is not defined                                     no-undef
+   8:3   error  Method 'action' has a complexity of 9. Maximum allowed is 7  complexity
+  11:17  error  Expected { after 'if' condition                              curly
+  13:29  error  Unexpected unnamed function                                  func-names
+  14:20  error  Do not nest ternary expressions                              no-nested-ternary
+  14:77  error  No magic number: 0.8                                         no-magic-numbers
+  19:60  error  Unexpected unnamed function                                  func-names
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T210136Z/generated-app/src/workflows/send-critical-time-email.js
+   1:18  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   2:23  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   4:1   error  'exports' is not defined                 no-undef
+  12:58  error  Unexpected unnamed function              func-names
+
+✖ 31 problems (31 errors, 0 warnings)
+  8 errors and 0 warnings potentially fixable with the `--fix` option.
+

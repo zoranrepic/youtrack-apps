@@ -1,0 +1,71 @@
+{
+  "name": "issue-operations-hub",
+  "title": "Issue Operations Hub",
+  "description": "Visualizes issue relations, tracks GitHub actions, logs time, and monitors critical time thresholds.",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "vendor": {
+    "name": "YouTrack Operations",
+    "url": "https://jetbrains.com"
+  },
+  "icon": "icon.svg",
+  "version": "1.0.0",
+  "minYouTrackVersion": "2024.3.0",
+  "widgets": [
+
+    {
+      "key": "issue-relation-visualizer",
+      "name": "Issue Relation Visualizer",
+      "indexPath": "issue-relation-visualizer/index.html",
+      "extensionPoint": "ISSUE_BELOW_SUMMARY",
+      "iconPath": "issue-relation-visualizer/widget-icon.svg",
+      "description": "",
+      "permissions": [
+        "READ_ISSUE"
+      ],
+      "expectedDimensions": {
+        "width": 900,
+        "height": 360
+      }
+    },
+    {
+      "key": "github-action-tracker",
+      "name": "GitHub Action Tracker",
+      "indexPath": "github-action-tracker/index.html",
+      "extensionPoint": "ISSUE_ABOVE_ACTIVITY_STREAM",
+      "iconPath": "github-action-tracker/widget-icon.svg",
+      "description": "",
+      "permissions": [
+        "READ_ISSUE"
+      ],
+      "expectedDimensions": {
+        "width": 900,
+        "height": 360
+      }
+    },
+    {
+      "key": "global-time-logger",
+      "name": "Global Time Logger",
+      "indexPath": "global-time-logger/index.html",
+      "extensionPoint": "MAIN_MENU_ITEM",
+      "iconPath": "global-time-logger/widget-icon.svg",
+      "description": "",
+      "permissions": [
+        "UPDATE_ISSUE"
+      ],
+      "expectedDimensions": {
+        "width": 900,
+        "height": 560
+      }
+    },
+    {
+      "key": "critical-threshold-configurator",
+      "name": "Critical Threshold Configurator",
+      "indexPath": "critical-threshold-configurator/index.html",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "iconPath": "critical-threshold-configurator/widget-icon.svg",
+      "description": "Configure critical time-spent limits for issues.",
+      "permissions": ["UPDATE_ISSUE"],
+      "defaultDimensions": {"width": "8fr", "height": "5fr"}
+    }
+  ]
+}

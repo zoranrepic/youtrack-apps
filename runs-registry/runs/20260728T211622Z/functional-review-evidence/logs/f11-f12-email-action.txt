@@ -1,0 +1,21 @@
+# F11/F12 Email Action (email-time-status)
+# F11 success, app log line:
+28/07/2026 21:41:31,532Z INFO  [email-action.js] [admin               ] Spent time report for,DEMO-40,emailed to,1,recipients, status:,OK
+28/07/2026 22:11:12,890Z INFO  [email-action.js] [admin               ] Spent time report for,DEMO-41,emailed to,1,recipients, status:,OK
+# UI confirmation toast: 'Spent time report for DEMO-41 (OK) was emailed to 1 recipient(s).'
+
+# F12 error path: app setting notificationsEnabled temporarily set to false (value restored to true afterwards)
+# UI error toast: 'Email notifications are turned off in the Issue Ops Suite settings.'
+# no work item, comment or email was produced; no secret value appeared in the message
+
+# settings in effect at the end of the review (secret redacted):
+{
+  "notificationEmails": "zoran.repic@jetbrains.com",
+  "notificationsEnabled": true,
+  "criticalSpentTimeMinutes": 480,
+  "warningPercentage": 80,
+  "alertRepeatMinutes": 60,
+  "githubRepository": "zoranrepic/ytapp-review-20260728t2148z",
+  "githubApiBaseUrl": "https://api.github.com",
+  "githubToken": "<redacted>"
+}

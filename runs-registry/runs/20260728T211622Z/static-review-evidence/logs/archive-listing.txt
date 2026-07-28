@@ -1,0 +1,38 @@
+Archive:  issue-ops-suite.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+     6811  07-28-2026 23:49   critical-time-monitor.js
+     5812  07-28-2026 23:49   email-action.js
+      557  07-28-2026 23:49   entity-extensions.json
+    15289  07-28-2026 23:49   global-backend.js
+      993  07-28-2026 23:49   icon.svg
+     6836  07-28-2026 23:49   issue-backend.js
+     2169  07-28-2026 23:49   manifest.json
+     2224  07-28-2026 23:49   settings.json
+        0  07-28-2026 23:49   widgets/
+        0  07-28-2026 23:49   widgets/global-time-logger/
+      560  07-28-2026 23:49   widgets/global-time-logger/index.html
+      993  07-28-2026 23:49   widgets/global-time-logger/widget-icon.svg
+        0  07-28-2026 23:49   widgets/issue-relation-visualizer/
+      485  07-28-2026 23:49   widgets/issue-relation-visualizer/index.html
+      993  07-28-2026 23:49   widgets/issue-relation-visualizer/widget-icon.svg
+        0  07-28-2026 23:49   widgets/github-action-tracker/
+      477  07-28-2026 23:49   widgets/github-action-tracker/index.html
+      993  07-28-2026 23:49   widgets/github-action-tracker/widget-icon.svg
+        0  07-28-2026 23:49   widgets/critical-threshold-configurator/
+      586  07-28-2026 23:49   widgets/critical-threshold-configurator/index.html
+      993  07-28-2026 23:49   widgets/critical-threshold-configurator/widget-icon.svg
+        0  07-28-2026 23:49   widgets/assets/
+     3248  07-28-2026 23:49   widgets/assets/issueRelationVisualizer-GS3g7Xs2.js
+   189116  07-28-2026 23:49   widgets/assets/text-DtxBn3Vi.css
+      497  07-28-2026 23:49   widgets/assets/criticalThresholdConfigurator-pbDBtHq3.css
+   160061  07-28-2026 23:49   widgets/assets/text-DSrQaJh1.js
+     6339  07-28-2026 23:49   widgets/assets/criticalThresholdConfigurator-DKo7gbD2.js
+     3231  07-28-2026 23:49   widgets/assets/globalTimeLogger-DYoecdFw.js
+     1405  07-28-2026 23:49   widgets/assets/githubActionTracker-5wcJUIg7.css
+     3312  07-28-2026 23:49   widgets/assets/githubActionTracker-DmCXG5y7.js
+      890  07-28-2026 23:49   widgets/assets/issueRelationVisualizer-lMZp3OJP.css
+      753  07-28-2026 23:49   widgets/assets/globalTimeLogger-D37vJyL9.css
+     8029  07-28-2026 23:49   widgets/assets/input-_wCbf37n.js
+---------                     -------
+   423652                     33 files
