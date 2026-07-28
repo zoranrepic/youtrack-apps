@@ -1,4 +1,4 @@
-# System Test Review Summary - GPT TERRA 5.6 - GENERATION + REVIEW 2.64$
+# System Test Review Summary - GPT TERRA 5.6(medium) - GENERATION + REVIEW 2.64$
 
 Generation and both review phases completed.
 
