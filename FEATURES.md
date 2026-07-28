@@ -28,12 +28,12 @@ matching template shape, with validation for rule type and filename.
 
 **Problem:** Uploading, inspecting, and operating on apps required manual
 YouTrack UI work or custom REST calls. We avoided relying on YouTrack MCP for
-these common flows because it consumed more tokens than direct CLI commands.
+these common flows because it consumed more tokens than direct CLI commands. Also, more instance exploration commands were added, because app logic often depends on live instance data such as groups, project fields, users and tags.
 
 **Solution:** `youtrack-app` now exposes app lifecycle and inspection commands
 for `list`, `info`, `upload`, `download`, `validate`, `scripts`,
 `settings`, `settings-set`, `delete`, `enable`, `disable`, `attach`, `detach`,
-`logs`, `script-logs`, and `requirement-errors`. Commands accept
+`logs`, `script-logs`, `requirement-errors` plus more instance exploration commands. Commands accept
 `YOUTRACK_HOST` and `YOUTRACK_API_TOKEN`, and can emit structured output where
 automation needs it.
 
@@ -47,17 +47,6 @@ use it efficiently.
 and `--type js` creates the JavaScript Vite app, and
 dependencies are installed after scaffolding.
 
-### Instance Exploration Commands and Agent Instructions
-
-**Problem:** Building app logic often depends on live YouTrack instance details
-such as project IDs, project fields, tags, users, groups, app settings, and
-script logs. Agents needed a repeatable CLI workflow for discovering that data.
-
-**Solution:** `youtrack-app` includes exploration commands for projects,
-project fields, groups, group members, users, and tags, with pagination and
-JSON/YAML output where useful. 
-
-
 ### More Verbose `--help`
 
 **Problem:** Large portion of the `SKILL.md` contents was related to **CLI** commands. While at the same time `packages` have their own `--help` commands for this purpose. 
@@ -69,19 +58,24 @@ JSON/YAML output where useful.
 
 ### Point of having `--backend-only` flag for Enhanced DX apps
 **Question:** Why do we have `--backend-only` flag when scaffolding `enhanced dx` apps?
-
-### TS vs JS default scaffolding
-**Question:** What are the main points of having TS default scaffolding?
+//  Sasha will address this from the idea point
 
 ### Structure of --help and mirrored commands for both ts and js
 **Question:** Can we achieve consistency across TS and JS commands?
 
 ### Wording of `Enhanced DX`
 **Question:** Can it be renamed to `advanced tools` since it indeed provides advanced tooling. In fresh context `Enhanced DX` is not self explanatory in terms of what it provides?
+// Communicate with tech writers - or no need since it is already on dev portal
 
 ### Consistent command structure in `apps-tools` 
 **Question:** Can we make all commands follow the same pattern like `youtrack-app <entity> <action> [--param value] [--param2 value]`? There will be some non-ordinary cases like `youtrack-app app`. Do we keep this backward comaptible or just bump the major version?
 
+### AGENTS.md
+**Question:** What should be the source of thurth for `ts` apps ; `skill` or `agents.md` or both? 
+// We choose only one source of thurth - SKILL
+
+### TS vs JS default scaffolding
+**Question:** What are the main points of having TS default scaffolding?
 
 ### Release of the preview version
 **Question:** Currently our system consists of `youtrack-apps` forked repository and `youtrack-app-agent-kit` repository which holds the `SKILL` resource files. We aim to release a preview version of the `skill` system. 
@@ -89,3 +83,4 @@ Notes:
 - `SKILL` is configured to use the `forked` version of `youtrack-apps` - implies merging features into original repo under some `beta` (tbd)
 - we need to release internally - skill is up to date with latest API 
 - we need to release to design partners - skill is up to date to latest released API
+// release to npm with special named version (multiple channels)
