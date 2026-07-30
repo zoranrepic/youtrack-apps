@@ -1,0 +1,13 @@
+[    1412ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[    1516ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) @ https://exploration.youtrack.cloud/projects/DEMO/settings?tab=apps&page=1&selected=148-8321&appTab=settings:0
+[   56144ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[   57129ms] [ERROR] Failed to load resource: the server responded with a status of 502 () @ https://exploration.youtrack.cloud/api/issues/DEMO-29/extensionEndpoints/issue-insight-suite/github/github:0
+[   93663ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[   93765ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) @ https://exploration.youtrack.cloud/projects/DEMO/settings?tab=apps&page=1&selected=148-8321&appTab=settings:0
+[  108108ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  147589ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  166945ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  301295ms] [WARNING] %c⚠️[ROUTER 8:09:54 PM] color: #777 onUrlChange is already in progress @ https://exploration.youtrack.cloud/manager/index.9f288ee8.js:898
+[  301418ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) @ https://exploration.youtrack.cloud/admin/apps?page=1&selected=148-8321&appTab=settings:0
+[  301698ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) @ https://exploration.youtrack.cloud/admin/apps?page=1&selected=148-8321&appTab=settings:0
+[  316204ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0

@@ -1,0 +1,38 @@
+Archive:  issue-insight-suite.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+     5040  07-30-2026 19:51   backend.js
+     3299  07-30-2026 19:51   critical-time-monitor.js
+     1952  07-30-2026 19:51   email-action.js
+      325  07-30-2026 19:51   entity-extensions.json
+     3509  07-30-2026 19:51   github.js
+      993  07-30-2026 19:51   icon.svg
+     2085  07-30-2026 19:51   manifest.json
+     1702  07-30-2026 19:51   settings.json
+        0  07-30-2026 19:51   widgets/
+        0  07-30-2026 19:51   widgets/global-time-logger/
+      564  07-30-2026 19:51   widgets/global-time-logger/index.html
+      993  07-30-2026 19:51   widgets/global-time-logger/widget-icon.svg
+        0  07-30-2026 19:51   widgets/issue-relation-visualizer/
+      489  07-30-2026 19:51   widgets/issue-relation-visualizer/index.html
+      993  07-30-2026 19:51   widgets/issue-relation-visualizer/widget-icon.svg
+        0  07-30-2026 19:51   widgets/github-action-tracker/
+      481  07-30-2026 19:51   widgets/github-action-tracker/index.html
+      993  07-30-2026 19:51   widgets/github-action-tracker/widget-icon.svg
+        0  07-30-2026 19:51   widgets/critical-threshold-configurator/
+      590  07-30-2026 19:51   widgets/critical-threshold-configurator/index.html
+      993  07-30-2026 19:51   widgets/critical-threshold-configurator/widget-icon.svg
+        0  07-30-2026 19:51   widgets/assets/
+     2468  07-30-2026 19:51   widgets/assets/githubActionTracker-BHNh8wL0.js
+     5023  07-30-2026 19:51   widgets/assets/criticalThresholdConfigurator-DkGL8XrS.js
+      753  07-30-2026 19:51   widgets/assets/githubActionTracker-C3XqzYhf.css
+      399  07-30-2026 19:51   widgets/assets/issueRelationVisualizer-B4CdrS39.css
+   163955  07-30-2026 19:51   widgets/assets/loader-U61z9cYZ.js
+   189116  07-30-2026 19:51   widgets/assets/loader-DtxBn3Vi.css
+     8031  07-30-2026 19:51   widgets/assets/input-d9EKbDuT.js
+     2375  07-30-2026 19:51   widgets/assets/globalTimeLogger-DqBRGmkT.js
+      441  07-30-2026 19:51   widgets/assets/criticalThresholdConfigurator-DT_qBxlE.css
+      426  07-30-2026 19:51   widgets/assets/globalTimeLogger-Cb0bwjc6.css
+     2800  07-30-2026 19:51   widgets/assets/issueRelationVisualizer-CC7BOlfF.js
+---------                     -------
+   400788                     33 files

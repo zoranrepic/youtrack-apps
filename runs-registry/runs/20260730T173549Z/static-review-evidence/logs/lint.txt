@@ -1,0 +1,82 @@
+
+> issue-insight-suite@0.0.0 lint
+> eslint --report-unused-disable-directives --max-warnings 0
+
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/src/backend.js
+    1:18   error  A `require()` style import is forbidden                       @typescript-eslint/no-require-imports
+    8:26   error  Arrow function has a complexity of 12. Maximum allowed is 7   complexity
+   13:5    error  Unexpected console statement                                  no-console
+   17:122  error  No magic number: 6                                            no-magic-numbers
+   18:126  error  No magic number: 8                                            no-magic-numbers
+   44:7    error  Method 'handle' has a complexity of 10. Maximum allowed is 7  complexity
+   57:11   error  Unexpected console statement                                  no-console
+   72:9    error  Unexpected console statement                                  no-console
+   78:75   error  No magic number: 100                                          no-magic-numbers
+   78:82   error  No magic number: 100                                          no-magic-numbers
+   96:7    error  Method 'handle' has a complexity of 11. Maximum allowed is 7  complexity
+  127:9    error  Unexpected console statement                                  no-console
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/src/github.js
+   1:14  error  A `require()` style import is forbidden                      @typescript-eslint/no-require-imports
+  19:38  error  No magic number: 200                                         no-magic-numbers
+  20:5   error  Unexpected console statement                                 no-console
+  26:5   error  Unexpected console statement                                 no-console
+  50:11  error  Identifier 'per_page' is not in camel case                   camelcase
+  60:47  error  Arrow function has a complexity of 11. Maximum allowed is 7  complexity
+  67:15  error  Identifier 'head_sha' is not in camel case                   camelcase
+  68:15  error  Identifier 'per_page' is not in camel case                   camelcase
+  95:9   error  Unexpected console statement                                 no-console
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/src/widgets/critical-threshold-configurator/app.tsx
+  54:5  error  Expected 'undefined' and instead saw 'void'  no-void
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/src/widgets/github-action-tracker/app.tsx
+  45:50  error  Arrow function has a complexity of 13. Maximum allowed is 7  complexity
+  64:5   error  Expected 'undefined' and instead saw 'void'                  no-void
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/src/widgets/global-time-logger/app.tsx
+  26:70  error  No magic number: 10                          no-magic-numbers
+  90:15  error  Expected 'undefined' and instead saw 'void'  no-void
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/src/widgets/issue-relation-visualizer/app.tsx
+   36:26  error  No magic number: 2                                          no-magic-numbers
+   37:27  error  No magic number: 2                                          no-magic-numbers
+   62:20  error  No magic number: 2                                          no-magic-numbers
+   62:80  error  No magic number: 2                                          no-magic-numbers
+   71:50  error  Arrow function has a complexity of 8. Maximum allowed is 7  complexity
+   95:5   error  Expected 'undefined' and instead saw 'void'                 no-void
+  132:42  error  No magic number: 2                                          no-magic-numbers
+  133:42  error  No magic number: 2                                          no-magic-numbers
+  133:46  error  No magic number: 4                                          no-magic-numbers
+  144:31  error  No magic number: 4                                          no-magic-numbers
+  154:46  error  No magic number: 4                                          no-magic-numbers
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/src/workflows/critical-time-monitor.js
+   1:18   error  A `require()` style import is forbidden                      @typescript-eslint/no-require-imports
+   2:23   error  A `require()` style import is forbidden                      @typescript-eslint/no-require-imports
+   6:26   error  Arrow function has a complexity of 16. Maximum allowed is 7  complexity
+  11:5    error  Unexpected console statement                                 no-console
+  19:19   error  Do not nest ternary expressions                              no-nested-ternary
+  20:113  error  No magic number: 6                                           no-magic-numbers
+  21:20   error  Do not nest ternary expressions                              no-nested-ternary
+  22:116  error  No magic number: 8                                           no-magic-numbers
+  40:1    error  'exports' is not defined                                     no-undef
+  46:3    error  Method 'action' has a complexity of 8. Maximum allowed is 7  complexity
+  50:71   error  No magic number: 100                                         no-magic-numbers
+  50:78   error  No magic number: 100                                         no-magic-numbers
+  67:5    error  Unexpected console statement                                 no-console
+  74:9    error  Unexpected console statement                                 no-console
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/src/workflows/email-action.js
+   1:18  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   2:23  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   3:18  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  19:1   error  'exports' is not defined                 no-undef
+  28:7   error  Unexpected console statement             no-console
+  33:83  error  No magic number: 100                     no-magic-numbers
+  33:90  error  No magic number: 100                     no-magic-numbers
+  48:5   error  Unexpected console statement             no-console
+
+✖ 59 problems (59 errors, 0 warnings)
+
