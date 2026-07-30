@@ -1,0 +1,164 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e8]:
+    - generic [ref=f3e9]:
+      - link [ref=f3e10] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f3e12]:
+        - link [ref=f3e14] [cursor=pointer]:
+          - /url: issues
+          - tooltip "Issues" [ref=f3e15]
+        - link [ref=f3e18] [cursor=pointer]:
+          - /url: dashboard
+          - tooltip "Dashboards" [ref=f3e19]
+        - link [ref=f3e22] [cursor=pointer]:
+          - /url: agiles
+          - tooltip "Agile Boards" [ref=f3e23]
+        - link [ref=f3e26] [cursor=pointer]:
+          - /url: reports
+          - tooltip "Reports" [ref=f3e27]
+        - link [ref=f3e30] [cursor=pointer]:
+          - /url: projects
+          - tooltip "Projects" [ref=f3e31]
+        - link [ref=f3e34] [cursor=pointer]:
+          - /url: articles
+          - tooltip "Knowledge Base" [ref=f3e35]
+        - link [ref=f3e38] [cursor=pointer]:
+          - /url: timesheets
+          - tooltip "Timesheets" [ref=f3e39]
+        - button [ref=f3e44] [cursor=pointer]:
+          - tooltip "More" [ref=f3e45]
+    - generic [ref=f3e48]:
+      - button [ref=f3e50] [cursor=pointer]:
+        - tooltip "Create" [ref=f3e51]
+      - button [ref=f3e55] [cursor=pointer]:
+        - tooltip "Administration" [ref=f3e56]
+      - button [ref=f3e61] [cursor=pointer]:
+        - tooltip "Help" [ref=f3e62]
+      - button [ref=f3e66] [cursor=pointer]:
+        - tooltip "Notifications" [ref=f3e67]
+      - generic "admin" [ref=f3e72] [cursor=pointer]:
+        - button "User avatar admin" [ref=f3e73]:
+          - img "User avatar" [ref=f3e75]
+          - generic [ref=f3e76]: admin
+      - button [ref=f3e77] [cursor=pointer]:
+        - tooltip "Collapse" [ref=f3e78]
+  - generic [ref=f3e128]:
+    - generic [ref=f3e1014]: Global Time Logger
+    - article [ref=f3e1018]:
+      - dialog [ref=f3e1019]:
+        - iframe [ref=f3e1020]:
+          - generic [ref=f6e3]:
+            - heading "Global Time Logger" [level=2] [ref=f6e4]
+            - paragraph [ref=f6e5]: Select an issue, enter spent time, and save a work item.
+            - generic [ref=f6e6]:
+              - text: Issue
+              - combobox "Issue" [ref=f6e7]:
+                - option "Select an issue" [selected]
+                - option "3-269553 — Some random description"
+                - option "3-232286 — adasd"
+                - option "3-273359 — Some random description"
+                - option "3-246295 — Issue from the seeding step"
+                - option "3-236503 — ffffff"
+                - option "3-256142 — Some random description"
+                - option "3-273352 — Parrent issue for cross-project-to-relates rule"
+                - option "3-273350 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-273348 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-271659 — Some random description"
+                - option "3-271652 — Parrent issue for cross-project-to-relates rule"
+                - option "3-271650 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-271648 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-269978 — Some random description"
+                - option "3-269971 — Parrent issue for cross-project-to-relates rule"
+                - option "3-269969 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-269967 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-269555 — Issue from the seeding step"
+                - option "3-269546 — Parrent issue for cross-project-to-relates rule"
+                - option "3-269544 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-269542 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-267916 — Some random description"
+                - option "3-267909 — Parrent issue for cross-project-to-relates rule"
+                - option "3-267907 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-267905 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-267502 — Some random description"
+                - option "3-267495 — Parrent issue for cross-project-to-relates rule"
+                - option "3-267493 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-267491 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-265906 — Some random description"
+                - option "3-265899 — Parrent issue for cross-project-to-relates rule"
+                - option "3-265897 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-265895 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-264329 — Some random description"
+                - option "3-264322 — Parrent issue for cross-project-to-relates rule"
+                - option "3-264320 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-264318 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-262770 — Some random description"
+                - option "3-263930 — Some random description"
+                - option "3-262763 — Parrent issue for cross-project-to-relates rule"
+                - option "3-262761 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-262759 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-262378 — Issue from the seeding step"
+                - option "3-262376 — Some random description"
+                - option "3-262369 — Parrent issue for cross-project-to-relates rule"
+                - option "3-262367 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-262365 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-261990 — Issue from the seeding step"
+                - option "3-261988 — Some random description"
+                - option "3-261981 — Parrent issue for cross-project-to-relates rule"
+                - option "3-261979 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-261977 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-260499 — Some random description"
+                - option "3-260492 — Parrent issue for cross-project-to-relates rule"
+                - option "3-260490 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-260488 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-259030 — Some random description"
+                - option "3-259023 — Parrent issue for cross-project-to-relates rule"
+                - option "3-259021 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-259019 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-258646 — Parrent issue for cross-project-to-relates rule"
+                - option "3-257568 — Some random description"
+                - option "3-257561 — Parrent issue for cross-project-to-relates rule"
+                - option "3-257559 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-257557 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-257202 — Parrent issue for cross-project-to-relates rule"
+                - option "3-255424 — Parrent issue for cross-project-to-relates rule"
+                - option "3-256135 — Parrent issue for cross-project-to-relates rule"
+                - option "3-256133 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-256131 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-255784 — Issue from the seeding step"
+                - option "3-255782 — Some random description"
+                - option "3-255775 — Parrent issue for cross-project-to-relates rule"
+                - option "3-255773 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-255771 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-255428 — Parrent issue for cross-project-to-relates rule"
+                - option "3-253052 — Documentation for 'Issue from the seeding step'"
+                - option "3-254403 — Some random description"
+                - option "3-254396 — Parrent issue for cross-project-to-relates rule"
+                - option "3-254394 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-254392 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-253055 — Some random description"
+                - option "3-253049 — Parrent issue for cross-project-to-relates rule"
+                - option "3-253047 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-253045 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-251725 — Some random description"
+                - option "3-251718 — Parrent issue for cross-project-to-relates rule"
+                - option "3-251716 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-251714 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-250416 — Some random description"
+                - option "3-250410 — Parrent issue for cross-project-to-relates rule"
+                - option "3-250408 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-250406 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-249124 — Some random description"
+                - option "3-249117 — Parrent issue for cross-project-to-relates rule"
+                - option "3-249115 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+                - option "3-249113 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-248798 — some issue"
+                - option "3-248794 — Duplicate target issue for close-as-duplicate-action"
+                - option "3-248792 — Duplicate candidate issue for reopen-on-duplicate-link-removal."
+            - generic [ref=f6e8]:
+              - text: Minutes
+              - spinbutton "Minutes" [ref=f6e9]: "30"
+            - generic [ref=f6e10]:
+              - text: Work description
+              - textbox "Work description" [ref=f6e11]:
+                - /placeholder: What did you work on?
+            - button "Log time" [disabled] [ref=f6e12]

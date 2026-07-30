@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Issue Delivery Control Center Settings",
+  "description": "Persisted project notification preferences and critical time-spent boundaries.",
+  "properties": {
+    "criticalTimeLimitMinutes": {
+      "title": "Critical time limit (minutes)",
+      "description": "Alert when an issue reaches this total logged time.",
+      "type": "integer",
+      "minimum": 1,
+      "default": 480,
+      "x-scope": "PROJECT"
+    },
+    "notificationEmail": {
+      "title": "Notification email",
+      "description": "Receives warning and critical time-threshold messages.",
+      "type": "string",
+      "format": "email",
+      "x-scope": "PROJECT"
+    },
+    "githubRepository": {
+      "title": "GitHub repository",
+      "description": "Optional owner/repository label displayed by GitHub tracking.",
+      "type": "string",
+      "default": "",
+      "x-scope": "PROJECT"
+    },
+    "githubToken": {
+      "title": "GitHub access token",
+      "description": "Optional token reserved for authenticated GitHub integrations.",
+      "type": "string",
+      "format": "secret",
+      "x-scope": "GLOBAL"
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,74 @@
+{
+  "name": "issue-delivery-control-center",
+  "title": "Issue Delivery Control Center",
+  "description": "Visualizes issue relations, GitHub pull request activity, time tracking, and critical time thresholds.",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "vendor": {
+    "name": "YouTrack App Team",
+    "url": "https://www.jetbrains.com/youtrack"
+  },
+  "icon": "icon.svg",
+  "widgets": [
+    {
+      "key": "issue-relation-visualizer",
+      "name": "Issue Relation Visualizer",
+      "indexPath": "issue-relation-visualizer/index.html",
+      "extensionPoint": "ISSUE_BELOW_SUMMARY",
+      "iconPath": "issue-relation-visualizer/widget-icon.svg",
+      "description": "Visual dependency graph for the selected issue.",
+      "permissions": [
+        "READ_ISSUE"
+      ],
+      "expectedDimensions": {
+        "width": 900,
+        "height": 380
+      }
+    },
+    {
+      "key": "github-action-tracker",
+      "name": "GitHub Action Tracker",
+      "indexPath": "github-action-tracker/index.html",
+      "extensionPoint": "ISSUE_ABOVE_ACTIVITY_STREAM",
+      "iconPath": "github-action-tracker/widget-icon.svg",
+      "description": "Linked pull request and GitHub action status tracker.",
+      "permissions": [
+        "READ_ISSUE"
+      ],
+      "expectedDimensions": {
+        "width": 900,
+        "height": 320
+      }
+    },
+    {
+      "key": "global-time-logger",
+      "name": "Global Time Logger",
+      "indexPath": "global-time-logger/index.html",
+      "extensionPoint": "MAIN_MENU_ITEM",
+      "iconPath": "global-time-logger/widget-icon.svg",
+      "description": "Select an issue and log spent time.",
+      "permissions": [
+        "UPDATE_ISSUE"
+      ],
+      "expectedDimensions": {
+        "width": 900,
+        "height": 600
+      }
+    },
+    {
+      "key": "critical-threshold-configurator",
+      "name": "Critical Threshold Configurator",
+      "indexPath": "critical-threshold-configurator/index.html",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "iconPath": "critical-threshold-configurator/widget-icon.svg",
+      "description": "Configure and review critical time-spent boundaries.",
+      "permissions": [
+        "UPDATE_PROJECT"
+      ],
+      "defaultDimensions": {
+        "width": "8fr",
+        "height": "5fr"
+      }
+    }
+  ],
+  "version": "1.0.0"
+}

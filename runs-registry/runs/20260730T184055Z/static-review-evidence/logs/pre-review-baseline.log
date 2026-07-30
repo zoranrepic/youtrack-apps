@@ -1,0 +1,42 @@
+=== pre-review baseline ===
+2026-07-30T18:48:34Z
+--- tracked/untracked source content SHA-256 ---
+c014464094cae48b9f6568543b116c7f65b0faf50dcf17e0efc4b4f003559231  ./.env.local
+fe718e7babb14f3cbad2d97f08889b9ce5215ed3fe0e43b2b8cfbfb3b9b844e8  ./.gitignore
+b49f73e8b3ed0474885ee31adbfd0cba2c87fde4f26c1be15b9894288e490f9b  ./.nvmrc
+11442b62221350cbd366e7b80b1ea3afda5f3d0fa853aa075c742392daaaa192  ./@types/globals.d.ts
+325b07305627595c19cda8eac023dd3cf1b8c5123f5f7cfd654bc426e7a6199e  ./eslint.config.mjs
+e0996b3b91bd8d55604b1298f01ddefe4c0163887e6240cbcb74e3fb22bd5e47  ./manifest.json
+b47a92727e9f72423b541cc44964e72819d8b0f62c136efa8b76227ff31f8c9c  ./package-lock.json
+3eed1971143fab758b38db78d25160e9b42587185beda599e5b2493e3f1e557a  ./package.json
+357acbb8e1dfe79686d84d2e4d2b4de89da5fb17f28ff0dcf4220a117cd7970c  ./public/icon.svg
+1849213db95156fa14bd88c76638339e05c5f1086a788582439fca9c6d5d0f74  ./src/backend.js
+aebfd9cf379bfbff0ccff7b600759b4ae4bfb2a6bd08e68c0b4f690292a885da  ./src/entity-extensions.json
+b41f332ef5e34d9e96351da65aa059af75cce22b4b2dd3a6830278ee159b9be2  ./src/settings.json
+74024b8cd4be75c1723d6704657cf1be866a1e08c1ee11f68f99496d6663da4c  ./src/time-tracking-global.js
+6228c81f4b3afab11ebba2e0a35cbfc88a0784de5df52f212aead38296ac4407  ./src/widgets/critical-threshold-configurator/app.css
+b0781f37be68edcce7610eadc980169b89bd2f2d2cb2d631422be151d2670b1e  ./src/widgets/critical-threshold-configurator/app.tsx
+84f2b410e337452b21b78e09713fe8f9cd4c6c0afe5f2faca38201df284b4be3  ./src/widgets/critical-threshold-configurator/index.html
+bb863e4e7e03dae3e337e7d1d0294d5acc3a932c3b5882b265f0082d669cc623  ./src/widgets/critical-threshold-configurator/index.tsx
+357acbb8e1dfe79686d84d2e4d2b4de89da5fb17f28ff0dcf4220a117cd7970c  ./src/widgets/critical-threshold-configurator/widget-icon.svg
+6228c81f4b3afab11ebba2e0a35cbfc88a0784de5df52f212aead38296ac4407  ./src/widgets/github-action-tracker/app.css
+84b14ebdb2486453ef0ff2bedd138393362f76cee3dd2b7e0a0b9de292e5b492  ./src/widgets/github-action-tracker/app.tsx
+84f2b410e337452b21b78e09713fe8f9cd4c6c0afe5f2faca38201df284b4be3  ./src/widgets/github-action-tracker/index.html
+bb863e4e7e03dae3e337e7d1d0294d5acc3a932c3b5882b265f0082d669cc623  ./src/widgets/github-action-tracker/index.tsx
+357acbb8e1dfe79686d84d2e4d2b4de89da5fb17f28ff0dcf4220a117cd7970c  ./src/widgets/github-action-tracker/widget-icon.svg
+6228c81f4b3afab11ebba2e0a35cbfc88a0784de5df52f212aead38296ac4407  ./src/widgets/global-time-logger/app.css
+e4e4699462d6ac6b2ba207e732c9cfb5a5a28ae435b965f2d54f3028f0d44d04  ./src/widgets/global-time-logger/app.tsx
+84f2b410e337452b21b78e09713fe8f9cd4c6c0afe5f2faca38201df284b4be3  ./src/widgets/global-time-logger/index.html
+bb863e4e7e03dae3e337e7d1d0294d5acc3a932c3b5882b265f0082d669cc623  ./src/widgets/global-time-logger/index.tsx
+357acbb8e1dfe79686d84d2e4d2b4de89da5fb17f28ff0dcf4220a117cd7970c  ./src/widgets/global-time-logger/widget-icon.svg
+6228c81f4b3afab11ebba2e0a35cbfc88a0784de5df52f212aead38296ac4407  ./src/widgets/issue-relation-visualizer/app.css
+58fda839e41fb9c7c76160007e6d4cff3cc918de0d28f4b4e6917d1b8730791b  ./src/widgets/issue-relation-visualizer/app.tsx
+84f2b410e337452b21b78e09713fe8f9cd4c6c0afe5f2faca38201df284b4be3  ./src/widgets/issue-relation-visualizer/index.html
+bb863e4e7e03dae3e337e7d1d0294d5acc3a932c3b5882b265f0082d669cc623  ./src/widgets/issue-relation-visualizer/index.tsx
+357acbb8e1dfe79686d84d2e4d2b4de89da5fb17f28ff0dcf4220a117cd7970c  ./src/widgets/issue-relation-visualizer/widget-icon.svg
+1f25c41427b9e5341cae1312d703e8597c07d88b87326895cd6477d6037f2791  ./src/workflows/critical-time-monitor.js
+8f184bf073cc4162a20951fdbab687ebb886f561f13d7e56c265d32677ac2381  ./src/workflows/email-action.js
+87188f0924372fae13588b452d62d44b4f74577d09b9f23ecc9165a1c788e498  ./tsconfig.app.json
+770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808  ./tsconfig.json
+1a270cb8020d1fa879262423b9c222fa38d94b830ec61164a46b558ea9d2a526  ./tsconfig.node.json
+1af76fed48465be9e8669724fa58b175e6588698bb41f9f00f64ef6a298a2c20  ./vite.config.ts

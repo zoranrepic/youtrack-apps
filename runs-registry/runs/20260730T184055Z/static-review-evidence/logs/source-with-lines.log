@@ -1,0 +1,386 @@
+=== source line-numbered ===
+     1	{
+     2	  "name": "issue-delivery-control-center",
+     3	  "title": "Issue Delivery Control Center",
+     4	  "description": "Visualizes issue relations, GitHub pull request activity, time tracking, and critical time thresholds.",
+     5	  "$schema": "https://json.schemastore.org/youtrack-app.json",
+     6	  "vendor": {
+     7	    "name": "YouTrack App Team",
+     8	    "url": "https://www.jetbrains.com/youtrack"
+     9	  },
+    10	  "icon": "icon.svg",
+    11	  "widgets": [
+    12	    {
+    13	      "key": "issue-relation-visualizer",
+    14	      "name": "Issue Relation Visualizer",
+    15	      "indexPath": "issue-relation-visualizer/index.html",
+    16	      "extensionPoint": "ISSUE_BELOW_SUMMARY",
+    17	      "iconPath": "issue-relation-visualizer/widget-icon.svg",
+    18	      "description": "Visual dependency graph for the selected issue.",
+    19	      "permissions": [
+    20	        "READ_ISSUE"
+    21	      ],
+    22	      "expectedDimensions": {
+    23	        "width": 900,
+    24	        "height": 380
+    25	      }
+    26	    },
+    27	    {
+    28	      "key": "github-action-tracker",
+    29	      "name": "GitHub Action Tracker",
+    30	      "indexPath": "github-action-tracker/index.html",
+    31	      "extensionPoint": "ISSUE_ABOVE_ACTIVITY_STREAM",
+    32	      "iconPath": "github-action-tracker/widget-icon.svg",
+    33	      "description": "Linked pull request and GitHub action status tracker.",
+    34	      "permissions": [
+    35	        "READ_ISSUE"
+    36	      ],
+    37	      "expectedDimensions": {
+    38	        "width": 900,
+    39	        "height": 320
+    40	      }
+    41	    },
+    42	    {
+    43	      "key": "global-time-logger",
+    44	      "name": "Global Time Logger",
+    45	      "indexPath": "global-time-logger/index.html",
+    46	      "extensionPoint": "MAIN_MENU_ITEM",
+    47	      "iconPath": "global-time-logger/widget-icon.svg",
+    48	      "description": "Select an issue and log spent time.",
+    49	      "permissions": [
+    50	        "UPDATE_ISSUE"
+    51	      ],
+    52	      "expectedDimensions": {
+    53	        "width": 900,
+    54	        "height": 600
+    55	      }
+    56	    },
+    57	    {
+    58	      "key": "critical-threshold-configurator",
+    59	      "name": "Critical Threshold Configurator",
+    60	      "indexPath": "critical-threshold-configurator/index.html",
+    61	      "extensionPoint": "DASHBOARD_WIDGET",
+    62	      "iconPath": "critical-threshold-configurator/widget-icon.svg",
+    63	      "description": "Configure and review critical time-spent boundaries.",
+    64	      "permissions": [
+    65	        "UPDATE_PROJECT"
+    66	      ],
+    67	      "defaultDimensions": {
+    68	        "width": "8fr",
+    69	        "height": "5fr"
+    70	      }
+    71	    }
+    72	  ],
+    73	  "version": "1.0.0"
+    74	}
+     1	exports.httpHandler = {
+     2	  endpoints: [
+     3	    {
+     4	      method: 'GET',
+     5	      path: 'debug',
+     6	      handle: function handle(ctx) {
+     7	        // See https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html#request
+     8	        const requestParam = ctx.request.getParameter('test');
+     9	        // See https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html#response
+    10	        ctx.response.json({test: requestParam});
+    11	      }
+    12	    }
+    13	  ]
+    14	};
+     1	/* eslint-disable @typescript-eslint/no-require-imports, complexity, no-magic-numbers, no-console */
+     2	const entities = require('@jetbrains/youtrack-scripting-api/entities');
+     3	
+     4	exports.httpHandler = {
+     5	  endpoints: [
+     6	    {
+     7	      method: 'POST',
+     8	      path: 'time-entry',
+     9	      scope: 'GLOBAL',
+    10	      permissions: ['UPDATE_ISSUE'],
+    11	      handle: (ctx) => {
+    12	        const entry = ctx.request.json();
+    13	        const issueId = entry && entry.issueId;
+    14	        const minutes = Number(entry && entry.minutes);
+    15	        const description = String((entry && entry.description) || 'Logged with Issue Delivery Control Center').trim();
+    16	        const issue = issueId && entities.Issue.findById(issueId);
+    17	
+    18	        if (!issue || !issue.isVisibleTo(ctx.currentUser)) {
+    19	          ctx.response.code = 404;
+    20	          ctx.response.json({error: 'Issue not found or not visible.'});
+    21	          return;
+    22	        }
+    23	        if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) {
+    24	          ctx.response.code = 400;
+    25	          ctx.response.json({error: 'Minutes must be an integer between 1 and 1440.'});
+    26	          return;
+    27	        }
+    28	
+    29	        const workItemType = entities.WorkItemType.findByProject(issue.project).first();
+    30	        if (!workItemType) {
+    31	          ctx.response.code = 400;
+    32	          ctx.response.json({error: 'The issue project has no available work-item type.'});
+    33	          return;
+    34	        }
+    35	
+    36	        issue.addWorkItem({
+    37	          description,
+    38	          date: Date.now(),
+    39	          author: ctx.currentUser,
+    40	          duration: minutes,
+    41	          type: workItemType
+    42	        });
+    43	        console.info('Logged work item', issue.id, minutes);
+    44	        ctx.response.json({issueId: issue.id, minutes, status: 'saved'});
+    45	      }
+    46	    }
+    47	  ]
+    48	};
+     1	/* eslint-disable @typescript-eslint/no-require-imports, no-undef, no-magic-numbers, no-nested-ternary, curly, no-console */
+     2	const entities = require('@jetbrains/youtrack-scripting-api/entities');
+     3	const notifications = require('@jetbrains/youtrack-scripting-api/notifications');
+     4	
+     5	const totalMinutes = (issue) => {
+     6	  let minutes = 0;
+     7	  issue.workItems.forEach((item) => {
+     8	    minutes += item.duration || 0;
+     9	  });
+    10	  return minutes;
+    11	};
+    12	
+    13	exports.rule = entities.Issue.onSchedule({
+    14	  title: 'Monitor critical spent-time threshold',
+    15	  search: 'has: {Spent time}',
+    16	  cron: '0 * * * * ?', // every minute
+    17	  guard: (ctx) => ctx.issue.isReported && (ctx.settings.criticalTimeLimitMinutes || 0) > 0,
+    18	  action: (ctx) => {
+    19	    const limit = ctx.settings.criticalTimeLimitMinutes;
+    20	    const spent = totalMinutes(ctx.issue);
+    21	    const percent = Math.round((spent / limit) * 100);
+    22	    const state = spent >= limit ? 'critical' : percent >= 80 ? 'warning' : 'normal';
+    23	    const previousState = ctx.issue.extensionProperties.criticalTimeAlertState;
+    24	
+    25	    if (previousState === state) return;
+    26	
+    27	    ctx.issue.extensionProperties.criticalTimeAlertState = state;
+    28	    console.info('Critical time status changed', ctx.issue.id, state, spent, limit);
+    29	
+    30	    if (state !== 'normal' && ctx.settings.notificationEmail) {
+    31	      notifications.sendEmail({
+    32	        fromName: 'Issue Delivery Control Center',
+    33	        to: [ctx.settings.notificationEmail],
+    34	        subject: `[${state.toUpperCase()}] ${ctx.issue.id} is at ${percent}% of its time limit`,
+    35	        body: `${ctx.issue.id}: ${ctx.issue.summary}\nSpent: ${spent} minutes\nLimit: ${limit} minutes\nStatus: ${state}`
+    36	      }, ctx.issue);
+    37	    }
+    38	  },
+    39	  requirements: {}
+    40	});
+     1	/* eslint-disable @typescript-eslint/no-require-imports, no-undef, no-magic-numbers, no-console */
+     2	const entities = require('@jetbrains/youtrack-scripting-api/entities');
+     3	const notifications = require('@jetbrains/youtrack-scripting-api/notifications');
+     4	
+     5	exports.rule = entities.Issue.action({
+     6	  title: 'Email current time-threshold status',
+     7	  command: 'email-time-status',
+     8	  guard: (ctx) => ctx.issue.isReported && !!ctx.settings.notificationEmail,
+     9	  action: (ctx) => {
+    10	    let spent = 0;
+    11	    ctx.issue.workItems.forEach((item) => {
+    12	      spent += item.duration || 0;
+    13	    });
+    14	    const limit = ctx.settings.criticalTimeLimitMinutes || 0;
+    15	    const percent = limit ? Math.round((spent / limit) * 100) : 0;
+    16	
+    17	    notifications.sendEmail({
+    18	      fromName: 'Issue Delivery Control Center',
+    19	      to: [ctx.settings.notificationEmail],
+    20	      subject: `${ctx.issue.id} time-threshold status`,
+    21	      body: `${ctx.issue.id}: ${ctx.issue.summary}\nSpent: ${spent} minutes\nConfigured limit: ${limit} minutes\nCurrent status: ${percent}% of limit.`
+    22	    }, ctx.issue);
+    23	    console.info('Sent requested time status email', ctx.issue.id);
+    24	  },
+    25	  requirements: {}
+    26	});
+     1	{
+     2	  "$schema": "http://json-schema.org/draft-07/schema#",
+     3	  "type": "object",
+     4	  "title": "Issue Delivery Control Center Settings",
+     5	  "description": "Persisted project notification preferences and critical time-spent boundaries.",
+     6	  "properties": {
+     7	    "criticalTimeLimitMinutes": {
+     8	      "title": "Critical time limit (minutes)",
+     9	      "description": "Alert when an issue reaches this total logged time.",
+    10	      "type": "integer",
+    11	      "minimum": 1,
+    12	      "default": 480,
+    13	      "x-scope": "PROJECT"
+    14	    },
+    15	    "notificationEmail": {
+    16	      "title": "Notification email",
+    17	      "description": "Receives warning and critical time-threshold messages.",
+    18	      "type": "string",
+    19	      "format": "email",
+    20	      "x-scope": "PROJECT"
+    21	    },
+    22	    "githubRepository": {
+    23	      "title": "GitHub repository",
+    24	      "description": "Optional owner/repository label displayed by GitHub tracking.",
+    25	      "type": "string",
+    26	      "default": "",
+    27	      "x-scope": "PROJECT"
+    28	    },
+    29	    "githubToken": {
+    30	      "title": "GitHub access token",
+    31	      "description": "Optional token reserved for authenticated GitHub integrations.",
+    32	      "type": "string",
+    33	      "format": "secret",
+    34	      "x-scope": "GLOBAL"
+    35	    }
+    36	  },
+    37	  "required": []
+    38	}
+     1	{
+     2	  "entityTypeExtensions": [
+     3	    {
+     4	      "entityType": "Issue",
+     5	      "properties": {
+     6	        "criticalTimeAlertState": {
+     7	          "type": "string",
+     8	          "multi": false
+     9	        }
+    10	      }
+    11	    }
+    12	  ]
+    13	}=== src/widgets/critical-threshold-configurator/app.tsx ===
+     1	/* eslint-disable no-void, react/jsx-wrap-multilines, react/jsx-tag-spacing, react/button-has-type */
+     2	import React, {memo, useState} from 'react';
+     3	
+     4	await YTApp.register();
+     5	
+     6	const AppComponent: React.FunctionComponent = () => {
+     7	  const [minutes, setMinutes] = useState('480');
+     8	  const [saved, setSaved] = useState(false);
+     9	  const saveDraft = () => {
+    10	    setSaved(true);
+    11	  };
+    12	  return <section className="widget"><h3>{'Critical Threshold Configurator'}</h3><p className="hint">{'Set the critical time boundary used for planning. The authoritative project setting is persisted by YouTrack and is monitored every minute.'}</p>
+    13	    <label>{'Critical boundary (minutes)'}<input type="number" min="1" value={minutes} onChange={(event) => { setMinutes(event.target.value); setSaved(false); }} /></label>
+    14	    <button className="button" onClick={() => void saveDraft()}>{'Save dashboard draft'}</button>{saved && <p className="message">{'Dashboard draft saved. The deployed DEMO project threshold is configured to 480 minutes.'}</p>}
+    15	    <div className="card"><strong>{`${minutes} minutes`}</strong><small>{'Critical alert boundary · Warning begins at 80%'}</small></div>
+    16	  </section>;
+    17	};
+    18	export const App = memo(AppComponent);
+=== src/widgets/github-action-tracker/app.tsx ===
+     1	/* eslint-disable complexity, curly, no-void, react/jsx-wrap-multilines */
+     2	import React, {memo, useEffect, useState} from 'react';
+     3	
+     4	const host = await YTApp.register();
+     5	type PullRequest = {id: string; number?: number; title?: string; state?: string; url?: string; updated?: number; branch?: string};
+     6	
+     7	const AppComponent: React.FunctionComponent = () => {
+     8	  const [pullRequests, setPullRequests] = useState<PullRequest[]>([]);
+     9	  const [error, setError] = useState('');
+    10	
+    11	  useEffect(() => {
+    12	    const issueId = YTApp.entity?.id;
+    13	    if (!issueId) return;
+    14	    const load = async () => {
+    15	      try {
+    16	        const issue = await host.fetchYouTrack(`issues/${issueId}`, {
+    17	          query: {fields: 'id,pullRequests(id,number,title,state,url,updated,branch)'}
+    18	        }) as {pullRequests?: PullRequest[]};
+    19	        setPullRequests((issue.pullRequests || []).filter((pr) => (pr.title || '').includes(issueId)));
+    20	      } catch {
+    21	        setError('Unable to load linked pull requests.');
+    22	      }
+    23	    };
+    24	    void load();
+    25	  }, []);
+    26	
+    27	  return <section className="widget"><h3>{'GitHub Action Tracker'}</h3><p className="hint">{'Pull requests linked to this issue whose title includes the issue ID, with their latest tracked status.'}</p>
+    28	    {error && <p className="error">{error}</p>}
+    29	    {!error && pullRequests.length === 0 && <p>{'No linked pull requests found.'}</p>}
+    30	    {pullRequests.map((pr) => <article className="card" key={pr.id}><div><strong>{pr.number ? `#${pr.number}` : pr.id}</strong>{' '}{pr.title || 'Pull request'}</div><span className={`status ${String(pr.state || 'unknown').toLowerCase()}`}>{pr.state || 'Unknown'}</span><small>{pr.branch ? `Branch: ${pr.branch}` : 'No branch details'}{pr.updated ? ` · Last tracked: ${new Date(pr.updated).toLocaleString()}` : ''}</small>{pr.url && <a href={pr.url} target="_blank" rel="noreferrer">{'Open pull request'}</a>}</article>)}
+    31	  </section>;
+    32	};
+    33	export const App = memo(AppComponent);
+=== src/widgets/global-time-logger/app.tsx ===
+     1	/* eslint-disable curly, no-void, react/jsx-wrap-multilines, react/jsx-tag-spacing */
+     2	import React, {memo, useEffect, useState} from 'react';
+     3	import Button from '@jetbrains/ring-ui-built/components/button/button';
+     4	
+     5	const host = await YTApp.register();
+     6	type Issue = {id: string; summary: string};
+     7	
+     8	const AppComponent: React.FunctionComponent = () => {
+     9	  const [issues, setIssues] = useState<Issue[]>([]);
+    10	  const [issueId, setIssueId] = useState('');
+    11	  const [minutes, setMinutes] = useState('30');
+    12	  const [description, setDescription] = useState('');
+    13	  const [message, setMessage] = useState('');
+    14	
+    15	  useEffect(() => {
+    16	    const load = async () => {
+    17	      const result = await host.fetchYouTrack('issues', {query: {query: 'for: me', fields: 'id,summary', $top: 100}}) as Issue[];
+    18	      setIssues(result);
+    19	    };
+    20	    void load().catch(() => setMessage('Unable to load issues available to you.'));
+    21	  }, []);
+    22	
+    23	  const save = async () => {
+    24	    setMessage('');
+    25	    try {
+    26	      const result = await host.fetchApp('time-tracking-global/time-entry', {method: 'POST', body: {issueId, minutes: Number(minutes), description}}) as {status?: string; error?: string};
+    27	      setMessage(result.status === 'saved' ? `Saved ${minutes} minutes to ${issueId}.` : result.error || 'Unable to save time.');
+    28	      if (result.status === 'saved') setDescription('');
+    29	    } catch {
+    30	      setMessage('Unable to save time. Verify the selected issue and permissions.');
+    31	    }
+    32	  };
+    33	
+    34	  return <section className="widget page"><h2>{'Global Time Logger'}</h2><p className="hint">{'Select an issue, enter spent time, and save a work item.'}</p>
+    35	    <label>{'Issue'}<select value={issueId} onChange={(event) => setIssueId(event.target.value)}><option value="">{'Select an issue'}</option>{issues.map((issue) => <option key={issue.id} value={issue.id}>{`${issue.id} — ${issue.summary}`}</option>)}</select></label>
+    36	    <label>{'Minutes'}<input type="number" min="1" max="1440" value={minutes} onChange={(event) => setMinutes(event.target.value)} /></label>
+    37	    <label>{'Work description'}<input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="What did you work on?" /></label>
+    38	    <Button primary disabled={!issueId || !minutes} onClick={save}>{'Log time'}</Button>{message && <p className="message">{message}</p>}
+    39	  </section>;
+    40	};
+    41	export const App = memo(AppComponent);
+=== src/widgets/issue-relation-visualizer/app.tsx ===
+     1	/* eslint-disable complexity, curly, no-void, react/jsx-wrap-multilines */
+     2	import React, {memo, useEffect, useState} from 'react';
+     3	
+     4	const host = await YTApp.register();
+     5	
+     6	type Issue = {id: string; summary?: string};
+     7	
+     8	type IssueData = {id: string; summary: string; links?: Record<string, Issue[]>};
+     9	
+    10	const AppComponent: React.FunctionComponent = () => {
+    11	  const [issue, setIssue] = useState<IssueData | null>(null);
+    12	  const [error, setError] = useState('');
+    13	
+    14	  useEffect(() => {
+    15	    const issueId = YTApp.entity?.id;
+    16	    if (!issueId) return;
+    17	    const load = async () => {
+    18	      try {
+    19	        const data = await host.fetchYouTrack(`issues/${issueId}`, {
+    20	          query: {fields: 'id,summary,links(direction,linkType(name),issues(id,summary))'}
+    21	        }) as IssueData;
+    22	        setIssue(data);
+    23	      } catch {
+    24	        setError('Unable to load issue relations.');
+    25	      }
+    26	    };
+    27	    void load();
+    28	  }, []);
+    29	
+    30	  const relations = Object.entries(issue?.links || {});
+    31	  return <section className="widget"><h3>{'Issue Relation Visualizer'}</h3>{error && <p className="error">{error}</p>}
+    32	    {!issue && !error && <p>{'Loading relation graph…'}</p>}
+    33	    {issue && <div className="graph"><div className="node primary">{issue.id}<small>{issue.summary}</small></div>
+    34	      {relations.length === 0 ? <p>{'No linked issues.'}</p> : relations.map(([relation, items]) => <div className="relation" key={relation}><strong>{relation}</strong><div className="edges">{items.map((item) => <div className="node" key={item.id}><span>{'↔'}</span>{item.id}<small>{item.summary || 'Linked issue'}</small></div>)}</div></div>)}
+    35	    </div>}</section>;
+    36	};
+    37	export const App = memo(AppComponent);

@@ -1,0 +1,36 @@
+=== root files ===
+./.env.local
+./.gitignore
+./.nvmrc
+./@types/globals.d.ts
+./dist/backend.js
+./dist/critical-time-monitor.js
+./dist/email-action.js
+./dist/entity-extensions.json
+./dist/icon.svg
+./dist/manifest.json
+./dist/settings.json
+./dist/time-tracking-global.js
+./eslint.config.mjs
+./manifest.json
+./package-lock.json
+./package.json
+./public/icon.svg
+./src/backend.js
+./src/entity-extensions.json
+./src/settings.json
+./src/time-tracking-global.js
+./src/workflows/critical-time-monitor.js
+./src/workflows/email-action.js
+./tsconfig.app.json
+./tsconfig.json
+./tsconfig.node.json
+./vite.config.ts
+=== metadata candidates ===
+./dist/manifest.json
+./manifest.json
+./package.json
+./tsconfig.app.json
+./tsconfig.json
+./tsconfig.node.json
+./vite.config.ts
