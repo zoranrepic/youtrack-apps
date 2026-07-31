@@ -22,43 +22,96 @@ import {usages} from './commands/usages.js';
 import {fieldValues} from './commands/field-values.js';
 import {visibility} from './commands/visibility.js';
 
-const options = {
-  download: download,
-  upload: upload,
-  validate: validate,
-  list: list,
-  info: info,
-  scripts: scripts,
-  usages: usages,
-  settings: settings,
-  'settings-set': settingsSet,
-  'tag-search': tagSearch,
-  'field-values': fieldValues,
-  visibility: visibility,
-  delete: deleteApp,
-  enable: enable,
-  disable: disable,
-  attach: attach,
-  detach: detach,
-  logs: logs,
-  'requirement-errors': requirementErrors,
-  'project-list': projectList,
-  'project-info': projectInfo,
-  'project-fields': projectFields,
-  'project-apps': projectApps,
-  'group-list': groupList,
-  'group-members': groupMembers,
-  'user-list': userList,
-  'user-info': userInfo,
-} as const;
+type Command = {
+  execute: (config: Config, argument?: string) => Promise<unknown>;
+  argument?: (args: Record<string, unknown>) => string | undefined;
+  flags?: string[];
+  required?: string[];
+  requiresAuthentication?: boolean;
+};
+
+const stringArg = (name: string, defaultValue?: string) => (args: Record<string, unknown>): string | undefined =>
+  optionalArgString(args[name]) ?? defaultValue;
+
+const joinedArgs = (...names: string[]) => (args: Record<string, unknown>): string | undefined => {
+  const values = names.map(name => optionalArgString(args[name])).filter((value): value is string => value !== null);
+  return values.length ? values.join(' ') : undefined;
+};
+
+const commands = {
+  'app:upload': command(upload, {argument: stringArg('directory', 'dist'), flags: ['directory', 'open']}),
+  'app:download': command(download, {argument: stringArg('app'), flags: ['app', 'output', 'overwrite'], required: ['app']}),
+  'app:validate': command(validate, {argument: stringArg('directory', 'dist'), flags: ['directory', 'manifest', 'schema'], requiresAuthentication: false}),
+  'app:list': command(list, {flags: ['skip', 'limit']}),
+  'app:info': command(info, {argument: stringArg('app'), flags: ['app'], required: ['app']}),
+  'app:scripts': command(scripts, {argument: joinedArgs('app', 'file-key'), flags: ['app', 'file-key'], required: ['app', 'file-key']}),
+  'app:usages': command(usages, {argument: stringArg('app'), flags: ['app', 'skip', 'limit'], required: ['app']}),
+  'app:settings': command(settings, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app']}),
+  'app:settings-set': command(settingsSet, {argument: stringArg('app'), flags: ['app', 'project', 'settings', 'enabled'], required: ['app']}),
+  'app:visibility': command(visibility, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app']}),
+  'app:enable': command(enable, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app']}),
+  'app:disable': command(disable, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app']}),
+  'app:attach': command(attach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project']}),
+  'app:detach': command(detach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project']}),
+  'app:logs': command(logs, {argument: joinedArgs('app', 'script'), flags: ['app', 'script', 'skip', 'limit'], required: ['app']}),
+  'app:requirement-errors': command(requirementErrors, {argument: stringArg('app'), flags: ['app'], required: ['app']}),
+  'app:delete': command(deleteApp, {argument: stringArg('app'), flags: ['app', 'yes'], required: ['app']}),
+  'project:list': command(projectList, {flags: ['skip', 'limit']}),
+  'project:info': command(projectInfo, {argument: stringArg('project'), flags: ['project', 'skip', 'limit'], required: ['project']}),
+  'project:fields': command(projectFields, {argument: stringArg('project'), flags: ['project', 'skip', 'limit'], required: ['project']}),
+  'project:apps': command(projectApps, {argument: stringArg('project'), flags: ['project', 'skip', 'limit'], required: ['project']}),
+  'tag:search': command(tagSearch, {argument: stringArg('query'), flags: ['query', 'project', 'skip', 'limit']}),
+  'field:values': command(fieldValues, {argument: stringArg('query'), flags: ['query', 'project', 'field', 'skip', 'limit'], required: ['project', 'field']}),
+  'group:list': command(groupList, {argument: stringArg('query'), flags: ['query', 'skip', 'limit']}),
+  'group:members': command(groupMembers, {argument: stringArg('group'), flags: ['group', 'skip', 'limit']}),
+  'user:list': command(userList, {argument: stringArg('query'), flags: ['query', 'skip', 'limit']}),
+  'user:info': command(userInfo, {argument: stringArg('user'), flags: ['user', 'skip', 'limit'], required: ['user']}),
+} satisfies Record<string, Command>;
+
+function command(execute: Command['execute'], options: Omit<Command, 'execute'> = {}): Command {
+  return {execute, requiresAuthentication: true, ...options};
+}
+
+function optionalArgString(value: unknown): string | null {
+  return value === undefined || value === null || value === false || value === true ? null : value.toString();
+}
 
 export async function run(argv = process.argv) {
   const args = parse(argv);
+
+  if (isFlagEnabled(args.version)) {
+    printVersion();
+    return;
+  }
+
+  if (isFlagEnabled(args.help) || isFlagEnabled(args.h) || args._.length === 0) {
+    printHelp();
+    return;
+  }
+
+  if (args._.length !== 2) {
+    exit(new Error(i18n('Expected command syntax: youtrack-app <entity> <action> [options]')));
+    return;
+  }
+
+  const commandKey = `${args._[0]}:${args._[1]}`;
+  if (!isCommand(commandKey)) {
+    exit(new Error(i18n(`Unknown command "${args._[0]} ${args._[1]}"`)));
+    return;
+  }
+
+  const selectedCommand = commands[commandKey];
+  const validationError = validateCommandArgs(selectedCommand, args);
+  if (validationError) {
+    exit(new Error(i18n(validationError)));
+    return;
+  }
+
   const {YOUTRACK_HOST, YOUTRACK_API_TOKEN} = process.env;
   const config: Config = {
     host: args.host || YOUTRACK_HOST || null,
     token: args.token || YOUTRACK_API_TOKEN || null,
-    output: args.output || null,
+    output: args.output || (commandKey === 'app:download' ? process.cwd() : null),
     overwrite: args.overwrite || null,
     manifest: args.manifest || null,
     schema: args.schema || null,
@@ -75,31 +128,19 @@ export async function run(argv = process.argv) {
     cwd: process.cwd(),
   };
 
-  const option = args._[0];
-  if (option === 'version') {
-    printVersion();
-    return;
-  }
-
-  if (!isCommand(option)) {
-    printHelp();
-    return;
-  }
-
-  const executable = options[option];
-  const commandArg = getCommandArg(option, args._.slice(1));
-  if (option === 'validate') {
-    await executable(config, commandArg);
+  const commandArg = selectedCommand.argument?.(args);
+  if (!selectedCommand.requiresAuthentication) {
+    await selectedCommand.execute(config, commandArg);
     return;
   }
 
   await checkRequiredParams(['host', 'token'], args, async () => {
-    await executable(config, commandArg);
+    await selectedCommand.execute(config, commandArg);
   });
 
   function printHelp() {
     br();
-    console.log(i18n('youtrack-app <command> [options]'));
+    console.log(i18n('youtrack-app <entity> <action> [options]'));
     br();
     console.log(i18n('Manage, configure, and debug YouTrack apps/workflows from an external development environment.'));
     console.log(i18n('Configure YOUTRACK_HOST and YOUTRACK_API_TOKEN, or pass --host and --token to each command.'));
@@ -112,60 +153,56 @@ export async function run(argv = process.argv) {
     printLine(i18n('--yaml'), i18n('Print YAML for commands that support it.'));
     printLine(i18n('--skip N'), i18n('Choose how many results to skip in commands that support paging.'));
     printLine(i18n('--limit N'), i18n('Choose how many results to request in commands that support paging.'));
-    br();
-
-    printSection(i18n('General commands'));
-    printCommand(i18n('version'), {
-      does: i18n('Prints the CLI version.'),
-    });
+    printLine(i18n('--help, -h'), i18n('Show help.'));
+    printLine(i18n('--version'), i18n('Print the CLI version.'));
     br();
 
     printSection(i18n('App lifecycle'));
-    printCommand(i18n('upload <directory> [--open]'), {
+    printCommand(i18n('app upload [--directory DIR] [--open]'), {
       does: i18n('Uploads a local app package to the YouTrack instance.'),
       args: [
-        i18n('<directory> is a local app directory or built package directory, usually dist.'),
+        i18n('--directory DIR is a local app directory or built package directory. Defaults to dist.'),
         i18n('--open opens app settings after upload.'),
       ],
     });
-    printCommand(i18n('download <app> [--output DIR] [--overwrite]'), {
+    printCommand(i18n('app download --app <app> [--output DIR] [--overwrite]'), {
       does: i18n('Downloads an app package from the YouTrack instance and extracts it locally.'),
       args: [
         i18n('<app> is an app ID or package name.'),
-        i18n('--output DIR selects the local destination.'),
+        i18n('--output DIR selects the local destination. Defaults to the current working directory.'),
         i18n('--overwrite replaces files in the destination directory.'),
       ],
     });
-    printCommand(i18n('validate [directory] [--manifest FILE] [--schema FILE]'), {
+    printCommand(i18n('app validate [--directory DIR] [--manifest FILE] [--schema FILE]'), {
       does: i18n('Validates local app manifest files against the YouTrack app JSON schema without connecting to YouTrack.'),
       args: [
-        i18n('[directory] is a local app directory.'),
+        i18n('--directory DIR is a local app directory. Defaults to dist.'),
         i18n('--manifest FILE validates a manifest file directly or overrides the default manifest file.'),
         i18n('--schema FILE overrides the default schema file.'),
       ],
     });
-    printCommand(i18n('enable <app> [--project <short-name>]'), {
+    printCommand(i18n('app enable --app <app> [--project <short-name>]'), {
       does: i18n('Enables an installed app globally in the YouTrack instance, or enables its usage for one project.'),
       args: [
         i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> is a project short name such as DEMO or JT.'),
       ],
     });
-    printCommand(i18n('disable <app> [--project <short-name>]'), {
+    printCommand(i18n('app disable --app <app> [--project <short-name>]'), {
       does: i18n('Disables an installed app globally in the YouTrack instance, or disables its usage for one project.'),
       args: [
         i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> is a project short name such as DEMO or JT.'),
       ],
     });
-    printCommand(i18n('attach <app> --project <short-name>'), {
+    printCommand(i18n('app attach --app <app> --project <short-name>'), {
       does: i18n('Attaches an installed app to a project in the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> is the project key, for example DEMO or JT.'),
       ],
     });
-    printCommand(i18n('detach <app> --project <short-name>'), {
+    printCommand(i18n('app detach --app <app> --project <short-name>'), {
       does: i18n('Detaches an installed app from a project in the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID or package name.'),
@@ -175,36 +212,36 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('App details and configuration'));
-    printCommand(i18n('list [--skip N] [--limit N]'), {
+    printCommand(i18n('app list [--skip N] [--limit N]'), {
       does: i18n('Lists installed apps visible to the token.'),
     });
-    printCommand(i18n('info <app>'), {
+    printCommand(i18n('app info --app <app>'), {
       does: i18n('Shows bounded app metadata and file keys for one installed app in the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID or package name.'),
       ],
     });
-    printCommand(i18n('scripts <app> <file-key>'), {
+    printCommand(i18n('app scripts --app <app> --file-key <file-key>'), {
       does: i18n('Shows one manifest, settings, entity extension, or script file from an installed app in the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID or package name.'),
         i18n('<file-key> is listed by info. Use manifest, settings, entityExtensions, or a script ID.'),
       ],
     });
-    printCommand(i18n('usages <app> [--skip N] [--limit N]'), {
+    printCommand(i18n('app usages --app <app> [--skip N] [--limit N]'), {
       does: i18n('Lists project usage records for one installed app, including nested requirement problems.'),
       args: [
         i18n('<app> is an app ID or package name.'),
       ],
     });
-    printCommand(i18n('settings <app> [--project <short-name>]'), {
+    printCommand(i18n('app settings --app <app> [--project <short-name>]'), {
       does: i18n('Reads global app settings or project-scoped settings from the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID or package name.'),
         i18n('--project <short-name> is a project short name.'),
       ],
     });
-    printCommand(i18n('settings-set <app> [--project <short-name>] [--settings JSON] [--enabled true|false]'), {
+    printCommand(i18n('app settings-set --app <app> [--project <short-name>] [--settings JSON] [--enabled true|false]'), {
       does: i18n('Updates app settings and/or enabled state in the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID or package name.'),
@@ -213,20 +250,20 @@ export async function run(argv = process.argv) {
         i18n('--enabled true|false updates the enabled state.'),
       ],
     });
-    printCommand(i18n('logs <app> [script] [--skip N] [--limit N]'), {
+    printCommand(i18n('app logs --app <app> [--script <script>] [--skip N] [--limit N]'), {
       does: i18n('Shows recent app-level log entries, or paged log entries for one script, module, or workflow rule.'),
       args: [
         i18n('<app> is an app ID or package name.'),
-        i18n('[script] is a script, module, rule ID, rule name, or rule title.'),
+        i18n('--script <script> is a script, module, rule ID, rule name, or rule title.'),
       ],
     });
-    printCommand(i18n('requirement-errors <app>'), {
+    printCommand(i18n('app requirement-errors --app <app>'), {
       does: i18n('Shows broken requirement problems reported by app usages in the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID or package name.'),
       ],
     });
-    printCommand(i18n('visibility <app> [--project <short-name>]'), {
+    printCommand(i18n('app visibility --app <app> [--project <short-name>]'), {
       does: i18n('Shows read-only global or project visibility settings for one app.'),
       args: [
         i18n('<app> is an app ID or package name.'),
@@ -236,61 +273,61 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('Instance exploration'));
-    printCommand(i18n('project-list [--skip N] [--limit N]'), {
+    printCommand(i18n('project list [--skip N] [--limit N]'), {
       does: i18n('Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.'),
     });
-    printCommand(i18n('project-info <project> [--skip N] [--limit N]'), {
+    printCommand(i18n('project info --project <project> [--skip N] [--limit N]'), {
       does: i18n('Shows identifying details for one project in the YouTrack instance.'),
       args: [
         i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
-    printCommand(i18n('project-fields <project> [--skip N] [--limit N]'), {
+    printCommand(i18n('project fields --project <project> [--skip N] [--limit N]'), {
       does: i18n('Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.'),
       args: [
         i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
-    printCommand(i18n('project-apps <project> [--skip N] [--limit N]'), {
+    printCommand(i18n('project apps --project <project> [--skip N] [--limit N]'), {
       does: i18n('Lists apps attached to one project in the YouTrack instance.'),
       args: [
         i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
-    printCommand(i18n('tag-search <query> [--project <short-name>] [--skip N] [--limit N]'), {
+    printCommand(i18n('tag search [--query <query>] [--project <short-name>] [--skip N] [--limit N]'), {
       does: i18n('Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.'),
       args: [
-        i18n('<query> is tag name text.'),
+        i18n('--query <query> is optional tag name text.'),
         i18n('--project <short-name> narrows tags to one project.'),
       ],
     });
-    printCommand(i18n('field-values <query> --project <short-name> --field <field> [--skip N] [--limit N]'), {
+    printCommand(i18n('field values --project <short-name> --field <field> [--query <query>] [--skip N] [--limit N]'), {
       does: i18n('Searches values for one project custom field.'),
       args: [
-        i18n('<query> is value text.'),
+        i18n('--query <query> is optional value text.'),
         i18n('--project <short-name> selects the project.'),
         i18n('--field <field> is a field ID or name.'),
       ],
     });
-    printCommand(i18n('group-list [query] [--skip N] [--limit N]'), {
+    printCommand(i18n('group list [--query <query>] [--skip N] [--limit N]'), {
       does: i18n('Searches user groups and project teams in the YouTrack instance with IDs.'),
       args: [
-        i18n('[query] is an optional group search filter. When omitted, all visible groups are listed.'),
+        i18n('--query <query> is an optional group search filter. When omitted, all visible groups are listed.'),
       ],
     });
-    printCommand(i18n('group-members [group] [--skip N] [--limit N]'), {
+    printCommand(i18n('group members [--group <group>] [--skip N] [--limit N]'), {
       does: i18n('Shows direct members of one user group or project team, or direct members for all paged groups when omitted.'),
       args: [
-        i18n('[group] is an optional exact group ID or name.'),
+        i18n('--group <group> is an optional exact group ID or name.'),
       ],
     });
-    printCommand(i18n('user-list [query] [--skip N] [--limit N]'), {
+    printCommand(i18n('user list [--query <query>] [--skip N] [--limit N]'), {
       does: i18n('Searches users in the YouTrack instance with login, ID, and display name.'),
       args: [
-        i18n('[query] is an optional user search filter. When omitted, all visible users are listed.'),
+        i18n('--query <query> is an optional user search filter. When omitted, all visible users are listed.'),
       ],
     });
-    printCommand(i18n('user-info <user> [--skip N] [--limit N]'), {
+    printCommand(i18n('user info --user <user> [--skip N] [--limit N]'), {
       does: i18n('Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.'),
       args: [
         i18n('<user> is an exact user ID, login, username, or full name.'),
@@ -299,7 +336,7 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('Dangerous commands'));
-    printCommand(i18n('delete <app> [--yes]'), {
+    printCommand(i18n('app delete --app <app> [--yes]'), {
       does: i18n('Danger: permanently deletes the installed app and everything app-related from the YouTrack instance.'),
       args: [
         i18n('<app> is an app ID or package name. Titles are not accepted.'),
@@ -369,46 +406,31 @@ export async function run(argv = process.argv) {
     return value !== undefined && value !== false && value !== 'false';
   }
 
-  function optionalArgString(value: unknown): string | null {
-    return value === undefined || value === null || value === false ? null : value.toString();
+}
+
+function validateCommandArgs(selectedCommand: Command, args: Record<string, unknown>): string | null {
+  const commonFlags = ['host', 'token', 'json', 'yaml', 'help', 'h', 'version'];
+  const booleanFlags = new Set(['json', 'yaml', 'help', 'h', 'version', 'open', 'overwrite', 'yes']);
+  const allowedFlags = new Set([...commonFlags, ...(selectedCommand.flags ?? [])]);
+  const unknownFlag = Object.keys(args).find(key => key !== '_' && !allowedFlags.has(key));
+  if (unknownFlag) {
+    return `Unknown option "--${unknownFlag}"`;
   }
 
-  function getCommandArg(option: string | number, values: unknown[]): string | undefined {
-    if (!shouldJoinCommandArg(option)) {
-      return values[0]?.toString();
+  const valuelessFlag = Object.keys(args).find(key => key !== '_' && args[key] === true && !booleanFlags.has(key));
+  if (valuelessFlag) {
+    return `Option "--${valuelessFlag}" requires a value`;
+  }
+
+  for (const flag of selectedCommand.required ?? []) {
+    if (optionalArgString(args[flag]) === null) {
+      return `Option "--${flag}" is required`;
     }
-
-    const joined = values.join(' ');
-    return joined || undefined;
   }
 
-  function shouldJoinCommandArg(option: string | number): boolean {
-    return [
-      'download',
-      'list',
-      'info',
-      'scripts',
-      'usages',
-      'settings',
-      'settings-set',
-      'tag-search',
-      'field-values',
-      'visibility',
-      'group-list',
-      'group-members',
-      'user-list',
-      'delete',
-      'enable',
-      'disable',
-      'attach',
-      'detach',
-      'logs',
-      'requirement-errors',
-      'project-apps',
-    ].includes(option.toString());
-  }
+  return null;
+}
 
-  function isCommand(option: string | number | undefined): option is keyof typeof options {
-    return option !== undefined && Object.hasOwn(options, option);
-  }
+function isCommand(commandKey: string): commandKey is keyof typeof commands {
+  return Object.hasOwn(commands, commandKey);
 }

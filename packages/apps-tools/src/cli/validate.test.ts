@@ -75,7 +75,7 @@ describe('validate', () => {
     process.env.YOUTRACK_HOST = '';
     process.env.YOUTRACK_API_TOKEN = '';
 
-    require('./index').run(['', '', 'validate', testDir]);
+    require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`]);
 
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
@@ -84,21 +84,11 @@ describe('validate', () => {
     process.env.YOUTRACK_API_TOKEN = 'bar';
   });
 
-  it('should exit if no directory or manifest file provided', () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
-
-    require('./index').run(['', '', 'validate']);
-
-    expect(console.error).toHaveBeenCalledWith('Error: Provide an app directory or a manifest file');
-    expect(process.exit).toHaveBeenCalledWith(1);
-  });
-
   it('should exit if manifest file is not a JSON file', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    require('./index').run(['', '', 'validate', testDir, '--manifest=foo.txt']);
+    require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`, '--manifest=foo.txt']);
 
     expect(console.error).toHaveBeenCalledWith('Error: The manifest file must use the .json extension');
     expect(process.exit).toHaveBeenCalledWith(1);
@@ -112,7 +102,7 @@ describe('validate', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
-    await require('./index').run(['', '', 'validate', testDir, '--schema=foo.txt']);
+    await require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`, '--schema=foo.txt']);
 
     expect(console.error).toHaveBeenCalledWith('Error: The schema file must use the .json extension');
     expect(process.exit).toHaveBeenCalledWith(1);
@@ -128,7 +118,7 @@ describe('validate', () => {
       .spyOn(global, 'fetch')
       .mockImplementation(jest.fn(() => Promise.resolve({json: () => Promise.resolve({})})) as unknown as typeof fetch);
 
-    await require('./index').run(['', '', 'validate', testDir]);
+    await require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`]);
 
     expect(fetch).toHaveBeenCalledWith(DEFAULT_SCHEMA_URL);
   });
@@ -144,7 +134,7 @@ describe('validate', () => {
       .spyOn(global, 'fetch')
       .mockImplementation(jest.fn(() => Promise.resolve({json: () => Promise.resolve({}), ok: true})) as unknown as typeof fetch);
 
-    await require('./index').run(['', '', 'validate', testDir, '--schema=http://foo.json']);
+    await require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`, '--schema=http://foo.json']);
 
     expect(fetch).toHaveBeenCalledWith('http://foo.json');
     expect(console.error).not.toHaveBeenCalled();
@@ -167,7 +157,7 @@ describe('validate', () => {
         jest.fn(() => Promise.resolve({json: () => Promise.resolve(testSchema), ok: true})) as unknown as typeof fetch,
       );
 
-    await require('./index').run(['', '', 'validate', testDir]);
+    await require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`]);
 
     expect(fetch).toHaveBeenCalledWith(DEFAULT_SCHEMA_URL);
     expect(console.error).not.toHaveBeenCalled();
@@ -189,7 +179,7 @@ describe('validate', () => {
         jest.fn(() => Promise.resolve({json: () => Promise.resolve(testSchema), ok: true})) as unknown as typeof fetch,
       );
 
-    await require('./index').run(['', '', 'validate', testDir]);
+    await require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`]);
 
     expect(fetch).toHaveBeenCalledWith(DEFAULT_SCHEMA_URL);
     expect(console.error).toHaveBeenCalledWith('Error: "widgets" must NOT have fewer than 1 items');
@@ -210,7 +200,7 @@ describe('validate', () => {
         jest.fn(() => Promise.resolve({json: () => Promise.resolve(testSchema), ok: true})) as unknown as typeof fetch,
       );
 
-    await require('./index').run(['', '', 'validate', testDir]);
+    await require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`]);
 
     expect(fetch).not.toHaveBeenCalled();
     expect(tmpSchema).toEqual(testSchema);
