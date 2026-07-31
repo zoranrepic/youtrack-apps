@@ -130,7 +130,7 @@ describe('NestJS-Style Code Generation', () => {
 
   describe('HTTP Handlers', () => {
     test('should create simple GET handler by default', () => {
-      const result = runCLI('handler global/health', { silent: true });
+      const result = runCLI('http-handler add --scope global --path health', { silent: true });
       
       assert.strictEqual(result.success, true, 'Command should succeed');
       assert.strictEqual(
@@ -151,7 +151,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create POST handler with --method flag', () => {
-      const result = runCLI('handler project/users --method POST', { silent: true });
+      const result = runCLI('http-handler add --scope project --path users --method POST', { silent: true });
       
       assert.strictEqual(result.success, true, 'Command should succeed');
       assert.strictEqual(
@@ -172,7 +172,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create PUT handler', () => {
-      const result = runCLI('handler issue/status --method PUT', { silent: true });
+      const result = runCLI('http-handler add --scope issue --path status --method PUT', { silent: true });
       
       assert.strictEqual(result.success, true);
       assert.strictEqual(fileExists('src/backend/router/issue/status/PUT.ts'), true);
@@ -183,7 +183,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create DELETE handler', () => {
-      const result = runCLI('handler global/cache --method DELETE', { silent: true });
+      const result = runCLI('http-handler add --scope global --path cache --method DELETE', { silent: true });
       
       assert.strictEqual(result.success, true);
       assert.strictEqual(fileExists('src/backend/router/global/cache/DELETE.ts'), true);
@@ -194,7 +194,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create handler with permissions', () => {
-      const result = runCLI('handler issue/comments --method POST --permissions READ_ISSUE,UPDATE_ISSUE', { silent: true });
+      const result = runCLI('http-handler add --scope issue --path comments --method POST --permissions READ_ISSUE,UPDATE_ISSUE', { silent: true });
       
       assert.strictEqual(result.success, true);
       assert.strictEqual(fileExists('src/backend/router/issue/comments/POST.ts'), true);
@@ -210,7 +210,7 @@ describe('NestJS-Style Code Generation', () => {
       const cleanupLintFixScript = createLintFixScript(argsPath);
 
       try {
-        const result = runCLI('handler global/lint-hook', { silent: true });
+        const result = runCLI('http-handler add --scope global --path lint-hook', { silent: true });
 
         assert.strictEqual(result.success, true, 'Command should succeed');
         assert.deepStrictEqual(JSON.parse(fs.readFileSync(argsPath, 'utf8')), [
@@ -222,7 +222,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should handle nested paths', () => {
-      const result = runCLI('handler project/users/profile/settings', { silent: true });
+      const result = runCLI('http-handler add --scope project --path users/profile/settings', { silent: true });
       
       assert.strictEqual(result.success, true);
       assert.strictEqual(
@@ -235,27 +235,27 @@ describe('NestJS-Style Code Generation', () => {
       );
     });
 
-    test('should work with short alias "h"', () => {
+    test('should reject the removed short alias "h"', () => {
       const result = runCLI('h global/ping', { silent: true });
       
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(fileExists('src/backend/router/global/ping/GET.ts'), true);
+      assert.strictEqual(result.success, false);
+      assert.match(result.output, /Unknown command/);
     });
 
-    test('http-handler interception should use normalized aliases', () => {
+    test('http-handler interception should use normalized argv', () => {
       const indexPath = path.join(PKG_DIR, 'index.js');
       const indexContent = fs.readFileSync(indexPath, 'utf8');
 
-      // Regression guard: alias commands like `handler add` / `h add`
+      // Regression guard: public commands translated to Hygen's internal argv
       // must be detected via normalizedArgv, not raw argv.
       assert.ok(
         indexContent.includes("const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler')"),
-        'HTTP handler interception should use normalizedArgv for alias handling'
+        'HTTP handler interception should use normalizedArgv'
       );
     });
 
     test('should handle multiple permissions', () => {
-      const result = runCLI('handler project/admin --method POST --permissions READ_PROJECT,UPDATE_PROJECT,DELETE_PROJECT', { silent: true });
+      const result = runCLI('http-handler add --scope project --path admin --method POST --permissions READ_PROJECT,UPDATE_PROJECT,DELETE_PROJECT', { silent: true });
       
       assert.strictEqual(result.success, true);
       const content = readFile('src/backend/router/project/admin/POST.ts');
@@ -267,7 +267,7 @@ describe('NestJS-Style Code Generation', () => {
 
   describe('Extension Properties', () => {
     test('should create string property by default', () => {
-      const result = runCLI('property Issue.customStatus', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name customStatus', { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -281,7 +281,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create integer property', () => {
-      const result = runCLI('property Project.rating --type integer', { silent: true });
+      const result = runCLI('extension-property add --entity Project --name rating --type integer', { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -293,7 +293,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create boolean property', () => {
-      const result = runCLI('property Issue.isArchived --type boolean', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name isArchived --type boolean', { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -304,7 +304,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create Issue reference property', () => {
-      const result = runCLI('property Issue.relatedIssue --type Issue', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name relatedIssue --type Issue', { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -315,7 +315,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create multi-value property with --set flag', () => {
-      const result = runCLI('property Issue.tags --type string --set', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name tags --type string --set', { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -326,20 +326,15 @@ describe('NestJS-Style Code Generation', () => {
       assert.strictEqual(issueEntity.properties.tags.multi, true);
     });
 
-    test('should create multi-value property with --multi true flag', () => {
-      const result = runCLI('property Issue.labels --type string --multi true', { silent: true });
+    test('should reject removed --multi alias', () => {
+      const result = runCLI('extension-property add --entity Issue --name labels --type string --multi true', { silent: true });
 
-      assert.strictEqual(result.success, true);
-
-      const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
-      const issueEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Issue');
-
-      assert.strictEqual(issueEntity.properties.labels.type, 'string');
-      assert.strictEqual(issueEntity.properties.labels.multi, true, '--multi true should set multi to boolean true');
+      assert.strictEqual(result.success, false);
+      assert.match(result.output, /Unknown option "--multi"/);
     });
 
     test('should store multi as boolean not string', () => {
-      const result = runCLI('property Issue.score --type integer --set', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name score --type integer --set', { silent: true });
 
       assert.strictEqual(result.success, true);
 
@@ -350,7 +345,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create property on User entity', () => {
-      const result = runCLI('property User.department --type string', { silent: true });
+      const result = runCLI('extension-property add --entity User --name department --type string', { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -362,7 +357,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create property on Article', () => {
-      const result = runCLI('property Article.config --type string', { silent: true });
+      const result = runCLI('extension-property add --entity Article --name config --type string', { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -373,30 +368,22 @@ describe('NestJS-Style Code Generation', () => {
       assert.ok(articleEntity.properties.config);
     });
 
-    test('should work with short alias "p"', () => {
+    test('should reject the removed short alias "p"', () => {
       const result = runCLI('p Issue.priority --type integer', { silent: true });
       
-      assert.strictEqual(result.success, true);
-      
-      const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
-      const issueEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Issue');
-      
-      assert.ok(issueEntity.properties.priority);
+      assert.strictEqual(result.success, false);
+      assert.match(result.output, /Unknown command/);
     });
 
-    test('should work with short alias "prop"', () => {
+    test('should reject the removed alias "prop"', () => {
       const result = runCLI('prop Article.version --type integer', { silent: true });
       
-      assert.strictEqual(result.success, true);
-      
-      const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
-      const articleEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Article');
-      
-      assert.ok(articleEntity.properties.version);
+      assert.strictEqual(result.success, false);
+      assert.match(result.output, /Unknown command/);
     });
 
     test('should handle property names with underscores', () => {
-      const result = runCLI('property Issue.custom_field_name --type string', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name custom_field_name --type string', { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -409,7 +396,7 @@ describe('NestJS-Style Code Generation', () => {
 
   describe('Workflow Rules', () => {
     test('should create workflow rules in src/workflows', () => {
-      const result = runCLI('rule add onChange notify-cli-rule', { silent: true });
+      const result = runCLI('rule add --type onChange --name notify-cli-rule', { silent: true });
 
       assert.strictEqual(result.success, true, 'Command should succeed');
       assert.strictEqual(fileExists('src/workflows/notify-cli-rule.ts'), true);
@@ -420,7 +407,7 @@ describe('NestJS-Style Code Generation', () => {
 
   describe('Error Handling & Validation', () => {
     test('should reject invalid scope', () => {
-      const result = runCLI('handler invalid/health', { silent: true });
+      const result = runCLI('http-handler add --scope invalid --path health', { silent: true });
       
       assert.strictEqual(result.success, false, 'Command should fail');
       assert.ok(
@@ -430,7 +417,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should reject invalid entity target', () => {
-      const result = runCLI('property InvalidEntity.field', { silent: true });
+      const result = runCLI('extension-property add --entity InvalidEntity --name field', { silent: true });
       
       assert.strictEqual(result.success, false, 'Command should fail');
       assert.ok(
@@ -440,7 +427,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should reject invalid property type', () => {
-      const result = runCLI('property Issue.field --type invalidtype', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name field --type invalidtype', { silent: true });
       
       assert.strictEqual(result.success, false, 'Command should fail');
       assert.ok(
@@ -450,7 +437,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should reject invalid property name with spaces', () => {
-      const result = runCLI('property "Issue.my field"', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name "my field"', { silent: true });
       
       assert.strictEqual(result.success, false, 'Command should fail');
       assert.ok(
@@ -460,13 +447,13 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should reject property name starting with number', () => {
-      const result = runCLI('property Issue.123field', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name 123field', { silent: true });
       
       assert.strictEqual(result.success, false, 'Command should fail');
     });
 
     test('should reject property name with hyphens', () => {
-      const result = runCLI('property "Issue.field-name"', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name field-name', { silent: true });
       
       assert.strictEqual(result.success, false, 'Command should fail');
     });
@@ -474,7 +461,7 @@ describe('NestJS-Style Code Generation', () => {
 
   describe('Edge Cases', () => {
     test('should handle very deep nested paths', () => {
-      const result = runCLI('handler project/api/v1/users/profile/settings/advanced', { silent: true });
+      const result = runCLI('http-handler add --scope project --path api/v1/users/profile/settings/advanced', { silent: true });
       
       assert.strictEqual(result.success, true);
       assert.strictEqual(
@@ -484,7 +471,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should handle single character property name', () => {
-      const result = runCLI('property Issue.x --type integer', { silent: true });
+      const result = runCLI('extension-property add --entity Issue --name x --type integer', { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -496,7 +483,7 @@ describe('NestJS-Style Code Generation', () => {
 
     test('should handle very long property name', () => {
       const longName = 'thisIsAVeryLongPropertyNameThatIsStillValidButUnusuallyLong';
-      const result = runCLI(`property Issue.${longName} --type string`, { silent: true });
+      const result = runCLI(`extension-property add --entity Issue --name ${longName} --type string`, { silent: true });
       
       assert.strictEqual(result.success, true);
       
@@ -511,7 +498,7 @@ describe('NestJS-Style Code Generation', () => {
       const backup = fs.readFileSync(entityExtPath, 'utf8');
       try {
         fs.writeFileSync(entityExtPath, '{ invalid json }', 'utf8');
-        const result = runCLI('property Issue.invalidJsonTest --type string', { silent: true });
+        const result = runCLI('extension-property add --entity Issue --name invalidJsonTest --type string', { silent: true });
 
         assert.strictEqual(result.success, false);
         assert.ok(result.output.includes('invalid JSON') || result.output.includes('entity-extensions'));
@@ -523,19 +510,19 @@ describe('NestJS-Style Code Generation', () => {
 
   describe('All Scopes', () => {
     test('should work with global scope', () => {
-      const result = runCLI('handler global/test1', { silent: true });
+      const result = runCLI('http-handler add --scope global --path test1', { silent: true });
       assert.strictEqual(result.success, true);
       assert.strictEqual(fileExists('src/backend/router/global/test1/GET.ts'), true);
     });
 
     test('should work with project scope', () => {
-      const result = runCLI('handler project/test2', { silent: true });
+      const result = runCLI('http-handler add --scope project --path test2', { silent: true });
       assert.strictEqual(result.success, true);
       assert.strictEqual(fileExists('src/backend/router/project/test2/GET.ts'), true);
     });
 
     test('should work with issue scope', () => {
-      const result = runCLI('handler issue/test3', { silent: true });
+      const result = runCLI('http-handler add --scope issue --path test3', { silent: true });
       assert.strictEqual(result.success, true);
       assert.strictEqual(fileExists('src/backend/router/issue/test3/GET.ts'), true);
     });
@@ -544,7 +531,7 @@ describe('NestJS-Style Code Generation', () => {
   describe('All HTTP Methods', () => {
     ['GET', 'POST', 'PUT', 'DELETE'].forEach((method) => {
       test(`should create ${method} handler`, () => {
-        const result = runCLI(`handler global/method-test-${method.toLowerCase()} --method ${method}`, { silent: true });
+        const result = runCLI(`http-handler add --scope global --path method-test-${method.toLowerCase()} --method ${method}`, { silent: true });
         assert.strictEqual(result.success, true);
         assert.strictEqual(
           fileExists(`src/backend/router/global/method-test-${method.toLowerCase()}/${method}.ts`),
@@ -557,7 +544,7 @@ describe('NestJS-Style Code Generation', () => {
   describe('All Property Types', () => {
     ['string', 'integer', 'float', 'boolean', 'Issue', 'User', 'Project', 'Article'].forEach((type) => {
       test(`should create property with ${type} type`, () => {
-        const result = runCLI(`property Issue.type_test_${type} --type ${type}`, { silent: true });
+        const result = runCLI(`extension-property add --entity Issue --name type_test_${type} --type ${type}`, { silent: true });
         assert.strictEqual(result.success, true);
         
         const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
@@ -571,7 +558,7 @@ describe('NestJS-Style Code Generation', () => {
   describe('All Entity Types', () => {
     ['Issue', 'User', 'Project', 'Article'].forEach((entity) => {
       test(`should create property on ${entity} entity`, () => {
-        const result = runCLI(`property ${entity}.entity_test --type string`, { silent: true });
+        const result = runCLI(`extension-property add --entity ${entity} --name entity_test --type string`, { silent: true });
         assert.strictEqual(result.success, true);
         
         const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));

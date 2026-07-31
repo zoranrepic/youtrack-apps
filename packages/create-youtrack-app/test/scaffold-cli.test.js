@@ -1,4 +1,4 @@
-const { test, describe, before, after, beforeEach } = require('node:test');
+const { test, describe, before, after } = require('node:test');
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -51,7 +51,7 @@ describe('Non-interactive scaffold gate (--name)', () => {
 
   describe('Enhanced DX (ts / default)', () => {
     test('scaffolds an Enhanced DX app and skips install with --no-install', () => {
-      const { success, dir } = runScaffold('--name my-app --type ts --no-install');
+      const { success, dir } = runScaffold('app create --name my-app --type ts --no-install');
 
       assert.strictEqual(success, true, 'Command should succeed');
       assert.ok(exists(dir, 'package.json'), 'package.json created');
@@ -71,7 +71,7 @@ describe('Non-interactive scaffold gate (--name)', () => {
     });
 
     test('defaults --type to ts when omitted', () => {
-      const { success, dir } = runScaffold('--name default-type --no-install');
+      const { success, dir } = runScaffold('app create --name default-type --no-install');
 
       assert.strictEqual(success, true);
       const pkg = readJson(dir, 'package.json');
@@ -79,7 +79,7 @@ describe('Non-interactive scaffold gate (--name)', () => {
     });
 
     test('derives title from name and applies default description/vendor', () => {
-      const { success, dir } = runScaffold('--name my-cool-app --no-install');
+      const { success, dir } = runScaffold('app create --name my-cool-app --no-install');
 
       assert.strictEqual(success, true);
       const manifest = readJson(dir, 'manifest.json');
@@ -91,7 +91,7 @@ describe('Non-interactive scaffold gate (--name)', () => {
 
     test('honors explicit --title, --description, --vendor, --vendor-url', () => {
       const { success, dir } = runScaffold(
-        '--name flags-app --no-install --title "Custom Title" --description "Custom desc" --vendor "Acme" --vendor-url "https://acme.test"'
+        'app create --name flags-app --no-install --title "Custom Title" --description "Custom desc" --vendor "Acme" --vendor-url "https://acme.test"'
       );
 
       assert.strictEqual(success, true);
@@ -105,7 +105,7 @@ describe('Non-interactive scaffold gate (--name)', () => {
 
   describe('JavaScript (js)', () => {
     test('scaffolds a vite-app when --type js', () => {
-      const { success, dir } = runScaffold('--name js-app --type js --no-install');
+      const { success, dir } = runScaffold('app create --name js-app --type js --no-install');
 
       assert.strictEqual(success, true);
       assert.ok(exists(dir, 'package.json'), 'package.json created');
@@ -129,35 +129,42 @@ describe('Non-interactive scaffold gate (--name)', () => {
 
   describe('Validation', () => {
     test('rejects an invalid app name', () => {
-      const { success, output } = runScaffold('--name "Bad Name" --no-install');
+      const { success, output } = runScaffold('app create --name "Bad Name" --no-install');
 
       assert.strictEqual(success, false, 'Command should fail');
       assert.ok(output.includes('Invalid app name'), 'Should show invalid app name error');
     });
 
     test('rejects a name starting with a digit', () => {
-      const { success, output } = runScaffold('--name 1app --no-install');
+      const { success, output } = runScaffold('app create --name 1app --no-install');
 
       assert.strictEqual(success, false);
       assert.ok(output.includes('Invalid app name'));
     });
 
     test('rejects an invalid --type', () => {
-      const { success, output } = runScaffold('--name typed-app --type python --no-install');
+      const { success, output } = runScaffold('app create --name typed-app --type python --no-install');
 
       assert.strictEqual(success, false, 'Command should fail');
       assert.ok(output.includes('Invalid type'), 'Should show invalid type error');
     });
   });
 
-  describe('Backward compatibility', () => {
-    test('subcommands still take precedence over the --name gate', () => {
-      // `widget --key ... --name ...` must scaffold a widget, never trigger the app gate.
+  describe('Command routing', () => {
+    test('entity/action commands take precedence over the --name gate', () => {
+      // `widget add --key ... --name ...` must scaffold a widget, never trigger the app gate.
       const indexContent = fs.readFileSync(CLI_PATH, 'utf8');
       const gateIdx = indexContent.indexOf('Non-interactive scaffold gate');
       const widgetIdx = indexContent.indexOf("const widgetIndex = normalizedArgv.findIndex");
       assert.ok(widgetIdx !== -1 && gateIdx !== -1);
       assert.ok(widgetIdx < gateIdx, 'widget handling must appear before the scaffold gate');
+    });
+
+    test('rejects the removed commandless flag form', () => {
+      const { success, output } = runScaffold('--name legacy-app --no-install');
+
+      assert.strictEqual(success, false);
+      assert.match(output, /Expected command syntax/);
     });
   });
 });
