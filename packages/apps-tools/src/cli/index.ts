@@ -33,6 +33,37 @@ type Command<TArgument = unknown> = {
   supportsStructuredOutput?: boolean;
 };
 
+const LEGACY: Record<string, string> = {
+  version: '--version',
+  upload: 'app upload --directory <dir>',
+  download: 'app download --app <app>',
+  validate: 'app validate',
+  list: 'app list',
+  info: 'app info --app <app>',
+  scripts: 'app scripts --app <app> --file-key <file-key>',
+  usages: 'app usages --app <app>',
+  settings: 'app settings --app <app>',
+  'settings-set': 'app settings-set --app <app>',
+  'tag-search': 'tag search --query <query>',
+  'field-values': 'field values --query <query> --project <project> --field <field>',
+  visibility: 'app visibility --app <app>',
+  delete: 'app delete --app <app>',
+  enable: 'app enable --app <app>',
+  disable: 'app disable --app <app>',
+  attach: 'app attach --app <app> --project <project>',
+  detach: 'app detach --app <app> --project <project>',
+  logs: 'app logs --app <app>',
+  'requirement-errors': 'app requirement-errors --app <app>',
+  'project-list': 'project list',
+  'project-info': 'project info --project <project>',
+  'project-fields': 'project fields --project <project>',
+  'project-apps': 'project apps --project <project>',
+  'group-list': 'group list',
+  'group-members': 'group members --group <group>',
+  'user-list': 'user list',
+  'user-info': 'user info --user <user>',
+};
+
 const stringArg = (name: string, defaultValue?: string) => (args: Record<string, unknown>): string | undefined =>
   optionalArgString(args[name]) ?? defaultValue;
 
@@ -95,6 +126,12 @@ export async function run(argv = process.argv) {
 
   if (isFlagEnabled(args.help) || isFlagEnabled(args.h) || args._.length === 0) {
     printHelp();
+    return;
+  }
+
+  const legacyCommand = LEGACY[args._[0]];
+  if (legacyCommand) {
+    exit(new Error(i18n(`"${args._[0]}" is now "${legacyCommand}"`)), ExitCode.Usage);
     return;
   }
 

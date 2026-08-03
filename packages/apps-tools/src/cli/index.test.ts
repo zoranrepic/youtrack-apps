@@ -298,6 +298,21 @@ describe('index', function () {
     expect(info).not.toHaveBeenCalled();
   });
 
+  it('should suggest the new syntax for legacy commands', async function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    await require('./index').run(['', '', 'upload', 'dist']);
+    await require('./index').run(['', '', 'validate']);
+    await require('./index').run(['', '', 'tag-search', 'bug']);
+
+    expect(console.error).toHaveBeenNthCalledWith(1, 'Error: "upload" is now "app upload --directory <dir>"');
+    expect(console.error).toHaveBeenNthCalledWith(2, 'Error: "validate" is now "app validate"');
+    expect(console.error).toHaveBeenNthCalledWith(3, 'Error: "tag-search" is now "tag search --query <query>"');
+    expect(process.exit).toHaveBeenCalledTimes(3);
+    expect(process.exit).toHaveBeenCalledWith(2);
+  });
+
   it('should reject unknown flags and missing required flags', async function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
