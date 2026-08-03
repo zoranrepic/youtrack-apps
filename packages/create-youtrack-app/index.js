@@ -73,6 +73,7 @@ function routePublicCommand(rawArgv) {
   if (!allowed) {
     return { argv: rawArgv, error: `Unknown command "${parsed._[0]} ${parsed._[1]}"` };
   }
+  const withCommand = result => ({ ...result, command: key });
 
   const unknownFlag = Object.keys(parsed).find(flag => !['_', 'cwd', ...allowed].includes(flag));
   if (unknownFlag) {
@@ -89,9 +90,9 @@ function routePublicCommand(rawArgv) {
     if (!flagValue(parsed.type) || !flagValue(parsed.name)) {
       return { argv: rawArgv, error: 'Usage: rule add --type <type> --name <name>' };
     }
-    return {
+    return withCommand({
       argv: ['rule', 'add', String(parsed.type), ...removeOptions(buildCommandArgv('rule', 'add', parsed, allowed).slice(2), ['type'])],
-    };
+    });
   }
 
   if (key === 'http-handler:add') {
@@ -101,9 +102,9 @@ function routePublicCommand(rawArgv) {
       if (!scope) {
         return { argv: rawArgv, error: 'Option "--scope" is required when --path is provided' };
       }
-      return {
+      return withCommand({
         argv: ['http-handler', `${scope}/${routePath || ''}`, ...removeOptions(buildCommandArgv('http-handler', 'add', parsed, allowed).slice(2), ['scope', 'path'])],
-      };
+      });
     }
   }
 
@@ -114,17 +115,17 @@ function routePublicCommand(rawArgv) {
       if (!entity || !name) {
         return { argv: rawArgv, error: 'Options "--entity" and "--name" must be provided together' };
       }
-      return {
+      return withCommand({
         argv: ['extension-property', `${entity}.${name}`, ...removeOptions(buildCommandArgv('extension-property', 'add', parsed, allowed).slice(2), ['entity'])],
-      };
+      });
     }
   }
 
   if (key === 'app:init') {
-    return { argv: buildCommandArgv('app', 'init', parsed, allowed).slice(2) };
+    return withCommand({ argv: buildCommandArgv('app', 'init', parsed, allowed).slice(2) });
   }
 
-  return { argv: rawArgv };
+  return withCommand({ argv: rawArgv });
 }
 
 function flagValue(value) {
@@ -377,30 +378,6 @@ async function handleSkillCommand(skillAction) {
   return false;
 }
 
-function getCommandArgs(commandName, normalizedArgv, positionalArgs) {
-  const positionalIndex = positionalArgs.findIndex(arg => arg === commandName);
-  if (positionalIndex !== -1) {
-    return positionalArgs.slice(positionalIndex);
-  }
-
-  const rawIndex = normalizedArgv.findIndex(arg => arg === commandName);
-  if (rawIndex === -1) {
-    return null;
-  }
-
-  const commandArgs = [];
-  for (const arg of normalizedArgv.slice(rawIndex)) {
-    if (commandArgs.length > 0 && arg.startsWith('--')) {
-      break;
-    }
-    if (arg !== '--') {
-      commandArgs.push(arg);
-    }
-  }
-
-  return commandArgs;
-}
-
 async function handleRuleCommand(ruleArgs) {
   if (!ruleArgs) {
     return false;
@@ -471,19 +448,14 @@ async function handleRuleCommand(ruleArgs) {
   }
 
   const normalizedArgv = argv;
-  const positionalArgs = args._;
 
-  const skillIndex = normalizedArgv.findIndex(a => a === 'skill');
-  if (skillIndex !== -1) {
-    const skillAction = normalizedArgv[skillIndex + 1] || 'status';
+  if (publicRoute.command === 'skill:install' || publicRoute.command === 'skill:status') {
+    const skillAction = publicRoute.command.split(':')[1];
 
     try {
       if (await handleSkillCommand(skillAction)) {
         return;
       }
-
-      console.error(styleText("red", `Invalid skill command: "${skillAction}". Must be one of: install, status.`));
-      process.exit(1);
     } catch (error) {
       console.error(styleText("red", `Error: ${(error && error.message) || String(error)}`));
       process.exit(1);
@@ -491,7 +463,7 @@ async function handleRuleCommand(ruleArgs) {
   }
 
   try {
-    if (await handleRuleCommand(getCommandArgs('rule', normalizedArgv, positionalArgs))) {
+    if (publicRoute.command === 'rule:add' && await handleRuleCommand(['rule', 'add', String(args.type)])) {
       return;
     }
   } catch (error) {

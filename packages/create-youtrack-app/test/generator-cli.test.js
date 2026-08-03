@@ -337,6 +337,15 @@ describe('NestJS-Style Code Generation', () => {
       assert.strictEqual(issueEntity.properties.customStatus.multi, false);
     });
 
+    test('does not treat a flag value of skill as the skill command', () => {
+      const result = runCLI('extension-property add --entity Issue --name skill', { silent: true });
+
+      assert.strictEqual(result.success, true);
+      const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
+      const issueEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Issue');
+      assert.ok(issueEntity.properties.skill);
+    });
+
     test('should create integer property', () => {
       const result = runCLI('extension-property add --entity Project --name rating --type integer', { silent: true });
       
@@ -459,6 +468,13 @@ describe('NestJS-Style Code Generation', () => {
       assert.strictEqual(fileExists('src/workflows/notify-cli-rule.ts'), true);
       assert.strictEqual(fileExists('src/workflows/notify-cli-rule.js'), false);
       assert.strictEqual(fileExists('src/backend/workflows/notify-cli-rule.ts'), false);
+    });
+
+    test('does not treat a rule name of skill as the skill command', () => {
+      const result = runCLI('rule add --type onChange --name skill', { silent: true });
+
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(fileExists('src/workflows/skill.ts'), true);
     });
   });
 
