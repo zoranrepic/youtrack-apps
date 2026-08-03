@@ -10,8 +10,6 @@ Common options:
   --token <token>                                                               Permanent token. Overrides YOUTRACK_API_TOKEN.
   --json                                                                        Print machine-readable JSON for supported commands.
   --yaml, --yml                                                                 Print machine-readable YAML for supported commands.
-  --skip N                                                                      Choose how many results to skip in commands that support paging.
-  --limit N                                                                     Choose how many results to request in commands that support paging.
   --help, -h                                                                    Show help.
   --version                                                                     Print the CLI version.
 
@@ -82,11 +80,12 @@ App details and configuration:
       --project <short-name> writes project settings instead of global settings.
       --settings JSON is a JSON object string.
       --enabled true|false updates the enabled state.
-  app logs --app <app> [--script <script>] [--skip N] [--limit N]
+  app logs --app <app> [--limit N] [--script <script> [--skip N]]
     Does: Shows recent app-level log entries, or paged log entries for one script, module, or workflow rule.
     Args:
       <app> is an app ID or package name.
       --script <script> is a script, module, rule ID, rule name, or rule title.
+      --skip N is supported with --script for paging script logs. --limit N limits app or script logs.
   app requirement-errors --app <app>
     Does: Shows broken requirement problems reported by app usages in the YouTrack instance.
     Args:
@@ -100,11 +99,11 @@ App details and configuration:
 Instance exploration:
   project list [--skip N] [--limit N]
     Does: Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.
-  project info --project <project> [--skip N] [--limit N]
+  project info --project <project>
     Does: Shows identifying details for one project in the YouTrack instance.
     Args:
       <project> is an exact project ID or short name/key.
-  project fields --project <project> [--skip N] [--limit N]
+  project fields --project <project>
     Does: Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.
     Args:
       <project> is an exact project ID or short name/key.
@@ -131,11 +130,12 @@ Instance exploration:
     Does: Shows direct members of one user group or project team, or direct members for all paged groups when omitted.
     Args:
       --group <group> is an optional exact group ID or name.
+      --skip N and --limit N apply when --group is omitted.
   user list [--query <query>] [--skip N] [--limit N]
     Does: Searches users in the YouTrack instance with login, ID, and display name.
     Args:
       --query <query> is an optional user search filter. When omitted, all visible users are listed.
-  user info --user <user> [--skip N] [--limit N]
+  user info --user <user>
     Does: Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.
     Args:
       <user> is an exact user ID, login, username, or full name.

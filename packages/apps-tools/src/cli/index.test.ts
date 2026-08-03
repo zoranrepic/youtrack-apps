@@ -325,6 +325,38 @@ describe('index', function () {
     expect(info).not.toHaveBeenCalled();
   });
 
+  it('should preserve short flag spelling in unknown option errors', async function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    await require('./index').run(['', '', 'app', 'list', '-j', '--host=foo', '--token=bar']);
+
+    expect(console.error).toHaveBeenCalledWith('Error: Unknown option "-j"');
+    expect(process.exit).toHaveBeenCalledWith(2);
+  });
+
+  it('should list paging options on commands instead of common options', async function () {
+    await require('./index').run(['', '', '--help']);
+
+    expect(console.log).not.toHaveBeenCalledWith(expect.stringMatching(/^{2}--skip N/));
+    expect(console.log).not.toHaveBeenCalledWith(expect.stringMatching(/^{2}--limit N/));
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('app list [--skip N] [--limit N]'));
+  });
+
+  it('should reject pagination that the selected command does not use', async function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    await require('./index').run(['', '', 'app', 'logs', '--app=my-app', '--skip=5', '--host=foo', '--token=bar']);
+    await require('./index').run(['', '', 'group', 'members', '--group=developers', '--limit=5', '--host=foo', '--token=bar']);
+    await require('./index').run(['', '', 'user', 'info', '--user=alex', '--limit=5', '--host=foo', '--token=bar']);
+
+    expect(console.error).toHaveBeenNthCalledWith(1, 'Error: Option "--skip" is only supported with "--script"');
+    expect(console.error).toHaveBeenNthCalledWith(2, 'Error: Options "--skip" and "--limit" are only supported when "--group" is omitted');
+    expect(console.error).toHaveBeenNthCalledWith(3, 'Error: Unknown option "--limit"');
+    expect(process.exit).toHaveBeenCalledTimes(3);
+  });
+
   it.each([
     ['app upload', ['app', 'upload']],
     ['app download', ['app', 'download', '--app=my-app']],

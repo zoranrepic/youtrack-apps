@@ -41,16 +41,16 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app app disable --app <app> [--project <project-short-name>]`
 - `youtrack-app app attach --app <app> --project <project-short-name>`
 - `youtrack-app app detach --app <app> --project <project-short-name>`
-- `youtrack-app app logs --app <app> [--script <script>] [--skip N] [--limit N]`
+- `youtrack-app app logs --app <app> [--limit N] [--script <script> [--skip N]]`
 - `youtrack-app app requirement-errors --app <app>`
 - `youtrack-app project list [--skip N] [--limit N]`
-- `youtrack-app project info --project <project> [--skip N] [--limit N]`
-- `youtrack-app project fields --project <project> [--skip N] [--limit N]`
+- `youtrack-app project info --project <project>`
+- `youtrack-app project fields --project <project>`
 - `youtrack-app project apps --project <project> [--skip N] [--limit N]`
 - `youtrack-app group list [--query <query>] [--skip N] [--limit N]`
 - `youtrack-app group members [--group <group>] [--skip N] [--limit N]`
 - `youtrack-app user list [--query <query>] [--skip N] [--limit N]`
-- `youtrack-app user info --user <user> [--skip N] [--limit N]`
+- `youtrack-app user info --user <user>`
 - `youtrack-app app delete --app <app> [--yes]`
 
 ### Using Environment Variables
@@ -218,12 +218,12 @@ The app is resolved by app ID or package name.
 
 ### Logs
 
-`youtrack-app app logs --app <app> [--script <script>] --host --token [--skip N] [--limit N]`
+`youtrack-app app logs --app <app> [--limit N] [--script <script> [--skip N]] --host --token`
 
 This command prints app log entries. Use `--limit` to limit the number of returned entries.
 The app is resolved by app ID or package name.
 
-When `script` is provided, this command prints paged log entries for that script, module, or rule. The script argument is a script, module, or rule name or ID.
+When `script` is provided, this command prints paged log entries for that script, module, or rule. The script argument is a script, module, or rule name or ID. `--skip` is supported only with `--script`; `--limit` limits app or script logs.
 
 ### Requirement Errors
 
@@ -238,11 +238,11 @@ The app is resolved by app ID or package name.
 
 This command lists projects in your YouTrack by short name and ID.
 
-`youtrack-app project info --project <project> --host --token [--skip N] [--limit N]`
+`youtrack-app project info --project <project> --host --token`
 
 This command shows project details. The project is resolved by exact project ID or short name/key, ignoring case.
 
-`youtrack-app project fields --project <project> --host --token [--skip N] [--limit N]`
+`youtrack-app project fields --project <project> --host --token`
 
 This command returns the full issue fields JSON schema for a project. The project is resolved by exact project ID or short name/key, ignoring case.
 
@@ -258,7 +258,7 @@ This command lists user groups with their IDs. When `query` is provided, the lis
 
 `youtrack-app group members [--group <group>] --host --token [--skip N] [--limit N]`
 
-This command prints the IDs of users that are direct members of a user group. When `group` is provided, it is resolved first as a direct group ID, then by exact group ID or name, ignoring case. When omitted, the command lists direct members for each group in the current page.
+This command prints the IDs of users that are direct members of a user group. When `group` is provided, it is resolved first as a direct group ID, then by exact group ID or name, ignoring case. When omitted, the command lists direct members for each group in the current page; `--skip` and `--limit` apply only in this mode.
 
 ### Users
 
@@ -266,7 +266,7 @@ This command prints the IDs of users that are direct members of a user group. Wh
 
 This command lists users with login, ID, and display name. When `query` is provided, the list is filtered by user text. When omitted, all visible users are listed.
 
-`youtrack-app user info --user <user> --host --token [--skip N] [--limit N]`
+`youtrack-app user info --user <user> --host --token`
 
 This command shows user details. The user is resolved first as a direct user ID, then by exact user ID, login, name, or full name, ignoring case.
 

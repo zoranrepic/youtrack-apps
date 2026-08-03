@@ -92,15 +92,15 @@ const commands = {
   'app:requirement-errors': command(requirementErrors, {argument: stringArg('app'), flags: ['app'], required: ['app']}),
   'app:delete': command(deleteApp, {argument: stringArg('app'), flags: ['app', 'yes'], required: ['app']}),
   'project:list': command(projectList, {flags: ['skip', 'limit']}),
-  'project:info': command(projectInfo, {argument: stringArg('project'), flags: ['project', 'skip', 'limit'], required: ['project']}),
-  'project:fields': command(projectFields, {argument: stringArg('project'), flags: ['project', 'skip', 'limit'], required: ['project']}),
+  'project:info': command(projectInfo, {argument: stringArg('project'), flags: ['project'], required: ['project']}),
+  'project:fields': command(projectFields, {argument: stringArg('project'), flags: ['project'], required: ['project']}),
   'project:apps': command(projectApps, {argument: stringArg('project'), flags: ['project', 'skip', 'limit'], required: ['project']}),
   'tag:search': command(tagSearch, {argument: stringArg('query'), flags: ['query', 'project', 'skip', 'limit']}),
   'field:values': command(fieldValues, {argument: stringArg('query'), flags: ['query', 'project', 'field', 'skip', 'limit'], required: ['project', 'field']}),
   'group:list': command(groupList, {argument: stringArg('query'), flags: ['query', 'skip', 'limit']}),
   'group:members': command(groupMembers, {argument: stringArg('group'), flags: ['group', 'skip', 'limit']}),
   'user:list': command(userList, {argument: stringArg('query'), flags: ['query', 'skip', 'limit']}),
-  'user:info': command(userInfo, {argument: stringArg('user'), flags: ['user', 'skip', 'limit'], required: ['user']}),
+  'user:info': command(userInfo, {argument: stringArg('user'), flags: ['user'], required: ['user']}),
 } satisfies Record<string, Command>;
 
 function command<TArgument>(execute: Command<TArgument>['execute'], options: Omit<Command<TArgument>, 'execute'> = {}): Command {
@@ -147,7 +147,7 @@ export async function run(argv = process.argv) {
   }
 
   const selectedCommand = commands[commandKey];
-  const validationError = validateCommandArgs(selectedCommand, args);
+  const validationError = validateCommandArgs(commandKey, selectedCommand, args, getShortFlags(argv));
   if (validationError) {
     exit(new Error(i18n(validationError)), ExitCode.Usage);
     return;
@@ -197,8 +197,6 @@ export async function run(argv = process.argv) {
     printLine(i18n('--token <token>'), i18n('Permanent token. Overrides YOUTRACK_API_TOKEN.'));
     printLine(i18n('--json'), i18n('Print machine-readable JSON for supported commands.'));
     printLine(i18n('--yaml, --yml'), i18n('Print machine-readable YAML for supported commands.'));
-    printLine(i18n('--skip N'), i18n('Choose how many results to skip in commands that support paging.'));
-    printLine(i18n('--limit N'), i18n('Choose how many results to request in commands that support paging.'));
     printLine(i18n('--help, -h'), i18n('Show help.'));
     printLine(i18n('--version'), i18n('Print the CLI version.'));
     br();
@@ -296,11 +294,12 @@ export async function run(argv = process.argv) {
         i18n('--enabled true|false updates the enabled state.'),
       ],
     });
-    printCommand(i18n('app logs --app <app> [--script <script>] [--skip N] [--limit N]'), {
+    printCommand(i18n('app logs --app <app> [--limit N] [--script <script> [--skip N]]'), {
       does: i18n('Shows recent app-level log entries, or paged log entries for one script, module, or workflow rule.'),
       args: [
         i18n('<app> is an app ID or package name.'),
         i18n('--script <script> is a script, module, rule ID, rule name, or rule title.'),
+        i18n('--skip N is supported with --script for paging script logs. --limit N limits app or script logs.'),
       ],
     });
     printCommand(i18n('app requirement-errors --app <app>'), {
@@ -322,13 +321,13 @@ export async function run(argv = process.argv) {
     printCommand(i18n('project list [--skip N] [--limit N]'), {
       does: i18n('Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.'),
     });
-    printCommand(i18n('project info --project <project> [--skip N] [--limit N]'), {
+    printCommand(i18n('project info --project <project>'), {
       does: i18n('Shows identifying details for one project in the YouTrack instance.'),
       args: [
         i18n('<project> is an exact project ID or short name/key.'),
       ],
     });
-    printCommand(i18n('project fields --project <project> [--skip N] [--limit N]'), {
+    printCommand(i18n('project fields --project <project>'), {
       does: i18n('Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.'),
       args: [
         i18n('<project> is an exact project ID or short name/key.'),
@@ -365,6 +364,7 @@ export async function run(argv = process.argv) {
       does: i18n('Shows direct members of one user group or project team, or direct members for all paged groups when omitted.'),
       args: [
         i18n('--group <group> is an optional exact group ID or name.'),
+        i18n('--skip N and --limit N apply when --group is omitted.'),
       ],
     });
     printCommand(i18n('user list [--query <query>] [--skip N] [--limit N]'), {
@@ -373,7 +373,7 @@ export async function run(argv = process.argv) {
         i18n('--query <query> is an optional user search filter. When omitted, all visible users are listed.'),
       ],
     });
-    printCommand(i18n('user info --user <user> [--skip N] [--limit N]'), {
+    printCommand(i18n('user info --user <user>'), {
       does: i18n('Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.'),
       args: [
         i18n('<user> is an exact user ID, login, username, or full name.'),
@@ -454,13 +454,25 @@ export async function run(argv = process.argv) {
 
 }
 
-function validateCommandArgs(selectedCommand: Command, args: Record<string, unknown>): string | null {
+function getShortFlags(argv: string[]): Set<string> {
+  return new Set(argv.slice(2).filter(argument => /^-[^-]/.test(argument)).flatMap(argument => argument.slice(1).split('')));
+}
+
+function validateCommandArgs(commandKey: string, selectedCommand: Command, args: Record<string, unknown>, shortFlags: Set<string> = new Set()): string | null {
   const commonFlags = ['host', 'token', 'json', 'yaml', 'yml', 'help', 'h', 'version'];
   const booleanFlags = new Set(['json', 'yaml', 'yml', 'help', 'h', 'version', 'open', 'overwrite', 'yes']);
   const allowedFlags = new Set([...commonFlags, ...(selectedCommand.flags ?? [])]);
   const unknownFlag = Object.keys(args).find(key => key !== '_' && !allowedFlags.has(key));
   if (unknownFlag) {
-    return `Unknown option "--${unknownFlag}"`;
+    return `Unknown option "${shortFlags.has(unknownFlag) ? '-' : '--'}${unknownFlag}"`;
+  }
+
+  if (commandKey === 'app:logs' && Object.hasOwn(args, 'skip') && !Object.hasOwn(args, 'script')) {
+    return 'Option "--skip" is only supported with "--script"';
+  }
+
+  if (commandKey === 'group:members' && Object.hasOwn(args, 'group') && (Object.hasOwn(args, 'skip') || Object.hasOwn(args, 'limit'))) {
+    return 'Options "--skip" and "--limit" are only supported when "--group" is omitted';
   }
 
   const valuelessFlag = Object.keys(args).find(key => key !== '_' && args[key] === true && !booleanFlags.has(key));
