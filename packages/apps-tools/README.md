@@ -41,7 +41,8 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app app disable --app <app> [--project <project-short-name>]`
 - `youtrack-app app attach --app <app> --project <project-short-name>`
 - `youtrack-app app detach --app <app> --project <project-short-name>`
-- `youtrack-app app logs --app <app> [--limit N] [--script <script> [--skip N]]`
+- `youtrack-app app logs --app <app> [--limit N]`
+- `youtrack-app app logs --app <app> --script <script> [--skip N] [--limit N]`
 - `youtrack-app app requirement-errors --app <app>`
 - `youtrack-app project list [--skip N] [--limit N]`
 - `youtrack-app project info --project <project>`
@@ -218,7 +219,9 @@ The app is resolved by app ID or package name.
 
 ### Logs
 
-`youtrack-app app logs --app <app> [--limit N] [--script <script> [--skip N]] --host --token`
+`youtrack-app app logs --app <app> [--limit N] --host --token`
+
+`youtrack-app app logs --app <app> --script <script> [--skip N] [--limit N] --host --token`
 
 This command prints app log entries. Use `--limit` to limit the number of returned entries.
 The app is resolved by app ID or package name.

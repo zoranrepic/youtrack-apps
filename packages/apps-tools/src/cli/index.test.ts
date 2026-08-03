@@ -341,6 +341,8 @@ describe('index', function () {
     expect(console.log).not.toHaveBeenCalledWith(expect.stringMatching(/^{2}--skip N/));
     expect(console.log).not.toHaveBeenCalledWith(expect.stringMatching(/^{2}--limit N/));
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining('app list [--skip N] [--limit N]'));
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('app logs --app <app> [--limit N]'));
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('app logs --app <app> --script <script> [--skip N] [--limit N]'));
   });
 
   it('should reject pagination that the selected command does not use', async function () {

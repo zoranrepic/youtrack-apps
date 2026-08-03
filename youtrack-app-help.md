@@ -80,12 +80,18 @@ App details and configuration:
       --project <short-name> writes project settings instead of global settings.
       --settings JSON is a JSON object string.
       --enabled true|false updates the enabled state.
-  app logs --app <app> [--limit N] [--script <script> [--skip N]]
-    Does: Shows recent app-level log entries, or paged log entries for one script, module, or workflow rule.
+  app logs --app <app> [--limit N]
+    Does: Shows recent app-level log entries.
+    Args:
+      <app> is an app ID or package name.
+      --limit N limits app log entries.
+  app logs --app <app> --script <script> [--skip N] [--limit N]
+    Does: Shows paged log entries for one script, module, or workflow rule.
     Args:
       <app> is an app ID or package name.
       --script <script> is a script, module, rule ID, rule name, or rule title.
-      --skip N is supported with --script for paging script logs. --limit N limits app or script logs.
+      --skip N chooses the starting log entry.
+      --limit N chooses the page size.
   app requirement-errors --app <app>
     Does: Shows broken requirement problems reported by app usages in the YouTrack instance.
     Args:

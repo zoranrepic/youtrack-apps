@@ -294,12 +294,20 @@ export async function run(argv = process.argv) {
         i18n('--enabled true|false updates the enabled state.'),
       ],
     });
-    printCommand(i18n('app logs --app <app> [--limit N] [--script <script> [--skip N]]'), {
-      does: i18n('Shows recent app-level log entries, or paged log entries for one script, module, or workflow rule.'),
+    printCommand(i18n('app logs --app <app> [--limit N]'), {
+      does: i18n('Shows recent app-level log entries.'),
+      args: [
+        i18n('<app> is an app ID or package name.'),
+        i18n('--limit N limits app log entries.'),
+      ],
+    });
+    printCommand(i18n('app logs --app <app> --script <script> [--skip N] [--limit N]'), {
+      does: i18n('Shows paged log entries for one script, module, or workflow rule.'),
       args: [
         i18n('<app> is an app ID or package name.'),
         i18n('--script <script> is a script, module, rule ID, rule name, or rule title.'),
-        i18n('--skip N is supported with --script for paging script logs. --limit N limits app or script logs.'),
+        i18n('--skip N chooses the starting log entry.'),
+        i18n('--limit N chooses the page size.'),
       ],
     });
     printCommand(i18n('app requirement-errors --app <app>'), {
