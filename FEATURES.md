@@ -33,15 +33,15 @@ these common flows because it consumed more tokens than direct CLI commands.
 **Solution:** `youtrack-app` now exposes app lifecycle and inspection commands
 for `list`, `info`, `upload`, `download`, `validate`, `scripts`,
 `settings`, `settings-set`, `delete`, `enable`, `disable`, `attach`, `detach`,
-`logs`, `script-logs`, and `requirement-errors`. Commands accept
+`logs`, and `requirement-errors`. Commands accept
 `YOUTRACK_HOST` and `YOUTRACK_API_TOKEN`, and can emit structured output where
 automation needs it.
 
-### Parameterized App Creation CLI
+### Parameterized App Initialization CLI
 **Problem:** Interactive app creation worked for humans, but agents could not
 use it efficiently.
 
-**Solution:** `create-youtrack-app app create` accepts non-interactive flags such as
+**Solution:** `create-youtrack-app app init` accepts non-interactive flags such as
 `--name`, `--title`, `--description`, `--vendor`, `--vendor-url`,
 `--type`. The default type is TypeScript `--type ts` Enhanced DX app
 and `--type js` creates the JavaScript Vite app, and
