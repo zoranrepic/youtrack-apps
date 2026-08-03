@@ -134,6 +134,14 @@ describe('Non-interactive scaffold gate (--name)', () => {
 
       const viteConfig = readFile(dir, 'vite.config.ts');
       assert.ok(viteConfig.includes("src: 'workflows/*.js'"), 'vite build should copy workflows from src/workflows');
+
+      try {
+        execSync(`node "${CLI_PATH}" endpoint add --cwd "${dir}"`, { encoding: 'utf8', stdio: 'pipe' });
+        assert.fail('endpoint add should be rejected for JavaScript apps');
+      } catch (error) {
+        const output = (error.stdout || '') + (error.stderr || '');
+        assert.match(output, /requires a TypeScript Enhanced DX project/);
+      }
     });
   });
 

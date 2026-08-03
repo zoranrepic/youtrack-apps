@@ -177,13 +177,17 @@ ${heading('Advanced tools')}
   ${command(`${createApp} endpoint add`)}
 
   Interactive typed endpoint generator for TypeScript apps with Advanced tools.
+  Omit the options to answer prompts interactively, or provide them for non-interactive generation.
 
   Values:
-    scope: global | issue | project | custom.
-    method: GET | POST | PUT | DELETE.
-    request type: type name or never. Default: never.
-    response type: type name or never. Default: never.
-    controller: function name, or empty to generate inline.
+    ${command('--scope <scope>')}          global | issue | project | custom.
+    ${command('--path <path>')}           Path below the selected scope.
+    ${command('--method <method>')}       GET | POST | PUT | DELETE.
+    ${command('--request-type <type>')}   Request type name or never. Default: never.
+    ${command('--response-type <type>')}  Response type name or never. Default: never.
+    ${command('--controller <name>')}     Existing exported function in
+                                             src/backend/controllers/<scope>.<path>.controller.ts.
+                                             Omit to generate an inline handler.
 
   Output: ${code('src/backend/router/<path>/<METHOD>.ts')}; backend builds generate
   ${code('src/api/api.d.ts')} and ${code('src/api/api.zod.ts')}.

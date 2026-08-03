@@ -63,7 +63,9 @@ function routePublicCommand(rawArgv) {
     'settings:add': ['name', 'type', 'title', 'description', 'scope', 'entity', 'required', 'readonly', 'const', 'min-length', 'max-length', 'format', 'enum', 'min', 'max', 'exclusive-min', 'exclusive-max', 'multiple-of'],
     'extension-property:add': ['entity', 'name', 'type', 'set'],
     'widget:add': ['key', 'extension-point', 'name', 'description', 'permissions', 'width', 'height'],
-    'endpoint:add': [],
+    // TypeScript Enhanced DX command. With no flags it remains interactive;
+    // endpoint flags are forwarded when an agent wants non-interactive output.
+    'endpoint:add': ['scope', 'path', 'method', 'request-type', 'response-type', 'controller'],
     'skill:install': ['agent', 'scope'],
     'skill:status': ['agent', 'scope'],
   };
@@ -166,6 +168,32 @@ function removeOptions(values, optionNames) {
     }
   }
   return result;
+}
+
+function validateEndpointController() {
+  if (args.controller === undefined || args.controller === '') {
+    return;
+  }
+
+  const scope = String(args.scope || '');
+  const routePath = String(args.path || '').replace(/^\/+|\/+$/g, '');
+  const endpointPath = scope === 'custom' ? routePath : `${scope}/${routePath}`;
+  const controllerModule = endpointPath.replace(/\//g, '.');
+  const controllerCandidates = ['.ts', '.tsx', '.js'].map(extension => path.join(
+    cwd,
+    'src',
+    'backend',
+    'controllers',
+    `${controllerModule}.controller${extension}`
+  ));
+
+  if (!controllerCandidates.some(candidate => fs.existsSync(candidate))) {
+    const expectedPath = path.relative(cwd, controllerCandidates[0]);
+    throw new Error(
+      `Controller module not found for --controller ${args.controller}: ${expectedPath}. ` +
+      'Create this module and export the controller function, or omit --controller to generate an inline handler.'
+    );
+  }
 }
 
 function isCancelled(e) {
@@ -868,6 +896,28 @@ async function handleRuleCommand(ruleArgs) {
   );
 
   if (hasHygenParams) {
+    const isEndpointCmd = new Set(normalizedArgv).has('endpoint');
+    if (isEndpointCmd) {
+      const pkgPath = path.join(cwd, 'package.json');
+      const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
+      const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+
+      if (!isEnhancedDX) {
+        console.error(styleText("red", 'This command requires a TypeScript Enhanced DX project.'));
+        process.exit(1);
+        return;
+      }
+
+      try {
+        validateEndpointController();
+      } catch (error) {
+        console.error(styleText("red", `Error: ${error.message}`));
+        process.exit(1);
+      }
+
+      return runHygen();
+    }
+
     // Intercept Enhanced DX http-handler flow for richer experience
     const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler') && (new Set(normalizedArgv).has('add') || !normalizedArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
     if (isHttpHandlerCmd) {

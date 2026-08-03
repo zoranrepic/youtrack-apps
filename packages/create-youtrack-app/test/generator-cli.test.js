@@ -268,6 +268,50 @@ describe('NestJS-Style Code Generation', () => {
     });
   });
 
+  describe('Typed Endpoints', () => {
+    test('supports non-interactive flags while retaining the endpoint generator', () => {
+      const result = runCLI(
+        'endpoint add --scope global --path cli-health --method GET --request-type never --response-type never',
+        {silent: true}
+      );
+
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(fileExists('src/backend/router/global/cli-health/GET.ts'), true);
+    });
+
+    test('rejects a controller reference when its module does not exist', () => {
+      const result = runCLI(
+        'endpoint add --scope global --path missing-controller --method GET --controller rand',
+        {silent: true}
+      );
+
+      assert.strictEqual(result.success, false);
+      assert.match(result.output, /Controller module not found/);
+      assert.match(result.output, /src\/backend\/controllers\/global\.missing-controller\.controller\.ts/);
+      assert.strictEqual(fileExists('src/backend/router/global/missing-controller/GET.ts'), false);
+    });
+
+    test('accepts a controller reference when its module exists', () => {
+      const controllerPath = path.join(
+        TEST_APP_DIR,
+        'src',
+        'backend',
+        'controllers',
+        'global.existing-controller.controller.ts'
+      );
+      fs.mkdirSync(path.dirname(controllerPath), { recursive: true });
+      fs.writeFileSync(controllerPath, 'export function rand(ctx) {}\n');
+
+      const result = runCLI(
+        'endpoint add --scope global --path existing-controller --method GET --controller rand',
+        {silent: true}
+      );
+
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(fileExists('src/backend/router/global/existing-controller/GET.ts'), true);
+    });
+  });
+
   describe('Extension Properties', () => {
     test('honors --cwd when it appears before the command', () => {
       const result = runCLI('extension-property add --entity Issue --name cwdBefore', {silent: true, cwdBefore: true});
