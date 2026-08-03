@@ -154,7 +154,7 @@ The app is resolved by app ID or package name.
 This command shows exactly one manifest, settings, entity extension, or script file from an installed app.
 The app is resolved by app ID or package name. The `file-key` argument is required and is listed by `youtrack-app app info --app <app>`.
 Use `manifest`, `settings`, or `entityExtensions` for app files. For scripts, pass the script ID exactly as shown in the module list, for example `150-238`.
-Use `--json` when another tool needs the selected file metadata together with the content.
+This command intentionally uses plain text output; structured-output flags are not accepted for file-content retrieval.
 
 ### Usages
 
@@ -270,7 +270,17 @@ This command lists users with login, ID, and display name. When `query` is provi
 
 This command shows user details. The user is resolved first as a direct user ID, then by exact user ID, login, name, or full name, ignoring case.
 
-For these project, user group, and user commands, text output is used by default. Pass `--json` or `--yaml` when structured output is supported.
+Text output is used by default. Commands that return structured data support `--json` and `--yaml` (`--yml` is an alias). Upload, download, validation, script, settings-update, and app scope-changing commands intentionally reject these flags.
+
+### Exit codes
+
+| Code | Meaning |
+| --- | --- |
+| `0` | Success |
+| `1` | Other failure |
+| `2` | Usage or validation failure |
+| `3` | Authentication or authorization failure |
+| `4` | Requested resource was not found |
 
 ### Delete
 

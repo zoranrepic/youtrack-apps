@@ -2,8 +2,9 @@ import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
-import {LogEntry, printJson, RuleLogEntry} from '../management/types.js';
+import {LogEntry, RuleLogEntry} from '../management/types.js';
 import {paginationFromConfig, printPaginationNotice} from '../pagination.js';
+import {printStructured} from './output.js';
 
 export async function logs(config: Config, args?: string): Promise<void> {
   try {
@@ -31,8 +32,7 @@ export async function requirementErrors(config: Config, appName?: string): Promi
   try {
     const errors = await createAppManagementOperations(config).getRequirementErrors(appName);
 
-    if (config.json) {
-      printJson(errors);
+    if (printStructured(config, errors)) {
       return;
     }
 
@@ -63,8 +63,7 @@ async function tryPrintAppLogs(config: Config, appName: string | undefined): Pro
 async function printAppLogs(config: Config, appName: string | undefined): Promise<void> {
   const entries = await createAppManagementOperations(config).getLogs(appName, config.limit);
 
-  if (config.json) {
-    printJson(entries);
+  if (printStructured(config, entries)) {
     return;
   }
 
@@ -82,8 +81,7 @@ async function printScriptLogs(config: Config, appName: string | undefined, scri
   const pagination = paginationFromConfig(config);
   const result = await createAppManagementOperations(config).getScriptLogs(appName, scriptName, pagination);
 
-  if (config.json) {
-    printJson(result);
+  if (printStructured(config, result)) {
     return;
   }
 

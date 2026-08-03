@@ -91,7 +91,7 @@ describe('validate', () => {
     require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`, '--manifest=foo.txt']);
 
     expect(console.error).toHaveBeenCalledWith('Error: The manifest file must use the .json extension');
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledWith(2);
   });
 
   it('should exit if schema file is not a JSON file', async () => {
@@ -105,7 +105,7 @@ describe('validate', () => {
     await require('./index').run(['', '', 'app', 'validate', `--directory=${testDir}`, '--schema=foo.txt']);
 
     expect(console.error).toHaveBeenCalledWith('Error: The schema file must use the .json extension');
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledWith(2);
   });
 
   it('should use default schema if no schema provided', async () => {
@@ -183,7 +183,7 @@ describe('validate', () => {
 
     expect(fetch).toHaveBeenCalledWith(DEFAULT_SCHEMA_URL);
     expect(console.error).toHaveBeenCalledWith('Error: "widgets" must NOT have fewer than 1 items');
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledWith(2);
   });
 
   it('should use schema from tmp', async () => {
@@ -205,7 +205,7 @@ describe('validate', () => {
     expect(fetch).not.toHaveBeenCalled();
     expect(tmpSchema).toEqual(testSchema);
     expect(console.error).toHaveBeenCalledWith('Error: "widgets" must NOT have fewer than 1 items');
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledWith(2);
   });
 });
 

@@ -1,6 +1,6 @@
 import pkg from '../../package.json' with { type: 'json' };
 import {i18n} from '../../lib/i18n/i18n.js';
-import {exit} from '../../lib/cli/exit.js';
+import {exit, ExitCode} from '../../lib/cli/exit.js';
 import {parse} from '../../lib/cli/parseargv.js';
 import {Config, RequiredParams} from '../../@types/types.js';
 import {download} from './download.js';
@@ -28,6 +28,7 @@ type Command = {
   flags?: string[];
   required?: string[];
   requiresAuthentication?: boolean;
+  supportsStructuredOutput?: boolean;
 };
 
 const stringArg = (name: string, defaultValue?: string) => (args: Record<string, unknown>): string | undefined =>
@@ -39,20 +40,20 @@ const joinedArgs = (...names: string[]) => (args: Record<string, unknown>): stri
 };
 
 const commands = {
-  'app:upload': command(upload, {argument: stringArg('directory', 'dist'), flags: ['directory', 'open']}),
-  'app:download': command(download, {argument: stringArg('app'), flags: ['app', 'output', 'overwrite'], required: ['app']}),
-  'app:validate': command(validate, {argument: stringArg('directory', 'dist'), flags: ['directory', 'manifest', 'schema'], requiresAuthentication: false}),
+  'app:upload': command(upload, {argument: stringArg('directory', 'dist'), flags: ['directory', 'open'], supportsStructuredOutput: false}),
+  'app:download': command(download, {argument: stringArg('app'), flags: ['app', 'output', 'overwrite'], required: ['app'], supportsStructuredOutput: false}),
+  'app:validate': command(validate, {argument: stringArg('directory', 'dist'), flags: ['directory', 'manifest', 'schema'], requiresAuthentication: false, supportsStructuredOutput: false}),
   'app:list': command(list, {flags: ['skip', 'limit']}),
   'app:info': command(info, {argument: stringArg('app'), flags: ['app'], required: ['app']}),
-  'app:scripts': command(scripts, {argument: joinedArgs('app', 'file-key'), flags: ['app', 'file-key'], required: ['app', 'file-key']}),
+  'app:scripts': command(scripts, {argument: joinedArgs('app', 'file-key'), flags: ['app', 'file-key'], required: ['app', 'file-key'], supportsStructuredOutput: false}),
   'app:usages': command(usages, {argument: stringArg('app'), flags: ['app', 'skip', 'limit'], required: ['app']}),
   'app:settings': command(settings, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app']}),
-  'app:settings-set': command(settingsSet, {argument: stringArg('app'), flags: ['app', 'project', 'settings', 'enabled'], required: ['app']}),
+  'app:settings-set': command(settingsSet, {argument: stringArg('app'), flags: ['app', 'project', 'settings', 'enabled'], required: ['app'], supportsStructuredOutput: false}),
   'app:visibility': command(visibility, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app']}),
-  'app:enable': command(enable, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app']}),
-  'app:disable': command(disable, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app']}),
-  'app:attach': command(attach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project']}),
-  'app:detach': command(detach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project']}),
+  'app:enable': command(enable, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app'], supportsStructuredOutput: false}),
+  'app:disable': command(disable, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app'], supportsStructuredOutput: false}),
+  'app:attach': command(attach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project'], supportsStructuredOutput: false}),
+  'app:detach': command(detach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project'], supportsStructuredOutput: false}),
   'app:logs': command(logs, {argument: joinedArgs('app', 'script'), flags: ['app', 'script', 'skip', 'limit'], required: ['app']}),
   'app:requirement-errors': command(requirementErrors, {argument: stringArg('app'), flags: ['app'], required: ['app']}),
   'app:delete': command(deleteApp, {argument: stringArg('app'), flags: ['app', 'yes'], required: ['app']}),
@@ -90,20 +91,20 @@ export async function run(argv = process.argv) {
   }
 
   if (args._.length !== 2) {
-    exit(new Error(i18n('Expected command syntax: youtrack-app <entity> <action> [options]')));
+    exit(new Error(i18n('Expected command syntax: youtrack-app <entity> <action> [options]')), ExitCode.Usage);
     return;
   }
 
   const commandKey = `${args._[0]}:${args._[1]}`;
   if (!isCommand(commandKey)) {
-    exit(new Error(i18n(`Unknown command "${args._[0]} ${args._[1]}"`)));
+    exit(new Error(i18n(`Unknown command "${args._[0]} ${args._[1]}"`)), ExitCode.Usage);
     return;
   }
 
   const selectedCommand = commands[commandKey];
   const validationError = validateCommandArgs(selectedCommand, args);
   if (validationError) {
-    exit(new Error(i18n(validationError)));
+    exit(new Error(i18n(validationError)), ExitCode.Usage);
     return;
   }
 
@@ -117,7 +118,7 @@ export async function run(argv = process.argv) {
     schema: args.schema || null,
     open: args.open || null,
     json: isFlagEnabled(args.json),
-    yaml: isFlagEnabled(args.yaml),
+    yaml: isFlagEnabled(args.yaml) || isFlagEnabled(args.yml),
     yes: isFlagEnabled(args.yes),
     project: args.project || null,
     skip: optionalArgString(args.skip),
@@ -149,8 +150,8 @@ export async function run(argv = process.argv) {
     printSection(i18n('Common options'));
     printLine(i18n('--host <url>'), i18n('YouTrack instance URL. Overrides YOUTRACK_HOST.'));
     printLine(i18n('--token <token>'), i18n('Permanent token. Overrides YOUTRACK_API_TOKEN.'));
-    printLine(i18n('--json'), i18n('Print machine-readable JSON for commands that support it.'));
-    printLine(i18n('--yaml'), i18n('Print YAML for commands that support it.'));
+    printLine(i18n('--json'), i18n('Print machine-readable JSON for supported commands.'));
+    printLine(i18n('--yaml, --yml'), i18n('Print machine-readable YAML for supported commands.'));
     printLine(i18n('--skip N'), i18n('Choose how many results to skip in commands that support paging.'));
     printLine(i18n('--limit N'), i18n('Choose how many results to request in commands that support paging.'));
     printLine(i18n('--help, -h'), i18n('Show help.'));
@@ -384,9 +385,9 @@ export async function run(argv = process.argv) {
         if ((!args.hasOwnProperty(param) || !args[param]) && !config[param]) {
           if (param === 'token') {
             const createTokenUrl = `${resolve(config.host, 'users/me?tab=account-security').href}`;
-            exit(new Error(i18n(`Token is required. Please create one at ${createTokenUrl}`)));
+            exit(new Error(i18n(`Token is required. Please create one at ${createTokenUrl}`)), ExitCode.Authentication);
           } else {
-            exit(new Error(i18n('Option "--' + param + '" is required')));
+            exit(new Error(i18n('Option "--' + param + '" is required')), ExitCode.Usage);
           }
 
           return false;
@@ -409,8 +410,8 @@ export async function run(argv = process.argv) {
 }
 
 function validateCommandArgs(selectedCommand: Command, args: Record<string, unknown>): string | null {
-  const commonFlags = ['host', 'token', 'json', 'yaml', 'help', 'h', 'version'];
-  const booleanFlags = new Set(['json', 'yaml', 'help', 'h', 'version', 'open', 'overwrite', 'yes']);
+  const commonFlags = ['host', 'token', 'json', 'yaml', 'yml', 'help', 'h', 'version'];
+  const booleanFlags = new Set(['json', 'yaml', 'yml', 'help', 'h', 'version', 'open', 'overwrite', 'yes']);
   const allowedFlags = new Set([...commonFlags, ...(selectedCommand.flags ?? [])]);
   const unknownFlag = Object.keys(args).find(key => key !== '_' && !allowedFlags.has(key));
   if (unknownFlag) {
@@ -420,6 +421,13 @@ function validateCommandArgs(selectedCommand: Command, args: Record<string, unkn
   const valuelessFlag = Object.keys(args).find(key => key !== '_' && args[key] === true && !booleanFlags.has(key));
   if (valuelessFlag) {
     return `Option "--${valuelessFlag}" requires a value`;
+  }
+
+  if (selectedCommand.supportsStructuredOutput === false) {
+    const unsupportedOutputFlag = ['json', 'yaml', 'yml'].find(flag => Object.hasOwn(args, flag));
+    if (unsupportedOutputFlag) {
+      return `Option "--${unsupportedOutputFlag}" is not supported for this command`;
+    }
   }
 
   for (const flag of selectedCommand.required ?? []) {

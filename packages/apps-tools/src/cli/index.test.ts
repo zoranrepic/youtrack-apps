@@ -61,7 +61,7 @@ describe('index', function () {
 
     require('./index').run(['', '', 'app', 'list', '--host=']);
     expect(console.error).toHaveBeenCalledWith('Error: Option "--host" is required');
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledWith(2);
   });
 
   it('should show error message if token is not provided', function () {
@@ -73,7 +73,7 @@ describe('index', function () {
     expect(console.error).toHaveBeenCalledWith(
       'Error: Token is required. Please create one at https://foo/users/me?tab=account-security',
     );
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledWith(3);
   });
 
   it('should not throw error if user passed all required parameters', function () {
@@ -150,6 +150,17 @@ describe('index', function () {
     require('./index').run(['', '', 'app', 'list', '--host=foo', '--token=bar', '--yaml']);
 
     expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should accept yml as an alias for yaml', function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    require('./index').run(['', '', 'app', 'list', '--host=foo', '--token=bar', '--yml']);
+
+    expect(list).toHaveBeenCalledWith(expect.objectContaining({json: false, yaml: true}), undefined);
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });
@@ -297,5 +308,25 @@ describe('index', function () {
     expect(console.error).toHaveBeenNthCalledWith(1, 'Error: Unknown option "--unknown"');
     expect(console.error).toHaveBeenNthCalledWith(2, 'Error: Option "--app" is required');
     expect(info).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['app upload', ['app', 'upload']],
+    ['app download', ['app', 'download', '--app=my-app']],
+    ['app validate', ['app', 'validate']],
+    ['app scripts', ['app', 'scripts', '--app=my-app', '--file-key=manifest']],
+    ['app settings-set', ['app', 'settings-set', '--app=my-app']],
+    ['app enable', ['app', 'enable', '--app=my-app']],
+    ['app disable', ['app', 'disable', '--app=my-app']],
+    ['app attach', ['app', 'attach', '--app=my-app', '--project=DEMO']],
+    ['app detach', ['app', 'detach', '--app=my-app', '--project=DEMO']],
+  ])('should reject structured output for %s', async (_name, commandArgs) => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
+    await require('./index').run(['', '', ...commandArgs, '--json']);
+
+    expect(console.error).toHaveBeenCalledWith('Error: Option "--json" is not supported for this command');
+    expect(process.exit).toHaveBeenCalledWith(2);
   });
 });
