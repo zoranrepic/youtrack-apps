@@ -28,6 +28,7 @@ npx @jetbrains/create-youtrack-app \
 ```
 
 Use `--type ts` to create a TypeScript app with advanced tools, or `--type js` for the basic JavaScript app.
+For a TypeScript app without the sample widget, add `--backend-only`.
 
 ## Adding Features to a Generated App
 
@@ -40,6 +41,7 @@ After you have generated an app, you may want to add more features. Add new feat
 | Add another [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-widgets.html)                         | `npx @jetbrains/create-youtrack-app widget add` |
 | Declare an [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html) | `npx @jetbrains/create-youtrack-app extension-property add` |
 | Add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html)        | `npx @jetbrains/create-youtrack-app http-handler add` |
+| Add a typed HTTP endpoint (TypeScript Enhanced DX only)                                                               | `npx @jetbrains/create-youtrack-app endpoint add` |
 | Add a classic workflow rule                                                                                           | `npx @jetbrains/create-youtrack-app rule add --type onChange --name notify-on-change` |
 | View a list of available commands                                                                                      | `npx @jetbrains/create-youtrack-app --help` |
 
@@ -105,6 +107,14 @@ npm run g                                             # Shows a menu for choosin
 - `<path>`: Route path (can be nested with `/`)
 - `--method`: `GET`, `POST`, `PUT`, `DELETE` (default: `GET`)
 - `--permissions`: Comma-separated permissions (optional)
+
+**Typed Endpoint:** `npx @jetbrains/create-youtrack-app endpoint add [--scope <scope>] [--path <path>] [--method METHOD] [--request-type TYPE] [--response-type TYPE] [--controller NAME]`
+- TypeScript Enhanced DX apps only; omit the options for interactive prompts.
+- `<scope>`: `global`, `issue`, `project`, or `custom`
+- `<path>`: Route path below the selected scope
+- `--method`: `GET`, `POST`, `PUT`, `DELETE` (default: `GET`)
+- `--request-type` and `--response-type`: Type names or `never` (default: `never`)
+- `--controller`: Existing exported controller name; omit to generate an inline handler
 
 **Extension Property:** `npm run g -- extension-property add --entity <Entity> --name <name> [--type TYPE] [--set]`
 - `<Entity>`: `Issue`, `User`, `Project`, or `Article`

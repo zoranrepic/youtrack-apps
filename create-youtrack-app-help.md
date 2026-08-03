@@ -17,7 +17,7 @@ Common:
 
 App Initialization
 
-  npx @jetbrains/create-youtrack-app app create [options]
+  npx @jetbrains/create-youtrack-app app init [options]
 
   Creates a new app. Missing values are prompted in an interactive terminal.
   Project type is selected here only; feature commands infer the existing app.
@@ -154,13 +154,17 @@ Advanced tools
   npx @jetbrains/create-youtrack-app endpoint add
 
   Interactive typed endpoint generator for TypeScript apps with Advanced tools.
+  Omit the options to answer prompts interactively, or provide them for non-interactive generation.
 
   Values:
-    scope: global | issue | project | custom.
-    method: GET | POST | PUT | DELETE.
-    request type: type name or never. Default: never.
-    response type: type name or never. Default: never.
-    controller: function name, or empty to generate inline.
+    --scope <scope>          global | issue | project | custom.
+    --path <path>           Path below the selected scope.
+    --method <method>       GET | POST | PUT | DELETE.
+    --request-type <type>   Request type name or never. Default: never.
+    --response-type <type>  Response type name or never. Default: never.
+    --controller <name>     Existing exported function in
+                                             src/backend/controllers/<scope>.<path>.controller.ts.
+                                             Omit to generate an inline handler.
 
   Output: src/backend/router/<path>/<METHOD>.ts; backend builds generate
   src/api/api.d.ts and src/api/api.zod.ts.

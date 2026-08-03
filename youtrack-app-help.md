@@ -8,8 +8,8 @@ Configure YOUTRACK_HOST and YOUTRACK_API_TOKEN, or pass --host and --token to ea
 Common options:
   --host <url>                                                                  YouTrack instance URL. Overrides YOUTRACK_HOST.
   --token <token>                                                               Permanent token. Overrides YOUTRACK_API_TOKEN.
-  --json                                                                        Print machine-readable JSON for commands that support it.
-  --yaml                                                                        Print YAML for commands that support it.
+  --json                                                                        Print machine-readable JSON for supported commands.
+  --yaml, --yml                                                                 Print machine-readable YAML for supported commands.
   --skip N                                                                      Choose how many results to skip in commands that support paging.
   --limit N                                                                     Choose how many results to request in commands that support paging.
   --help, -h                                                                    Show help.
