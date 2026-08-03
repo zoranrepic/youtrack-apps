@@ -15,10 +15,12 @@ let seq = 0;
  * The `init` templates write to the cwd root (to: package.json), so each test gets
  * its own isolated directory.
  */
-function runScaffold(args) {
+function runScaffold(args, options = {}) {
   const dir = path.join(SCAFFOLD_ROOT, `app-${seq++}`);
   fs.mkdirSync(dir, { recursive: true });
-  const cmd = `node "${CLI_PATH}" ${args} --cwd "${dir}"`;
+  const cmd = options.cwdBefore
+    ? `node "${CLI_PATH}" --cwd "${dir}" ${args}`
+    : `node "${CLI_PATH}" ${args} --cwd "${dir}"`;
   try {
     const output = execSync(cmd, { encoding: 'utf8', stdio: 'pipe' });
     return { success: true, output, dir };
@@ -50,6 +52,14 @@ describe('Non-interactive scaffold gate (--name)', () => {
   });
 
   describe('Enhanced DX (ts / default)', () => {
+    test('honors --cwd when it appears before the command', () => {
+      const { success, dir } = runScaffold('app init --name cwd-before --no-install', { cwdBefore: true });
+
+      assert.strictEqual(success, true, 'Command should succeed');
+      assert.ok(exists(dir, 'package.json'), 'package.json created in the requested cwd');
+      assert.ok(exists(dir, 'manifest.json'), 'manifest.json created in the requested cwd');
+    });
+
     test('scaffolds an Enhanced DX app and skips install with --no-install', () => {
       const { success, dir } = runScaffold('app init --name my-app --type ts --no-install');
 

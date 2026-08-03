@@ -13,13 +13,16 @@ const CLI_PATH = path.join(PKG_DIR, 'index.js');
  */
 function runCLI(args, options = {}) {
   const cwd = options.cwd || TEST_APP_DIR;
-  const cmd = `node "${CLI_PATH}" ${args} --cwd "${cwd}"`;
-  
+  const { cwdBefore, ...execOptions } = options;
+  const cmd = cwdBefore
+    ? `node "${CLI_PATH}" --cwd "${cwd}" ${args}`
+    : `node "${CLI_PATH}" ${args} --cwd "${cwd}"`;
+
   try {
     const result = execSync(cmd, {
       encoding: 'utf8',
-      stdio: options.silent ? 'pipe' : 'inherit',
-      ...options
+      stdio: execOptions.silent ? 'pipe' : 'inherit',
+      ...execOptions
     });
     return { success: true, output: result };
   } catch (error) {
@@ -266,6 +269,16 @@ describe('NestJS-Style Code Generation', () => {
   });
 
   describe('Extension Properties', () => {
+    test('honors --cwd when it appears before the command', () => {
+      const result = runCLI('extension-property add --entity Issue --name cwdBefore', {silent: true, cwdBefore: true});
+
+      assert.strictEqual(result.success, true);
+
+      const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
+      const issueEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Issue');
+      assert.ok(issueEntity.properties.cwdBefore, 'cwdBefore property should exist');
+    });
+
     test('should create string property by default', () => {
       const result = runCLI('extension-property add --entity Issue --name customStatus', { silent: true });
       

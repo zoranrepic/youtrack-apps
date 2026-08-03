@@ -11,7 +11,14 @@ const defaultTemplates = path.join(__dirname, "_templates");
 const publicArgv = process.argv.slice(2);
 const publicRoute = routePublicCommand(publicArgv);
 const argv = publicRoute.argv;
+// Keep positional arguments from routed argv, but restore global options that
+// routing intentionally removes. In particular, --cwd must be read from the
+// original invocation regardless of where it appears.
 const args = require("minimist")(argv);
+const originalArgs = require("minimist")(publicArgv);
+if (originalArgs.cwd !== undefined) {
+  args.cwd = originalArgs.cwd;
+}
 const cwd = path.resolve(process.cwd(), args.cwd || ".");
 const { trimPathSegments } = require('./utils/sanitize');
 const {
@@ -81,7 +88,7 @@ function routePublicCommand(rawArgv) {
       return { argv: rawArgv, error: 'Usage: rule add --type <type> --name <name>' };
     }
     return {
-      argv: ['rule', 'add', String(parsed.type), ...removeOptions(rawArgv.slice(2), ['type'])],
+      argv: ['rule', 'add', String(parsed.type), ...removeOptions(buildCommandArgv('rule', 'add', parsed, allowed).slice(2), ['type'])],
     };
   }
 
@@ -93,7 +100,7 @@ function routePublicCommand(rawArgv) {
         return { argv: rawArgv, error: 'Option "--scope" is required when --path is provided' };
       }
       return {
-        argv: ['http-handler', `${scope}/${routePath || ''}`, ...removeOptions(rawArgv.slice(2), ['scope', 'path'])],
+        argv: ['http-handler', `${scope}/${routePath || ''}`, ...removeOptions(buildCommandArgv('http-handler', 'add', parsed, allowed).slice(2), ['scope', 'path'])],
       };
     }
   }
@@ -106,13 +113,13 @@ function routePublicCommand(rawArgv) {
         return { argv: rawArgv, error: 'Options "--entity" and "--name" must be provided together' };
       }
       return {
-        argv: ['extension-property', `${entity}.${name}`, ...removeOptions(rawArgv.slice(2), ['entity'])],
+        argv: ['extension-property', `${entity}.${name}`, ...removeOptions(buildCommandArgv('extension-property', 'add', parsed, allowed).slice(2), ['entity'])],
       };
     }
   }
 
   if (key === 'app:init') {
-    return { argv: rawArgv.slice(2) };
+    return { argv: buildCommandArgv('app', 'init', parsed, allowed).slice(2) };
   }
 
   return { argv: rawArgv };
@@ -120,6 +127,29 @@ function routePublicCommand(rawArgv) {
 
 function flagValue(value) {
   return value === undefined || value === null || value === false || value === true ? undefined : String(value);
+}
+
+function buildCommandArgv(entity, action, parsed, allowedFlags) {
+  const result = [entity, action];
+
+  for (const flag of allowedFlags) {
+    if (!Object.hasOwn(parsed, flag)) {
+      continue;
+    }
+
+    const values = Array.isArray(parsed[flag]) ? parsed[flag] : [parsed[flag]];
+    for (const value of values) {
+      if (value === false) {
+        result.push(`--no-${flag}`);
+      } else if (value === true) {
+        result.push(`--${flag}`);
+      } else {
+        result.push(`--${flag}`, String(value));
+      }
+    }
+  }
+
+  return result;
 }
 
 function removeOptions(values, optionNames) {
