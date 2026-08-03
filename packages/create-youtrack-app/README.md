@@ -19,7 +19,7 @@ For non-interactive app creation, pass the metadata as flags. The default type i
 
 ```bash
 npx @jetbrains/create-youtrack-app \
-  app create \
+  app init \
   --name my-youtrack-app \
   --title "My YouTrack App" \
   --description "Internal YouTrack app" \

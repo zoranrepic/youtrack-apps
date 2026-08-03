@@ -40,7 +40,7 @@ Common:
 
 ${heading('App Initialization')}
 
-  ${command(`${createApp} app create [options]`)}
+  ${command(`${createApp} app init [options]`)}
 
   Creates a new app. Missing values are prompted in an interactive terminal.
   Project type is selected here only; feature commands infer the existing app.

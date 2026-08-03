@@ -49,7 +49,7 @@ function routePublicCommand(rawArgv) {
 
   const key = `${parsed._[0]}:${parsed._[1]}`;
   const commandFlags = {
-    'app:create': ['name', 'type', 'title', 'description', 'vendor', 'vendor-url', 'backend-only', 'install'],
+    'app:init': ['name', 'type', 'title', 'description', 'vendor', 'vendor-url', 'backend-only', 'install'],
     'rule:add': ['type', 'name'],
     'http-handler:add': ['scope', 'path', 'method', 'permissions', 'handler'],
     'settings:init': ['title', 'description'],
@@ -111,7 +111,7 @@ function routePublicCommand(rawArgv) {
     }
   }
 
-  if (key === 'app:create') {
+  if (key === 'app:init') {
     return { argv: rawArgv.slice(2) };
   }
 
