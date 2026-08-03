@@ -11,20 +11,22 @@ import {info, list} from './commands/discovery.js';
 import {deleteApp, disable, enable} from './commands/lifecycle.js';
 import {attach, detach} from './commands/project-scope.js';
 import {logs, requirementErrors} from './commands/diagnostics.js';
+import type {LogsArgs} from './commands/diagnostics.js';
 import {projectFields, projectInfo, projectList} from './commands/projects.js';
 import {projectApps} from './commands/project-apps.js';
 import {groupList, groupMembers} from './commands/groups.js';
 import {userInfo, userList} from './commands/users.js';
 import {scripts} from './commands/scripts.js';
+import type {ScriptsArgs} from './commands/scripts.js';
 import {settings, settingsSet} from './commands/settings.js';
 import {tagSearch} from './commands/tags.js';
 import {usages} from './commands/usages.js';
 import {fieldValues} from './commands/field-values.js';
 import {visibility} from './commands/visibility.js';
 
-type Command = {
-  execute: (config: Config, argument?: string) => Promise<unknown>;
-  argument?: (args: Record<string, unknown>) => string | undefined;
+type Command<TArgument = unknown> = {
+  execute: (config: Config, argument?: TArgument) => Promise<unknown>;
+  argument?: (args: Record<string, unknown>) => TArgument | undefined;
   flags?: string[];
   required?: string[];
   requiresAuthentication?: boolean;
@@ -34,18 +36,16 @@ type Command = {
 const stringArg = (name: string, defaultValue?: string) => (args: Record<string, unknown>): string | undefined =>
   optionalArgString(args[name]) ?? defaultValue;
 
-const joinedArgs = (...names: string[]) => (args: Record<string, unknown>): string | undefined => {
-  const values = names.map(name => optionalArgString(args[name])).filter((value): value is string => value !== null);
-  return values.length ? values.join(' ') : undefined;
-};
-
 const commands = {
   'app:upload': command(upload, {argument: stringArg('directory', 'dist'), flags: ['directory', 'open'], supportsStructuredOutput: false}),
   'app:download': command(download, {argument: stringArg('app'), flags: ['app', 'output', 'overwrite'], required: ['app'], supportsStructuredOutput: false}),
   'app:validate': command(validate, {argument: stringArg('directory', 'dist'), flags: ['directory', 'manifest', 'schema'], requiresAuthentication: false, supportsStructuredOutput: false}),
   'app:list': command(list, {flags: ['skip', 'limit']}),
   'app:info': command(info, {argument: stringArg('app'), flags: ['app'], required: ['app']}),
-  'app:scripts': command(scripts, {argument: joinedArgs('app', 'file-key'), flags: ['app', 'file-key'], required: ['app', 'file-key'], supportsStructuredOutput: false}),
+  'app:scripts': command(
+    (config, argument) => scripts(config, argument as ScriptsArgs),
+    {argument: args => ({app: optionalArgString(args.app) ?? undefined, fileKey: optionalArgString(args['file-key']) ?? undefined}), flags: ['app', 'file-key'], required: ['app', 'file-key'], supportsStructuredOutput: false}
+  ),
   'app:usages': command(usages, {argument: stringArg('app'), flags: ['app', 'skip', 'limit'], required: ['app']}),
   'app:settings': command(settings, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app']}),
   'app:settings-set': command(settingsSet, {argument: stringArg('app'), flags: ['app', 'project', 'settings', 'enabled'], required: ['app'], supportsStructuredOutput: false}),
@@ -54,7 +54,10 @@ const commands = {
   'app:disable': command(disable, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app'], supportsStructuredOutput: false}),
   'app:attach': command(attach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project'], supportsStructuredOutput: false}),
   'app:detach': command(detach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project'], supportsStructuredOutput: false}),
-  'app:logs': command(logs, {argument: joinedArgs('app', 'script'), flags: ['app', 'script', 'skip', 'limit'], required: ['app']}),
+  'app:logs': command(
+    (config, argument) => logs(config, argument as LogsArgs),
+    {argument: args => ({app: optionalArgString(args.app) ?? undefined, script: optionalArgString(args.script) ?? undefined}), flags: ['app', 'script', 'skip', 'limit'], required: ['app']}
+  ),
   'app:requirement-errors': command(requirementErrors, {argument: stringArg('app'), flags: ['app'], required: ['app']}),
   'app:delete': command(deleteApp, {argument: stringArg('app'), flags: ['app', 'yes'], required: ['app']}),
   'project:list': command(projectList, {flags: ['skip', 'limit']}),
@@ -69,8 +72,13 @@ const commands = {
   'user:info': command(userInfo, {argument: stringArg('user'), flags: ['user', 'skip', 'limit'], required: ['user']}),
 } satisfies Record<string, Command>;
 
-function command(execute: Command['execute'], options: Omit<Command, 'execute'> = {}): Command {
-  return {execute, requiresAuthentication: true, ...options};
+function command<TArgument>(execute: Command<TArgument>['execute'], options: Omit<Command<TArgument>, 'execute'> = {}): Command {
+  return {
+    execute: execute as Command['execute'],
+    requiresAuthentication: true,
+    ...options,
+    argument: options.argument as Command['argument'],
+  };
 }
 
 function optionalArgString(value: unknown): string | null {

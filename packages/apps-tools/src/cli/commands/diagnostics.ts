@@ -6,14 +6,20 @@ import {LogEntry, RuleLogEntry} from '../management/types.js';
 import {paginationFromConfig, printPaginationNotice} from '../pagination.js';
 import {printStructured} from './output.js';
 
-export async function logs(config: Config, args?: string): Promise<void> {
+export type LogsArgs = {
+  app?: string;
+  script?: string;
+};
+
+export async function logs(config: Config, args?: LogsArgs): Promise<void> {
   try {
-    const [appName, scriptName] = splitLogArgs(args);
+    const appName = args?.app;
+    const scriptName = args?.script;
     if (scriptName) {
       try {
         await printScriptLogs(config, appName, scriptName);
       } catch (error) {
-        if (await tryPrintAppLogs(config, args)) {
+        if (await tryPrintAppLogs(config, appName)) {
           return;
         }
 
@@ -105,11 +111,6 @@ function formatLogEntry(entry: LogEntry): string {
   const level = readString(entry, 'level');
   const message = readString(entry, 'message') ?? readString(entry, 'text') ?? JSON.stringify(entry);
   return [timestamp, level, message].filter(Boolean).join(' ');
-}
-
-function splitLogArgs(args: string | undefined): [string | undefined, string | undefined] {
-  const parts = (args ?? '').split(/\s+/).filter(Boolean);
-  return [parts[0], parts.slice(1).join(' ') || undefined];
 }
 
 function formatRuleLogEntry(entry: RuleLogEntry): string {
