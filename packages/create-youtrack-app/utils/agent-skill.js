@@ -4,8 +4,7 @@ const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
 
 const SKILL_NAME = 'youtrack-app-builder';
-const SKILL_REPOSITORY = 'JetBrains/youtrack-app-agent-kit';
-const SKILL_RELEASES_URL = `https://api.github.com/repos/${SKILL_REPOSITORY}/releases/latest`;
+const SKILL_RELEASE_URL = 'https://github.com/JetBrains/youtrack-app-agent-kit/releases/latest/download/youtrack-apps-skill.zip';
 
 const ALL_AGENTS = 'all';
 const ALL_SCOPES = 'all';
@@ -131,28 +130,11 @@ async function downloadSkill(options = {}) {
   }
 
   const downloadDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'youtrack-skill-'));
-  const archivePath = path.join(downloadDir, 'skill.tar.gz');
+  const archivePath = path.join(downloadDir, 'skill.zip');
   const extractDir = path.join(downloadDir, 'extract');
 
   try {
-    const releaseResponse = await fetch(SKILL_RELEASES_URL, {
-      headers: { Accept: 'application/vnd.github+json' },
-      signal: AbortSignal.timeout(30_000),
-    });
-    if (!releaseResponse.ok) {
-      if (releaseResponse.status === 404) {
-        throw new Error('YouTrack app builder skill release is not available yet.');
-      }
-      throw new Error(`Could not find the latest skill release on GitHub (HTTP ${releaseResponse.status}).`);
-    }
-
-    const release = await releaseResponse.json();
-    const releaseAsset = release.assets?.find(asset => asset.name === 'youtrack-app-builder.tar.gz');
-    if (!releaseAsset?.browser_download_url) {
-      throw new Error('The latest skill release does not contain youtrack-app-builder.tar.gz.');
-    }
-
-    const response = await fetch(releaseAsset.browser_download_url, {
+    const response = await fetch(SKILL_RELEASE_URL, {
       signal: AbortSignal.timeout(30_000),
     });
     if (!response.ok) {
@@ -164,7 +146,7 @@ async function downloadSkill(options = {}) {
 
     fs.writeFileSync(archivePath, Buffer.from(await response.arrayBuffer()));
     fs.mkdirSync(extractDir, { recursive: true });
-    execFileSync('tar', ['-xzf', archivePath, '-C', extractDir], { stdio: 'ignore' });
+    execFileSync('tar', ['-xf', archivePath, '-C', extractDir], { stdio: 'ignore' });
 
     const sourceDir = findSkillDirectory(extractDir);
     if (!sourceDir) {
