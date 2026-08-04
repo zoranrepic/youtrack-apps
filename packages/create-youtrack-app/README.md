@@ -27,7 +27,7 @@ npx @jetbrains/create-youtrack-app \
   --vendor-url "https://example.com"
 ```
 
-Use `--type ts` to create a TypeScript app with advanced tools, or `--type js` for the basic JavaScript app.
+Use `--type ts` to create a TypeScript app with Enhanced DX, or `--type js` for the basic JavaScript app.
 For a TypeScript app without the sample widget, add `--backend-only`.
 
 ## Adding Features to a Generated App
