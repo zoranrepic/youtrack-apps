@@ -5,6 +5,7 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
 const {
+  findSkillDirectory,
   installSkill,
   getSkillStatus,
   runSystemAgentScan,
@@ -66,6 +67,17 @@ describe('Agent skill CLI', () => {
     fs.mkdirSync(TEST_SOURCE, { recursive: true });
     fs.writeFileSync(path.join(TEST_SOURCE, 'SKILL.md'), '# Test skill\n');
     fs.writeFileSync(path.join(TEST_PROJECT, 'package.json'), '{"name":"test-project"}\n');
+  });
+
+  test('findSkillDirectory locates a nested skill directory', () => {
+    const nested = path.join(TEST_SOURCE, 'release', SKILL_NAME);
+    fs.mkdirSync(nested, { recursive: true });
+    fs.writeFileSync(path.join(nested, 'SKILL.md'), '# Test skill\n');
+    assert.strictEqual(findSkillDirectory(path.join(TEST_SOURCE, 'release')), nested);
+
+    const empty = path.join(TEST_SOURCE, 'empty');
+    fs.mkdirSync(empty, { recursive: true });
+    assert.strictEqual(findSkillDirectory(empty), null);
   });
 
   afterEach(() => {
