@@ -6,6 +6,7 @@ const { execFileSync } = require('node:child_process');
 
 const {
   findSkillDirectory,
+  downloadSkill,
   installSkill,
   getSkillStatus,
   runSystemAgentScan,
@@ -16,7 +17,7 @@ const CLI_PATH = path.join(PKG_DIR, 'index.js');
 const TEST_HOME = path.join(PKG_DIR, 'tmp', 'test-skill-home');
 const TEST_PROJECT = path.join(PKG_DIR, 'tmp', 'test-skill-project');
 const TEST_SOURCE = path.join(PKG_DIR, 'tmp', 'test-skill-source');
-const SKILL_NAME = 'youtrack-app-builder';
+const SKILL_NAME = 'youtrack-apps-skill';
 
 function runCLI(args) {
   try {
@@ -78,6 +79,62 @@ describe('Agent skill CLI', () => {
     const empty = path.join(TEST_SOURCE, 'empty');
     fs.mkdirSync(empty, { recursive: true });
     assert.strictEqual(findSkillDirectory(empty), null);
+  });
+
+  test('skill download authenticates release and asset requests with GITHUB_TOKEN', async () => {
+    const requests = [];
+    const fetch = async (url, options) => {
+      requests.push({ url, options });
+
+      if (requests.length === 1) {
+        return {
+          ok: true,
+          json: async () => ({
+            assets: [{
+              name: 'youtrack-apps-skill.zip',
+              url: 'https://api.github.com/repos/JetBrains/youtrack-app-agent-kit/releases/assets/1',
+            }],
+          }),
+        };
+      }
+
+      return { ok: false, status: 500 };
+    };
+
+    await assert.rejects(
+      downloadSkill({
+        cacheDir: path.join(TEST_HOME, 'authenticated-cache'),
+        fetch,
+        githubToken: 'test-token',
+      }),
+      /HTTP 500/
+    );
+
+    assert.strictEqual(requests.length, 2);
+    assert.strictEqual(requests[0].options.headers.Authorization, 'Bearer test-token');
+    assert.strictEqual(requests[1].options.headers.Authorization, 'Bearer test-token');
+    assert.strictEqual(requests[0].options.headers.Accept, 'application/vnd.github+json');
+    assert.strictEqual(requests[1].options.headers.Accept, 'application/octet-stream');
+  });
+
+  test('skill download does not send authorization without a GitHub token', async () => {
+    const requests = [];
+    const fetch = async (url, options) => {
+      requests.push({ url, options });
+      return { ok: false, status: 404 };
+    };
+
+    await assert.rejects(
+      downloadSkill({
+        cacheDir: path.join(TEST_HOME, 'unauthenticated-cache'),
+        fetch,
+        githubToken: '',
+      }),
+      /release is not available yet/
+    );
+
+    assert.strictEqual(requests.length, 1);
+    assert.strictEqual('Authorization' in requests[0].options.headers, false);
   });
 
   afterEach(() => {

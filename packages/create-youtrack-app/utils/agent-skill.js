@@ -1,10 +1,12 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { Buffer } = require('node:buffer');
 const { execFileSync, spawnSync } = require('node:child_process');
 
-const SKILL_NAME = 'youtrack-app-builder';
-const SKILL_RELEASE_URL = 'https://github.com/JetBrains/youtrack-app-agent-kit/releases/latest/download/youtrack-apps-skill.zip';
+const SKILL_NAME = 'youtrack-apps-skill';
+const SKILL_REPOSITORY = 'JetBrains/youtrack-app-agent-kit';
+const SKILL_RELEASES_URL = `https://api.github.com/repos/${SKILL_REPOSITORY}/releases/latest`;
 
 const ALL_AGENTS = 'all';
 const ALL_SCOPES = 'all';
@@ -123,6 +125,17 @@ function findSkillDirectory(rootDir) {
   return null;
 }
 
+function getGitHubHeaders(accept, options = {}) {
+  const headers = { Accept: accept };
+  const token = options.githubToken ?? process.env.GITHUB_TOKEN;
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
 async function downloadSkill(options = {}) {
   const cacheDir = getSkillCacheDir(options);
   if (fs.existsSync(path.join(cacheDir, 'SKILL.md'))) {
@@ -132,10 +145,29 @@ async function downloadSkill(options = {}) {
   const downloadDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'youtrack-skill-'));
   const archivePath = path.join(downloadDir, 'skill.zip');
   const extractDir = path.join(downloadDir, 'extract');
+  const fetchImpl = options.fetch || globalThis.fetch;
 
   try {
-    const response = await fetch(SKILL_RELEASE_URL, {
-      signal: AbortSignal.timeout(30_000),
+    const releaseResponse = await fetchImpl(SKILL_RELEASES_URL, {
+      headers: getGitHubHeaders('application/vnd.github+json', options),
+      signal: globalThis.AbortSignal.timeout(30_000),
+    });
+    if (!releaseResponse.ok) {
+      if (releaseResponse.status === 404) {
+        throw new Error('YouTrack app builder skill release is not available yet.');
+      }
+      throw new Error(`Could not find the latest skill release on GitHub (HTTP ${releaseResponse.status}).`);
+    }
+
+    const release = await releaseResponse.json();
+    const releaseAsset = release.assets?.find(asset => asset.name === 'youtrack-apps-skill.zip');
+    if (!releaseAsset?.url) {
+      throw new Error('The latest skill release does not contain youtrack-apps-skill.zip.');
+    }
+
+    const response = await fetchImpl(releaseAsset.url, {
+      headers: getGitHubHeaders('application/octet-stream', options),
+      signal: globalThis.AbortSignal.timeout(30_000),
     });
     if (!response.ok) {
       if (response.status === 404) {

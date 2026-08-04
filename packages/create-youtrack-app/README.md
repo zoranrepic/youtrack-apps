@@ -55,7 +55,7 @@ It is downloaded from the latest GitHub release when installed.
 | `npx @jetbrains/create-youtrack-app skill install` | Detects supported agents and lets you choose agents plus global or project installation. |
 | `npx @jetbrains/create-youtrack-app skill status` | Shows global and project installation status. |
 
-Supported agents are Claude Code, Codex CLI and Junie. Global installs use symlinks in the agent home config. Project installs use hard copies under the current directory. If the skill is unavailable, installation fails with an explicit error.
+Supported agents are Claude Code, Codex CLI and Junie. Global installs use symlinks in the agent home config. Project installs use hard copies under the current directory. If the skill is unavailable, installation fails with an explicit error. For a release in a private GitHub repository, set `GITHUB_TOKEN` to a token with read access before running `skill install`.
 
 ## Classic Workflow Rules
 
