@@ -14,6 +14,7 @@ const PKG_DIR = path.join(__dirname, '..');
 const CLI_PATH = path.join(PKG_DIR, 'index.js');
 const TEST_HOME = path.join(PKG_DIR, 'tmp', 'test-skill-home');
 const TEST_PROJECT = path.join(PKG_DIR, 'tmp', 'test-skill-project');
+const TEST_SOURCE = path.join(PKG_DIR, 'tmp', 'test-skill-source');
 const SKILL_NAME = 'youtrack-app-builder';
 
 function runCLI(args) {
@@ -60,19 +61,21 @@ describe('Agent skill CLI', () => {
   beforeEach(() => {
     fs.rmSync(TEST_HOME, { recursive: true, force: true });
     fs.rmSync(TEST_PROJECT, { recursive: true, force: true });
+    fs.rmSync(TEST_SOURCE, { recursive: true, force: true });
     fs.mkdirSync(TEST_PROJECT, { recursive: true });
+    fs.mkdirSync(TEST_SOURCE, { recursive: true });
+    fs.writeFileSync(path.join(TEST_SOURCE, 'SKILL.md'), '# Test skill\n');
     fs.writeFileSync(path.join(TEST_PROJECT, 'package.json'), '{"name":"test-project"}\n');
   });
 
   afterEach(() => {
     fs.rmSync(TEST_HOME, { recursive: true, force: true });
     fs.rmSync(TEST_PROJECT, { recursive: true, force: true });
+    fs.rmSync(TEST_SOURCE, { recursive: true, force: true });
   });
 
-  test('skill install defaults to global symlinks for all supported agents in non-interactive mode', () => {
-    const result = runCLI(['skill', 'install']);
-
-    assert.strictEqual(result.success, true, result.output);
+  test('skill install defaults to global symlinks for all supported agents', async () => {
+    await installSkill({ sourceDir: TEST_SOURCE, homeDir: TEST_HOME });
     assert.strictEqual(fs.existsSync(path.join(targetDir('codex'), 'SKILL.md')), true);
     assert.strictEqual(fs.existsSync(path.join(targetDir('claude'), 'SKILL.md')), true);
     assert.strictEqual(fs.existsSync(path.join(targetDir('junie'), 'SKILL.md')), true);
@@ -88,8 +91,9 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(result.output.trim(), require('../package.json').version);
   });
 
-  test('project-level install uses hard copies', () => {
-    const results = installSkill({
+  test('project-level install uses hard copies', async () => {
+    const results = await installSkill({
+      sourceDir: TEST_SOURCE,
       agent: 'codex',
       scope: 'project',
       cwd: TEST_PROJECT,
@@ -102,12 +106,13 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(fs.lstatSync(targetDir('codex', 'project')).isSymbolicLink(), false);
   });
 
-  test('project-level install uses the current directory without searching parent project markers', () => {
+  test('project-level install uses the current directory without searching parent project markers', async () => {
     const nestedProjectDir = path.join(TEST_PROJECT, 'examples', 'nested-app');
     fs.mkdirSync(nestedProjectDir, { recursive: true });
     fs.mkdirSync(path.join(TEST_PROJECT, '.git'));
 
-    const results = installSkill({
+    const results = await installSkill({
+      sourceDir: TEST_SOURCE,
       agent: 'codex',
       scope: 'project',
       cwd: nestedProjectDir,
@@ -120,8 +125,9 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(fs.existsSync(path.join(targetDir('codex', 'project'), 'SKILL.md')), false);
   });
 
-  test('status reports installed and not installed based on target directories', () => {
-    installSkill({
+  test('status reports installed and not installed based on target directories', async () => {
+    await installSkill({
+      sourceDir: TEST_SOURCE,
       agent: 'codex',
       scope: 'global',
       homeDir: TEST_HOME,

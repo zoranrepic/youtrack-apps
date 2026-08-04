@@ -1,9 +1,11 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { spawnSync } = require('node:child_process');
+const { execFileSync, spawnSync } = require('node:child_process');
 
 const SKILL_NAME = 'youtrack-app-builder';
+const SKILL_REPOSITORY = 'JetBrains/youtrack-app-builder';
+const SKILL_REF = 'main';
 
 const ALL_AGENTS = 'all';
 const ALL_SCOPES = 'all';
@@ -44,10 +46,6 @@ const DEPLOYMENT_BY_SCOPE = {
   [GLOBAL_SCOPE]: 'symlink',
   [PROJECT_SCOPE]: 'copy',
 };
-
-function getSkillSourceDir() {
-  return path.join(__dirname, '..', 'resources', 'skills', SKILL_NAME);
-}
 
 function getHomeDir() {
   return process.env.YOUTRACK_SKILL_HOME || os.homedir();
@@ -104,18 +102,74 @@ function getAgentSkillsDir(agentId, scope, options = {}) {
   return path.join(rootDir, agent.configDir, 'skills');
 }
 
-function ensureSkillSourceExists(sourceDir = getSkillSourceDir()) {
-  if (!fs.existsSync(sourceDir) || !fs.statSync(sourceDir).isDirectory()) {
-    throw new Error(`Bundled YouTrack app builder skill is missing at ${sourceDir}.`);
+function getSkillCacheDir(options = {}) {
+  return options.cacheDir || path.join(getHomeDir(), '.cache', 'youtrack-app', SKILL_NAME);
+}
+
+function findSkillDirectory(rootDir) {
+  if (fs.existsSync(path.join(rootDir, 'SKILL.md'))) {
+    return rootDir;
+  }
+
+  const entries = fs.readdirSync(rootDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const entryPath = path.join(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === SKILL_NAME && fs.existsSync(path.join(entryPath, 'SKILL.md'))) {
+        return entryPath;
+      }
+      const nestedSkillDir = findSkillDirectory(entryPath);
+      if (nestedSkillDir) return nestedSkillDir;
+    }
+  }
+
+  return null;
+}
+
+async function downloadSkill(options = {}) {
+  const archiveUrl = `https://codeload.github.com/${SKILL_REPOSITORY}/zip/refs/heads/${SKILL_REF}`;
+  const cacheDir = getSkillCacheDir(options);
+  const downloadDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'youtrack-skill-'));
+  const archivePath = path.join(downloadDir, 'skill.zip');
+  const extractDir = path.join(downloadDir, 'extract');
+
+  try {
+    const response = await fetch(archiveUrl);
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('YouTrack app builder skill is not released yet.');
+      }
+      throw new Error(`Could not download the YouTrack app builder skill from GitHub (HTTP ${response.status}).`);
+    }
+
+    fs.mkdirSync(downloadDir, { recursive: true });
+    fs.writeFileSync(archivePath, Buffer.from(await response.arrayBuffer()));
+    fs.mkdirSync(extractDir, { recursive: true });
+    execFileSync('unzip', ['-q', archivePath, '-d', extractDir], { stdio: 'ignore' });
+
+    const sourceDir = findSkillDirectory(extractDir);
+    if (!sourceDir) {
+      throw new Error(`The GitHub skill repository does not contain ${SKILL_NAME}/SKILL.md.`);
+    }
+
+    fs.rmSync(cacheDir, { recursive: true, force: true });
+    fs.mkdirSync(path.dirname(cacheDir), { recursive: true });
+    fs.cpSync(sourceDir, cacheDir, { recursive: true });
+    return cacheDir;
+  } catch (error) {
+    if (error && error.code === 'ENOTFOUND') {
+      throw new Error(`Could not reach GitHub while downloading the YouTrack app builder skill: ${error.message}`);
+    }
+    throw error;
+  } finally {
+    fs.rmSync(downloadDir, { recursive: true, force: true });
   }
 }
 
-function createInstallPlan(options = {}) {
-  const sourceDir = getSkillSourceDir();
+function createInstallPlan(sourceDir, options = {}) {
   const agents = expandAgents(options.agent || DEFAULT_AGENT_SELECTION);
   const scopes = expandScopes(options.scope || DEFAULT_INSTALL_SCOPE);
-
-  ensureSkillSourceExists(sourceDir);
 
   return scopes.flatMap(scope => agents.map(agentId => {
     const targetDir = path.join(getAgentSkillsDir(agentId, scope, options), SKILL_NAME);
@@ -161,8 +215,9 @@ function deploySkill(planItem) {
   copySkillDirectory(planItem.sourceDir, planItem.targetDir);
 }
 
-function installSkill(options = {}) {
-  return createInstallPlan(options).map(planItem => {
+async function installSkill(options = {}) {
+  const sourceDir = options.sourceDir || await downloadSkill(options);
+  return createInstallPlan(sourceDir, options).map(planItem => {
     deploySkill(planItem);
 
     return {
@@ -281,4 +336,5 @@ module.exports = {
   getSkillStatus,
   installSkill,
   runSystemAgentScan,
+  downloadSkill,
 };
