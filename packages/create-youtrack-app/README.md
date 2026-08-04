@@ -48,7 +48,7 @@ After you have generated an app, you may want to add more features. Add new feat
 ## App Skill Commands
 
 The skill gives supported AI coding agents YouTrack app development guidance.
-It is downloaded from GitHub when installed.
+It is downloaded from the latest GitHub release when installed.
 
 | Command | Description |
 | --- | --- |

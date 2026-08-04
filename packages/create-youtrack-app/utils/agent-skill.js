@@ -4,8 +4,7 @@ const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
 
 const SKILL_NAME = 'youtrack-app-builder';
-const SKILL_REPOSITORY = 'JetBrains/youtrack-app-builder';
-const SKILL_REF = 'main';
+const SKILL_RELEASE_URL = 'https://github.com/JetBrains/youtrack-app-builder/releases/latest/download/youtrack-app-builder.zip';
 
 const ALL_AGENTS = 'all';
 const ALL_SCOPES = 'all';
@@ -128,17 +127,16 @@ function findSkillDirectory(rootDir) {
 }
 
 async function downloadSkill(options = {}) {
-  const archiveUrl = `https://codeload.github.com/${SKILL_REPOSITORY}/zip/refs/heads/${SKILL_REF}`;
   const cacheDir = getSkillCacheDir(options);
   const downloadDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'youtrack-skill-'));
   const archivePath = path.join(downloadDir, 'skill.zip');
   const extractDir = path.join(downloadDir, 'extract');
 
   try {
-    const response = await fetch(archiveUrl);
+    const response = await fetch(SKILL_RELEASE_URL);
     if (!response.ok) {
       if (response.status === 404) {
-        throw new Error('YouTrack app builder skill is not released yet.');
+        throw new Error('YouTrack app builder skill release is not available yet.');
       }
       throw new Error(`Could not download the YouTrack app builder skill from GitHub (HTTP ${response.status}).`);
     }
@@ -150,7 +148,7 @@ async function downloadSkill(options = {}) {
 
     const sourceDir = findSkillDirectory(extractDir);
     if (!sourceDir) {
-      throw new Error(`The GitHub skill repository does not contain ${SKILL_NAME}/SKILL.md.`);
+      throw new Error(`The YouTrack app builder release does not contain ${SKILL_NAME}/SKILL.md.`);
     }
 
     fs.rmSync(cacheDir, { recursive: true, force: true });
