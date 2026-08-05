@@ -68,16 +68,43 @@ describe('restRequest', () => {
     expect(console.log).toHaveBeenCalledWith('plain response');
   });
 
-  it('rejects absolute paths and malformed JSON', async () => {
+  it.each([
+    'https://other.example.test/api',
+    '\\\\evil.com/x',
+    'http:/evil.com/x',
+    'ht' + '\t' + 'tps://evil.com/x',
+  ])('rejects paths which resolve outside the configured host: %s', async path => {
     const fetchMock = jest.spyOn(global, 'fetch');
     const exitMock = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    await restRequest(config, {path: 'https://other.example.test/api'});
+    await restRequest(config, {path});
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(exitMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects malformed JSON', async () => {
+    const fetchMock = jest.spyOn(global, 'fetch');
+    const exitMock = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
     await restRequest(config, {path: '/api/issues', body: '{bad'});
 
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(exitMock).toHaveBeenCalledTimes(2);
+    expect(exitMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('requires --yes for DELETE requests', async () => {
+    const fetchMock = jest.spyOn(global, 'fetch');
+    const exitMock = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await restRequest(config, {path: '/api/issues/1', method: 'DELETE'});
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledWith('Error: DELETE requests require --yes');
+    expect(exitMock).toHaveBeenCalledTimes(1);
   });
 
   it('reports HTTP errors with status and response details', async () => {

@@ -189,6 +189,15 @@ describe('index', function () {
     expect(process.exit).not.toHaveBeenCalled();
   });
 
+  it('should pass --yes to DELETE REST requests', async function () {
+    await require('./index').run(['', '', 'rest', 'request', '--path=/api/issues/1', '--method=DELETE', '--host=foo', '--token=bar', '--yes']);
+
+    expect(restRequest).toHaveBeenCalledWith(
+      expect.objectContaining({host: 'foo', token: 'bar', yes: true}),
+      {path: '/api/issues/1', method: 'DELETE', body: undefined, header: undefined},
+    );
+  });
+
   it('should pass app and script args to logs', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);

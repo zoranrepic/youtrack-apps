@@ -105,7 +105,7 @@ const commands = {
   'user:info': command(userInfo, {argument: stringArg('user'), flags: ['user'], required: ['user']}),
   'rest:request': command(
     (config, argument) => restRequest(config, argument as RawRestRequestArgs),
-    {argument: args => ({path: optionalArgString(args.path) ?? undefined, method: optionalArgString(args.method) ?? undefined, body: optionalArgString(args.body) ?? undefined, header: args.header as string | string[] | undefined}), flags: ['path', 'method', 'body', 'header'], required: ['path']},
+    {argument: args => ({path: optionalArgString(args.path) ?? undefined, method: optionalArgString(args.method) ?? undefined, body: optionalArgString(args.body) ?? undefined, header: args.header as string | string[] | undefined}), flags: ['path', 'method', 'body', 'header', 'yes'], required: ['path']},
   ),
 } satisfies Record<string, Command>;
 
@@ -396,11 +396,12 @@ export async function run(argv = process.argv) {
     br();
 
     printSection(i18n('Raw REST API'));
-    printCommand(i18n('rest request --path <path> [--method METHOD] [--body JSON] [--header name:value]'), {
+    printCommand(i18n('rest request --path <path> [--method METHOD] [--body JSON] [--header name:value] [--yes]'), {
       does: i18n('Makes an authenticated request to a relative path on the configured YouTrack host.'),
       args: [
         i18n('--path <path> is a relative REST path, including any query string.'),
         i18n('--method defaults to GET. Supported methods are GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.'),
+        i18n('--yes is required for DELETE requests.'),
         i18n('--body JSON sends a JSON request body.'),
         i18n('--header name:value adds a request header and may be repeated.'),
         i18n('See https://www.jetbrains.com/help/youtrack/devportal/rest-api-reference.html for available paths and payloads.'),
