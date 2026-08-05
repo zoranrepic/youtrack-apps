@@ -403,6 +403,7 @@ export async function run(argv = process.argv) {
         i18n('--method defaults to GET. Supported methods are GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.'),
         i18n('--body JSON sends a JSON request body.'),
         i18n('--header name:value adds a request header and may be repeated.'),
+        i18n('See https://www.jetbrains.com/help/youtrack/devportal/rest-api-reference.html for available paths and payloads.'),
       ],
     });
     br();
