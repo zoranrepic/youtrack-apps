@@ -17,6 +17,7 @@ import {projectFields, projectInfo, projectList} from './commands/projects.js';
 import {tagSearch} from './commands/tags.js';
 import {groupList, groupMembers} from './commands/groups.js';
 import {userInfo, userList} from './commands/users.js';
+import {restRequest} from './commands/rest.js';
 
 nock.back.setMode('record');
 jest.mock('./commands/discovery');
@@ -36,6 +37,7 @@ jest.mock('./commands/projects');
 jest.mock('./commands/tags');
 jest.mock('./commands/groups');
 jest.mock('./commands/users');
+jest.mock('./commands/rest');
 
 describe('index', function () {
   beforeEach(function () {
@@ -280,6 +282,7 @@ describe('index', function () {
     ['group members', ['group', 'members', '--group=developers'], groupMembers, 'developers'],
     ['user list', ['user', 'list', '--query=alex'], userList, 'alex'],
     ['user info', ['user', 'info', '--user=alex'], userInfo, 'alex'],
+    ['rest request', ['rest', 'request', '--path=/api/issues'], restRequest, {path: '/api/issues', method: undefined, body: undefined, header: undefined}],
   ])('should route %s', async (_name, commandArgs, handler, expectedArgument) => {
     await require('./index').run(['', '', ...commandArgs, '--host=foo', '--token=bar']);
 
