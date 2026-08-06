@@ -1,0 +1,6 @@
+
+> issue-operations-suite@0.0.0 pack
+> rm -rf issue-operations-suite.zip && cd dist/ && bestzip ../issue-operations-suite.zip *
+
+Writing backend.js, critical-time-monitor.js, email-action.js, entity-extensions.json, icon.svg, manifest.json, settings.json, time-tracking.js, widgets to ../issue-operations-suite.zip...
+zipped!

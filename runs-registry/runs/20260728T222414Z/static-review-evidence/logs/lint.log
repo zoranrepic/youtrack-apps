@@ -1,0 +1,63 @@
+
+> ops-command-center@0.0.0 lint
+> eslint --report-unused-disable-directives --max-warnings 0
+
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T222414Z/generated-app/src/config.js
+  13:12  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  43:48  error  Unexpected unnamed function    func-names
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T222414Z/generated-app/src/github.js
+   7:14  error  A `require()` style import is forbidden     @typescript-eslint/no-require-imports
+  26:36  error  No magic number: 200                        no-magic-numbers
+  26:60  error  No magic number: 300                        no-magic-numbers
+  31:12  error  'e' is defined but never used               @typescript-eslint/no-unused-vars
+  75:41  error  Unexpected unnamed function                 func-names
+  89:15  error  Identifier 'per_page' is not in camel case  camelcase
+  92:66  error  Unexpected unnamed function                 func-names
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T222414Z/generated-app/src/time-tracking.js
+   6:18  error  A `require()` style import is forbidden                      @typescript-eslint/no-require-imports
+  10:27  error  Unexpected unnamed function                                  func-names
+  21:7   error  Method 'handle' has a complexity of 8. Maximum allowed is 7  complexity
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T222414Z/generated-app/src/widgets/github-actions/app.tsx
+  46:50  error  Arrow function has a complexity of 14. Maximum allowed is 7  complexity
+  99:28  error  Do not use Array index in keys                               react/no-array-index-key
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T222414Z/generated-app/src/widgets/issue-relations/app.tsx
+   34:26  error  No magic number: 2  no-magic-numbers
+   35:27  error  No magic number: 2  no-magic-numbers
+   72:26  error  No magic number: 2  no-magic-numbers
+  114:38  error  No magic number: 2  no-magic-numbers
+  115:38  error  No magic number: 2  no-magic-numbers
+  115:42  error  No magic number: 4  no-magic-numbers
+  130:42  error  No magic number: 4  no-magic-numbers
+  134:42  error  No magic number: 4  no-magic-numbers
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T222414Z/generated-app/src/widgets/threshold-config/app.tsx
+   78:14  error  'e' is defined but never used   @typescript-eslint/no-unused-vars
+  104:37  error  Do not use Array index in keys  react/no-array-index-key
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T222414Z/generated-app/src/widgets/time-logger/app.tsx
+  42:14  error  'e' is defined but never used                @typescript-eslint/no-unused-vars
+  77:14  error  'e' is defined but never used                @typescript-eslint/no-unused-vars
+  97:15  error  Expected 'undefined' and instead saw 'void'  no-void
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T222414Z/generated-app/src/workflows/critical-time-monitor.js
+   7:18  error  A `require()` style import is forbidden                       @typescript-eslint/no-require-imports
+   8:23  error  A `require()` style import is forbidden                       @typescript-eslint/no-require-imports
+  16:12  error  'e' is defined but never used                                 @typescript-eslint/no-unused-vars
+  23:27  error  Unexpected unnamed function                                   func-names
+  41:1   error  'exports' is not defined                                      no-undef
+  45:3   error  Method 'action' has a complexity of 10. Maximum allowed is 7  complexity
+  63:5   error  Unexpected console statement                                  no-console
+
+/Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260728T222414Z/generated-app/src/workflows/email-action.js
+   6:18  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+   7:23  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  11:27  error  Unexpected unnamed function              func-names
+  17:1   error  'exports' is not defined                 no-undef
+
+✖ 38 problems (38 errors, 0 warnings)
+

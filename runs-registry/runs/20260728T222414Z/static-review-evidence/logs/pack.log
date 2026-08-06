@@ -1,0 +1,6 @@
+
+> ops-command-center@0.0.0 pack
+> rm -rf ops-command-center.zip && cd dist/ && bestzip ../ops-command-center.zip *
+
+Writing config.js, critical-time-monitor.js, email-action.js, entity-extensions.json, github.js, icon.svg, manifest.json, settings.json, time-tracking.js, widgets to ../ops-command-center.zip...
+zipped!

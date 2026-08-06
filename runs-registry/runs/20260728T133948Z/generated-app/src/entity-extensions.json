@@ -1,0 +1,27 @@
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "Issue",
+      "properties": {
+        "criticalTimeAlertState": {
+          "type": "string",
+          "multi": false
+        }
+      }
+    },
+    {
+      "entityType": "AppGlobalStorage",
+      "properties": {
+        "dashboardCriticalMinutes": {
+          "type": "integer"
+        },
+        "dashboardWarningPercent": {
+          "type": "integer"
+        },
+        "dashboardNotificationsEnabled": {
+          "type": "boolean"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+  margin: calc(var(--ring-unit) / 2);
+}
+
+.relations-header {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--ring-unit) * 1.5);
+}
+
+.relations-graph {
+  overflow: visible;
+}
+
+.relations-edge {
+  stroke: var(--ring-borders-color);
+  stroke-width: 1;
+}
+
+.relations-edge-label {
+  fill: var(--ring-secondary-color);
+  font-size: 10px;
+}
+
+.relations-node rect {
+  fill: var(--ring-content-background-color);
+  stroke: var(--ring-borders-color);
+  stroke-width: 1;
+}
+
+.relations-node text {
+  fill: var(--ring-text-color);
+  font-size: 12px;
+}
+
+.relations-node:not(.relations-node_focused) {
+  cursor: pointer;
+}
+
+.relations-node:not(.relations-node_focused):hover rect {
+  stroke: var(--ring-main-color);
+}
+
+.relations-node_focused rect {
+  fill: var(--ring-selected-background-color);
+  stroke: var(--ring-main-color);
+  stroke-width: 2;
+}
+
+.relations-node_resolved text {
+  fill: var(--ring-secondary-color);
+  text-decoration: line-through;
+}

@@ -1,0 +1,6 @@
+
+> issue-delivery-control-center@0.0.0 lint
+> eslint --report-unused-disable-directives --max-warnings 0
+
+
+EXIT_STATUS=0

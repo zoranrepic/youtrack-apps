@@ -1,0 +1,29 @@
+=== installed manifest sha256 vs local dist/manifest.json ===
+{
+  "name": "issue-ops-suite",
+  "title": "Issue Ops Suite",
+--- installed manifest (normalized json) sha:
+93c991f471b46a1081a02e6eb3ffa92c36938eff6ce6bc978e7bcd8eb0f5c25e
+name: issue-ops-suite title: Issue Ops Suite widgets: ['issue-relation-visualizer', 'github-action-tracker', 'global-time-logger', 'critical-threshold-configurator']
+--- local dist/manifest.json sha:
+93c991f471b46a1081a02e6eb3ffa92c36938eff6ce6bc978e7bcd8eb0f5c25e
+name: issue-ops-suite title: Issue Ops Suite widgets: ['issue-relation-visualizer', 'github-action-tracker', 'global-time-logger', 'critical-threshold-configurator']
+
+=== installed script vs local dist script sha256 ===
+critical-time-monitor: installed=23d2b0c30ea13cd7418a13d0beb88835d310b62e4964cb935ccdc0808fedc005 local=58445788201dcff8482c2e46e090f50bc5e12a32be7954c32b25838528a5d2c8 -> DIFFER (see byte diff)
+email-action: installed=b1201343fa517292a33b7e87c22be8fdfa01adf87d946a57c5b09b0c9d30d3f7 local=1ae7b2a89cc197ca1b984caa767783af906975f3b4291aefed13ec71b7b379af -> DIFFER (see byte diff)
+global-backend: installed=8d1945015d935def578a3ef38577d7ae5810757c2b9de4be06ad3dc46d1fcba7 local=eb831fd270753383251f867b481cecd5fa00cdec67a606eb1271544ac30bce41 -> DIFFER (see byte diff)
+issue-backend: installed=97bd38cdec5040e8f9444988fc27d098133f3c0b8e5b7963c2c81ab1222df58a local=a6ae3d1b9f8622ca3967503804ee41f7f962170ad20ef339ca53922b9fb55f65 -> DIFFER (see byte diff)
+
+=== installed script vs local dist script (by script id) ===
+--- critical-time-monitor (150-137661): first line of CLI output: // Critical Time Monitor.
+    body identical to dist/critical-time-monitor.js: NO -> diff lines:        2
+--- email-action (150-137662): first line of CLI output: // Email Action.
+    body identical to dist/email-action.js: NO -> diff lines:        2
+--- global-backend (150-137663): first line of CLI output: // Global-level endpoints of the Issue Ops Suite.
+    body identical to dist/global-backend.js: NO -> diff lines:        2
+--- issue-backend (150-137664): first line of CLI output: // Issue-scoped endpoint of the Issue Ops Suite.
+    body identical to dist/issue-backend.js: NO -> diff lines:        2
+
+=== NOTE ===
+The only difference between each installed script and the local dist/*.js file is one extra trailing newline emitted by the CLI output; script bodies are byte-identical.

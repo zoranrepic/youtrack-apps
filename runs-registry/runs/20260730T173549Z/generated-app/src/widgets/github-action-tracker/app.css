@@ -1,0 +1,16 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+  margin: calc(var(--ring-unit) / 2);
+}
+
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--ring-unit); }
+.title { font-weight: bold; }
+.empty { color: var(--ring-secondary-color); }
+.error { color: var(--ring-error-color); }
+.pr { border: 1px solid var(--ring-borders-color); border-radius: var(--ring-border-radius); padding: var(--ring-unit); }
+.pr-header { display: flex; flex-direction: column; margin-bottom: var(--ring-unit); }
+.pr-meta { color: var(--ring-secondary-color); font-size: var(--ring-font-size-smaller); }
+.runs { width: 100%; border-collapse: collapse; font-size: var(--ring-font-size-smaller); }
+.runs th, .runs td { text-align: left; padding: 2px 4px; border-bottom: 1px solid var(--ring-line-color); }

@@ -1,0 +1,15 @@
+=== POST thresholds (Configuration Storage) at 22:03:40Z ===
+{"config":{"defaultMinutes":480,"warningPercentage":75,"alertRepeatMinutes":120,"notificationsEnabled":true,"projects":{"DEMO":960},"issues":{"DEMO-40":100000,"DEMO-42":600,"DEMO-43":60,"DEMO-44":30},"updatedAt":1785276220807,"updatedBy":"admin"},"saved":true}
+[HTTP 200]
+
+=== log time via app endpoint (Time Tracking Service) ===
+issue DEMO-42 30m duration  -> {"error":"duration must be a positive number of minutes or a period such as \"2h 30m\"."} [HTTP 400]
+issue DEMO-43 1h duration  -> {"error":"duration must be a positive number of minutes or a period such as \"2h 30m\"."} [HTTP 400]
+
+=== log time via app endpoint (retry with correct payloads) 22:03:54Z ===
+{"issueId":"DEMO-42","summary":"YTAPP-REVIEW-20260728T2148Z-Below","loggedMinutes":30,"loggedPresentation":"30m","totalSpentMinutes":30,"totalSpentPresentation":"30m","limitMinutes":600,"limitPresentation":"1d 2h","limitSource":"issue","status":"OK"} [HTTP 200]
+{"issueId":"DEMO-43","summary":"YTAPP-REVIEW-20260728T2148Z-AtLimit","loggedMinutes":60,"loggedPresentation":"1h","totalSpentMinutes":60,"totalSpentPresentation":"1h","limitMinutes":60,"limitPresentation":"1h","limitSource":"issue","status":"CRITICAL"} [HTTP 200]
+
+=== add DEMO-45 threshold (10m) and log 30m at 22:05:58Z to force a second-minute execution ===
+{"config":{"defaultMinutes":480,"warningPercentage":75,"alertRepeatMinutes":120,"notificationsEnabled":true,"projects":{"DEMO":960},"issues":{"DEMO-40":100000,"DEMO-42":600,"DEMO-43":60,"DEMO-44":30,"DEMO-45":10},"updatedAt":1785276358912,"updatedBy":"admin"},"saved":true} [HTTP 200]
+{"issueId":"DEMO-45","summary":"YTAPP-REVIEW-20260728T2148Z-Empty","loggedMinutes":30,"loggedPresentation":"30m","totalSpentMinutes":30,"totalSpentPresentation":"30m","limitMinutes":10,"limitPresentation":"10m","limitSource":"issue","status":"CRITICAL"} [HTTP 200]

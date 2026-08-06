@@ -1,0 +1,33 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+  margin: calc(var(--ring-unit) / 2);
+}
+
+.config-header {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--ring-unit) * 1.5);
+}
+
+.config-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ring-unit);
+  border-top: 1px solid var(--ring-line-color);
+  padding-top: var(--ring-unit);
+}
+
+.config-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ring-unit);
+  flex-wrap: wrap;
+}
+
+.config-actions {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--ring-unit) * 1.5);
+}

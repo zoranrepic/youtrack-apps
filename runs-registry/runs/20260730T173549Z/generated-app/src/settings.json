@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Issue Insight Suite Settings",
+  "description": "Configure notifications, GitHub access, and critical time thresholds.",
+  "properties": {
+    "notificationRecipients": {
+      "title": "Notification recipients",
+      "description": "Comma-separated list of email addresses that receive time-tracking alerts.",
+      "type": "string"
+    },
+    "notifyOnCritical": {
+      "title": "Send email when the critical limit is reached",
+      "description": "When enabled, the critical time monitor sends an email once an issue crosses a boundary.",
+      "type": "boolean",
+      "default": true
+    },
+    "warningSpentTimeHours": {
+      "title": "Warning limit (hours)",
+      "description": "Default spent-time boundary that marks an issue as approaching the critical limit.",
+      "type": "number",
+      "minimum": 0,
+      "default": 6
+    },
+    "criticalSpentTimeHours": {
+      "title": "Critical limit (hours)",
+      "description": "Default spent-time boundary that marks an issue as critical. Can be overridden per project in the Critical Threshold Configurator.",
+      "type": "number",
+      "minimum": 0,
+      "default": 8
+    },
+    "githubRepository": {
+      "title": "GitHub repository",
+      "description": "Repository scanned for pull requests, in the owner/repo format, for example jetbrains/youtrack.",
+      "type": "string"
+    },
+    "githubToken": {
+      "title": "GitHub token",
+      "description": "Personal access token with read access to the repository, its pull requests, and its workflow runs.",
+      "type": "string",
+      "format": "secret"
+    }
+  },
+  "required": []
+}

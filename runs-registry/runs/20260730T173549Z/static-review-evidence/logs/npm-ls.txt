@@ -1,0 +1,30 @@
+issue-insight-suite@0.0.0 /Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app
+├── @eslint/compat@1.4.1
+├── @eslint/eslintrc@3.3.6
+├── @eslint/js@9.39.5
+├── @jetbrains/eslint-config@6.0.5
+├── @jetbrains/ring-ui-built@7.0.120
+├── @jetbrains/youtrack-apps-tools@0.1.3 invalid: "^0.0.1" from the root project -> ./../../../../../youtrack-apps/packages/apps-tools
+├── @jetbrains/youtrack-workflow-types@2026.2.0 extraneous -> ./../../../../../../../.local/share/mise/installs/node/24.15.0/lib/node_modules/@jetbrains/youtrack-workflow-types
+├── @types/react-dom@18.3.7
+├── @types/react@18.3.31
+├── @vitejs/plugin-react@4.7.0
+├── bestzip@2.2.5
+├── core-js@3.38.0
+├── eslint-plugin-jsx-a11y@6.10.2
+├── eslint-plugin-react-hooks@5.2.0
+├── eslint-plugin-react-refresh@0.4.26
+├── eslint-plugin-react@7.37.5
+├── eslint@9.39.5
+├── globals@15.15.0
+├── react-dom@18.3.1
+├── react@18.3.1
+├── typescript-eslint@8.65.0
+├── typescript@5.9.3
+├── vite-plugin-static-copy@2.3.2
+└── vite@6.4.3
+
+npm error code ELSPROBLEMS
+npm error invalid: @jetbrains/youtrack-apps-tools@0.1.3 /Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/node_modules/@jetbrains/youtrack-apps-tools
+npm error extraneous: @jetbrains/youtrack-workflow-types@2026.2.0 /Users/zoran.repic/Documents/Projects/youtrack-app-agent-kit/system-test/runs/20260730T173549Z/generated-app/node_modules/@jetbrains/youtrack-workflow-types
+npm error A complete log of this run can be found in: /Users/zoran.repic/.npm/_logs/2026-07-30T17_50_53_080Z-debug-0.log

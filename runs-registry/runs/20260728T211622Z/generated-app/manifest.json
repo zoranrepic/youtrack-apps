@@ -1,0 +1,65 @@
+{
+  "name": "issue-ops-suite",
+  "title": "Issue Ops Suite",
+  "description": "Issue relation graph, GitHub action tracking, global time logging, and critical spent-time monitoring for YouTrack.",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "vendor": {
+    "name": "Issue Ops",
+    "url": "https://example.com"
+  },
+  "icon": "icon.svg",
+  "minYouTrackVersion": "2025.3.0",
+  "widgets": [
+
+    {
+      "key": "issue-relation-visualizer",
+      "name": "Issue Relation Visualizer",
+      "indexPath": "issue-relation-visualizer/index.html",
+      "extensionPoint": "ISSUE_ABOVE_ACTIVITY_STREAM",
+      "iconPath": "issue-relation-visualizer/widget-icon.svg",
+      "description": "Visualizes issue relations and dependencies as a graph.",
+      "permissions": [
+        "READ_ISSUE"
+      ],
+      "expectedDimensions": {
+        "width": 720,
+        "height": 420
+      }
+    },
+    {
+      "key": "github-action-tracker",
+      "name": "GitHub Action Tracker",
+      "indexPath": "github-action-tracker/index.html",
+      "extensionPoint": "ISSUE_BELOW_SUMMARY",
+      "iconPath": "github-action-tracker/widget-icon.svg",
+      "description": "Shows GitHub pull requests that reference the issue ID and their past action runs.",
+      "permissions": [
+        "READ_ISSUE"
+      ],
+      "expectedDimensions": {
+        "width": 720,
+        "height": 360
+      }
+    },
+    {
+      "key": "global-time-logger",
+      "name": "Global Time Logger",
+      "indexPath": "global-time-logger/index.html",
+      "extensionPoint": "MAIN_MENU_ITEM",
+      "iconPath": "global-time-logger/widget-icon.svg",
+      "description": "Select an issue and log spent time from one global page."
+    },
+    {
+      "key": "critical-threshold-configurator",
+      "name": "Critical Threshold Configurator",
+      "indexPath": "critical-threshold-configurator/index.html",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "iconPath": "critical-threshold-configurator/widget-icon.svg",
+      "description": "Define critical spent-time limits for issues and projects.",
+      "defaultDimensions": {
+        "width": "8fr",
+        "height": "12fr"
+      }
+    }
+  ]
+}

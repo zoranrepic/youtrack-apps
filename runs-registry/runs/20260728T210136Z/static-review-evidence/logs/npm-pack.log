@@ -1,0 +1,6 @@
+
+> issue-operations-hub@0.0.0 pack
+> rm -rf issue-operations-hub.zip && cd dist/ && bestzip ../issue-operations-hub.zip *
+
+Writing backend.js, critical-time-monitor.js, entity-extensions.json, github-action-service.js, icon.svg, manifest.json, send-critical-time-email.js, settings.json, time-tracking-service.js, widgets to ../issue-operations-hub.zip...
+zipped!

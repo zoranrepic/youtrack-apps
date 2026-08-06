@@ -1,0 +1,393 @@
+- generic [ref=f27e2]:
+  - generic [ref=f27e8]:
+    - generic [ref=f27e9]:
+      - link [ref=f27e10] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f27e12]:
+        - link [ref=f27e14] [cursor=pointer]:
+          - /url: issues
+          - tooltip "Issues" [ref=f27e325]
+        - link [ref=f27e414] [cursor=pointer]:
+          - /url: dashboard
+          - tooltip "Dashboards" [ref=f27e415]
+        - link [ref=f27e418] [cursor=pointer]:
+          - /url: agiles
+          - tooltip "Agile Boards" [ref=f27e419]
+        - link [ref=f27e422] [cursor=pointer]:
+          - /url: reports
+          - tooltip "Reports" [ref=f27e423]
+        - link [ref=f27e426] [cursor=pointer]:
+          - /url: projects
+          - tooltip "Projects" [ref=f27e427]
+        - link [ref=f27e430] [cursor=pointer]:
+          - /url: articles
+          - tooltip "Knowledge Base" [ref=f27e431]
+        - link [ref=f27e434] [cursor=pointer]:
+          - /url: timesheets
+          - tooltip "Timesheets" [ref=f27e435]
+        - button [ref=f27e44] [cursor=pointer]:
+          - tooltip "More" [ref=f27e328]
+    - generic [ref=f27e48]:
+      - button [ref=f27e332] [cursor=pointer]:
+        - tooltip "Create" [ref=f27e333]
+      - button [ref=f27e55] [cursor=pointer]:
+        - tooltip "Administration" [ref=f27e336]
+      - button [ref=f27e61] [cursor=pointer]:
+        - tooltip "Help" [ref=f27e339]
+      - button [ref=f27e66] [cursor=pointer]:
+        - tooltip "Notifications" [ref=f27e342]
+      - generic "admin" [ref=f27e346] [cursor=pointer]:
+        - button "User avatar admin" [ref=f27e347]:
+          - img "User avatar" [ref=f27e349]
+          - generic [ref=f27e350]: admin
+      - button [ref=f27e351] [cursor=pointer]:
+        - tooltip "Collapse" [ref=f27e352]
+  - generic [ref=f27e3]:
+    - generic [ref=f27e355]:
+      - generic [ref=f27e356]:
+        - generic [ref=f27e358]:
+          - link "N YTAPP-REVIEW-202607241245-EmptyRel" [ref=f27e359] [cursor=pointer]:
+            - /url: issue/DEMO-37/YTAPP-REVIEW-202607241245-EmptyRel
+            - generic [ref=f27e360]: "N"
+            - button "YTAPP-REVIEW-202607241245-EmptyRel" [ref=f27e363]
+          - button "Remove issue" [ref=f27e365] [cursor=pointer]
+        - generic [ref=f27e368]:
+          - link "N YTAPP-REVIEW-202607241245-MainRel" [ref=f27e369] [cursor=pointer]:
+            - /url: issue/DEMO-35/YTAPP-REVIEW-202607241245-MainRel
+            - generic [ref=f27e370]: "N"
+            - button "YTAPP-REVIEW-202607241245-MainRel" [ref=f27e373]
+          - button "Remove issue" [ref=f27e375] [cursor=pointer]
+        - generic [ref=f27e378]:
+          - link "S Launch YouTrack" [ref=f27e379] [cursor=pointer]:
+            - /url: issue/DEMO-1/Launch-YouTrack
+            - generic [ref=f27e380]: S
+            - button "Launch YouTrack" [ref=f27e383]
+          - button "Remove issue" [ref=f27e385] [cursor=pointer]
+        - generic [ref=f27e388]:
+          - link "N YTAPP-REVIEW-202607241245-SubRel1" [ref=f27e389] [cursor=pointer]:
+            - /url: issue/DEMO-36/YTAPP-REVIEW-202607241245-SubRel1
+            - generic [ref=f27e390]: "N"
+            - button "YTAPP-REVIEW-202607241245-SubRel1" [ref=f27e393]
+          - button "Remove issue" [ref=f27e395] [cursor=pointer]
+      - tooltip "Show more recent items" [ref=f27e397]:
+        - button [ref=f27e398] [cursor=pointer]
+    - generic [ref=f27e128]:
+      - generic [ref=f27e129]:
+        - generic [ref=f27e132]:
+          - link "Dashboards" [ref=f27e400] [cursor=pointer]:
+            - /url: dashboard
+          - generic [ref=f27e401]: /
+          - combobox "DEMO Dashboard" [ref=f27e403]:
+            - button "DEMO Dashboard" [ref=f27e404] [cursor=pointer]
+          - tooltip "More" [ref=f27e407]:
+            - button [ref=f27e409] [cursor=pointer]
+        - generic [ref=f27e146]:
+          - button "New dashboard" [ref=f27e147] [cursor=pointer]
+          - combobox "Critical Threshold Configurator" [ref=f27e299] [cursor=pointer]: Add widget
+      - main [ref=f27e153]:
+        - generic [ref=f27e155]:
+          - dialog [ref=f27e158]:
+            - generic [ref=f27e159]:
+              - generic [ref=f27e161]:
+                - img "Time Tracking Report - Demo project"
+                - heading [level=3] [ref=f27e162]:
+                  - tooltip "Time Tracking Report - Demo project" [ref=f27e411]:
+                    - link "Time Tracking Report - Demo project" [ref=f27e412] [cursor=pointer]:
+                      - /url: https://exploration.youtrack.cloud/reports/timeSheet/220-0
+                - generic [ref=f27e165]:
+                  - button [ref=f27e166] [cursor=pointer]
+                  - button [ref=f27e169] [cursor=pointer]
+              - iframe [ref=f27e175]:
+                - generic [ref=f28e4]:
+                  - generic [ref=f28e6]:
+                    - generic [ref=f28e7]:
+                      - generic [ref=f28e9]:
+                        - button [ref=f28e11] [cursor=pointer]
+                        - generic [ref=f28e15]:
+                          - text: group by
+                          - button [ref=f28e17] [cursor=pointer]
+                      - generic [ref=f28e21]:
+                        - generic [ref=f28e22]: Total time
+                        - generic [ref=f28e23]: 16h00m
+                    - generic [ref=f28e25]:
+                      - generic [ref=f28e26]:
+                        - generic [ref=f28e27]: Implementation
+                        - generic [ref=f28e28]: 12h30m
+                      - generic [ref=f28e30]:
+                        - generic [ref=f28e32]:
+                          - link "DEMO-1" [ref=f28e34] [cursor=pointer]:
+                            - /url: https://exploration.youtrack.cloud/issue/DEMO-1
+                          - text: Launch YouTrack
+                        - generic [ref=f28e38]:
+                          - generic [ref=f28e39]:
+                            - generic [ref=f28e40]: 2h30m
+                            - generic [ref=f28e42]: 2h00m
+                            - generic [ref=f28e44]: 30m
+                          - generic [ref=f28e46]: 1h00m
+                      - generic [ref=f28e50]:
+                        - generic [ref=f28e52]:
+                          - link "DEMO-3" [ref=f28e54] [cursor=pointer]:
+                            - /url: https://exploration.youtrack.cloud/issue/DEMO-3
+                          - text: First steps for system administrators
+                        - generic [ref=f28e55]: 8h00m
+                      - generic [ref=f28e57]:
+                        - generic [ref=f28e59]:
+                          - link "DEMO-8" [ref=f28e61] [cursor=pointer]:
+                            - /url: https://exploration.youtrack.cloud/issue/DEMO-8
+                          - text: Create a project
+                        - generic [ref=f28e65]:
+                          - generic [ref=f28e66]:
+                            - generic [ref=f28e67]: 5h30m
+                            - generic [ref=f28e69]: 6h00m
+                          - generic [ref=f28e71]: 3h30m
+                    - generic [ref=f28e75]:
+                      - generic [ref=f28e76]:
+                        - generic [ref=f28e77]: Investigation
+                        - generic [ref=f28e78]: 3h30m
+                      - generic [ref=f28e80]:
+                        - generic [ref=f28e82]:
+                          - link "DEMO-1" [ref=f28e84] [cursor=pointer]:
+                            - /url: https://exploration.youtrack.cloud/issue/DEMO-1
+                          - text: Launch YouTrack
+                        - generic [ref=f28e88]:
+                          - generic [ref=f28e89]:
+                            - generic [ref=f28e90]: 2h30m
+                            - generic [ref=f28e92]: 2h00m
+                            - generic [ref=f28e94]: 30m
+                          - generic [ref=f28e96]: 1h30m
+                      - generic [ref=f28e100]:
+                        - generic [ref=f28e102]:
+                          - link "DEMO-8" [ref=f28e104] [cursor=pointer]:
+                            - /url: https://exploration.youtrack.cloud/issue/DEMO-8
+                          - text: Create a project
+                        - generic [ref=f28e108]:
+                          - generic [ref=f28e109]:
+                            - generic [ref=f28e110]: 5h30m
+                            - generic [ref=f28e112]: 6h00m
+                          - generic [ref=f28e114]: 2h00m
+                  - generic "Hide details" [ref=f28e118] [cursor=pointer]
+                  - table [ref=f28e121]:
+                    - rowgroup [ref=f28e122]:
+                      - row [ref=f28e123]:
+                        - columnheader "Jan 2026" [ref=f28e124]
+                        - columnheader "Jan 2026" [ref=f28e126]
+                      - row [ref=f28e128]:
+                        - columnheader "13 Tue" [ref=f28e129]
+                        - columnheader "14 Wed" [ref=f28e130]
+                        - columnheader "15 Thu" [ref=f28e131]
+                        - columnheader "16 Fri" [ref=f28e132]
+                        - columnheader "17 Sat" [ref=f28e133]
+                        - columnheader "18 Sun" [ref=f28e134]
+                        - columnheader "19 Mon" [ref=f28e135]
+                        - columnheader "20 Tue" [ref=f28e136]
+                        - columnheader "21 Wed" [ref=f28e137]
+                        - columnheader "22 Thu" [ref=f28e138]
+                        - columnheader "23 Fri" [ref=f28e139]
+                        - columnheader "24 Sat" [ref=f28e140]
+                        - columnheader "25 Sun" [ref=f28e141]
+                        - columnheader "26 Mon" [ref=f28e142]
+                        - columnheader "27 Tue" [ref=f28e143]
+                      - row [ref=f28e144]:
+                        - cell "00m" [ref=f28e145]:
+                          - strong [ref=f28e146]:
+                            - generic [ref=f28e147]: 00m
+                        - cell "00m" [ref=f28e148]:
+                          - strong [ref=f28e149]:
+                            - generic [ref=f28e150]: 00m
+                        - cell "00m" [ref=f28e151]:
+                          - strong [ref=f28e152]:
+                            - generic [ref=f28e153]: 00m
+                        - cell "00m" [ref=f28e154]:
+                          - strong [ref=f28e155]:
+                            - generic [ref=f28e156]: 00m
+                        - cell [ref=f28e157]:
+                          - strong
+                        - cell "1h00m" [ref=f28e158]:
+                          - strong [ref=f28e159]:
+                            - generic [ref=f28e160]: 1h00m
+                        - cell "3h30m" [ref=f28e161]:
+                          - strong [ref=f28e162]:
+                            - generic [ref=f28e163]: 3h30m
+                        - cell "11h30m" [ref=f28e164]:
+                          - strong [ref=f28e165]:
+                            - generic [ref=f28e166]: 11h30m
+                        - cell "00m" [ref=f28e167]:
+                          - strong [ref=f28e168]:
+                            - generic [ref=f28e169]: 00m
+                        - cell "00m" [ref=f28e170]:
+                          - strong [ref=f28e171]:
+                            - generic [ref=f28e172]: 00m
+                        - cell "00m" [ref=f28e173]:
+                          - strong [ref=f28e174]:
+                            - generic [ref=f28e175]: 00m
+                        - cell [ref=f28e176]:
+                          - strong
+                        - cell [ref=f28e177]:
+                          - strong
+                        - cell "00m" [ref=f28e178]:
+                          - strong [ref=f28e179]:
+                            - generic [ref=f28e180]: 00m
+                        - cell "00m" [ref=f28e181]:
+                          - strong [ref=f28e182]:
+                            - generic [ref=f28e183]: 00m
+                    - rowgroup [ref=f28e184]:
+                      - row [ref=f28e185]:
+                        - cell "00m" [ref=f28e186]
+                        - cell "00m" [ref=f28e188]
+                        - cell "00m" [ref=f28e190]
+                        - cell "00m" [ref=f28e192]
+                        - cell [ref=f28e194]
+                        - cell [ref=f28e195]
+                        - cell "1h00m" [ref=f28e196]
+                        - cell "11h30m" [ref=f28e198]
+                        - cell "00m" [ref=f28e200]
+                        - cell "00m" [ref=f28e202]
+                        - cell "00m" [ref=f28e204]
+                        - cell [ref=f28e206]
+                        - cell [ref=f28e207]
+                        - cell "00m" [ref=f28e208]
+                        - cell "00m" [ref=f28e210]
+                      - row [ref=f28e212]:
+                        - cell [ref=f28e213]
+                        - cell [ref=f28e214]
+                        - cell [ref=f28e215]
+                        - cell [ref=f28e216]
+                        - cell [ref=f28e217]
+                        - cell [ref=f28e218]
+                        - cell "1h00m" [ref=f28e219]
+                        - cell [ref=f28e221]
+                        - cell [ref=f28e222]
+                        - cell [ref=f28e223]
+                        - cell [ref=f28e224]
+                        - cell [ref=f28e225]
+                        - cell [ref=f28e226]
+                        - cell [ref=f28e227]
+                        - cell [ref=f28e228]
+                      - row [ref=f28e229]:
+                        - cell [ref=f28e230]
+                        - cell [ref=f28e231]
+                        - cell [ref=f28e232]
+                        - cell [ref=f28e233]
+                        - cell [ref=f28e234]
+                        - cell [ref=f28e235]
+                        - cell [ref=f28e236]
+                        - cell "8h00m" [ref=f28e237]
+                        - cell [ref=f28e239]
+                        - cell [ref=f28e240]
+                        - cell [ref=f28e241]
+                        - cell [ref=f28e242]
+                        - cell [ref=f28e243]
+                        - cell [ref=f28e244]
+                        - cell [ref=f28e245]
+                      - row [ref=f28e246]:
+                        - cell [ref=f28e247]
+                        - cell [ref=f28e248]
+                        - cell [ref=f28e249]
+                        - cell [ref=f28e250]
+                        - cell [ref=f28e251]
+                        - cell [ref=f28e252]
+                        - cell [ref=f28e253]
+                        - cell "3h30m" [ref=f28e254]
+                        - cell [ref=f28e256]
+                        - cell [ref=f28e257]
+                        - cell [ref=f28e258]
+                        - cell [ref=f28e259]
+                        - cell [ref=f28e260]
+                        - cell [ref=f28e261]
+                        - cell [ref=f28e262]
+                    - rowgroup [ref=f28e263]:
+                      - row [ref=f28e264]:
+                        - cell "00m" [ref=f28e265]
+                        - cell "00m" [ref=f28e267]
+                        - cell "00m" [ref=f28e269]
+                        - cell "00m" [ref=f28e271]
+                        - cell [ref=f28e273]
+                        - cell "1h00m" [ref=f28e274]
+                        - cell "2h30m" [ref=f28e276]
+                        - cell "00m" [ref=f28e278]
+                        - cell "00m" [ref=f28e280]
+                        - cell "00m" [ref=f28e282]
+                        - cell "00m" [ref=f28e284]
+                        - cell [ref=f28e286]
+                        - cell [ref=f28e287]
+                        - cell "00m" [ref=f28e288]
+                        - cell "00m" [ref=f28e290]
+                      - row [ref=f28e292]:
+                        - cell [ref=f28e293]
+                        - cell [ref=f28e294]
+                        - cell [ref=f28e295]
+                        - cell [ref=f28e296]
+                        - cell [ref=f28e297]
+                        - cell "1h00m" [ref=f28e298]
+                        - cell "30m" [ref=f28e300]
+                        - cell [ref=f28e302]
+                        - cell [ref=f28e303]
+                        - cell [ref=f28e304]
+                        - cell [ref=f28e305]
+                        - cell [ref=f28e306]
+                        - cell [ref=f28e307]
+                        - cell [ref=f28e308]
+                        - cell [ref=f28e309]
+                      - row [ref=f28e310]:
+                        - cell [ref=f28e311]
+                        - cell [ref=f28e312]
+                        - cell [ref=f28e313]
+                        - cell [ref=f28e314]
+                        - cell [ref=f28e315]
+                        - cell [ref=f28e316]
+                        - cell "2h00m" [ref=f28e317]
+                        - cell [ref=f28e319]
+                        - cell [ref=f28e320]
+                        - cell [ref=f28e321]
+                        - cell [ref=f28e322]
+                        - cell [ref=f28e323]
+                        - cell [ref=f28e324]
+                        - cell [ref=f28e325]
+                        - cell [ref=f28e326]
+          - dialog [ref=f27e302]:
+            - generic [ref=f27e303]:
+              - generic [ref=f27e305]:
+                - img "Critical Threshold Configurator"
+                - heading [level=3] [ref=f27e306]:
+                  - tooltip "Critical Threshold Configurator" [ref=f27e413]
+                - button [expanded] [active] [ref=f27e438] [cursor=pointer]:
+                  - grid "Dropdown menu" [ref=f27e441]:
+                    - row [ref=f27e442]:
+                      - cell [ref=f27e443]
+                    - row [ref=f27e445]:
+                      - cell [ref=f27e446]:
+                        - button "Share link…" [ref=f27e448]:
+                          - generic "Share link…" [ref=f27e452]
+                    - row [ref=f27e453]:
+                      - cell [ref=f27e454]:
+                        - button "Clone widget" [ref=f27e456]:
+                          - generic "Clone widget" [ref=f27e460]
+                    - row [ref=f27e461]:
+                      - cell [ref=f27e462]:
+                        - button "Move to another dashboard…" [ref=f27e464]:
+                          - generic "Move to another dashboard…" [ref=f27e468]
+                    - row [ref=f27e469]:
+                      - cell [ref=f27e470]:
+                        - button "Remove" [ref=f27e472]
+                    - row [ref=f27e477]:
+                      - cell [ref=f27e478]
+                    - row [ref=f27e480]:
+                      - cell [ref=f27e481]:
+                        - button [ref=f27e482]:
+                          - link "About" [ref=f27e485]:
+                            - /url: admin/apps?selected=148-8099&tab=technical
+                    - row [ref=f27e486]:
+                      - cell [ref=f27e487]
+              - iframe [ref=f27e316]:
+                - generic [ref=f29e3]:
+                  - heading "Critical Time Limits" [level=3] [ref=f29e4]
+                  - generic [ref=f29e5]:
+                    - text: Critical minutes
+                    - spinbutton "Critical minutes" [ref=f29e6]: "480"
+                  - generic [ref=f29e7]:
+                    - text: Warning percent
+                    - spinbutton "Warning percent" [ref=f29e8]: "80"
+                  - generic [ref=f29e9]:
+                    - checkbox "Email notifications" [checked] [ref=f29e10]
+                    - text: Email notifications
+                  - button "Save thresholds" [ref=f29e11] [cursor=pointer]

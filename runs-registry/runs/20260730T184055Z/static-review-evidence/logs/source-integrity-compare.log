@@ -1,0 +1,3 @@
+=== source-only integrity comparison to pre baseline ===
+SOURCE_COMPARE=IDENTICAL
+DIFF_EXIT_STATUS=0

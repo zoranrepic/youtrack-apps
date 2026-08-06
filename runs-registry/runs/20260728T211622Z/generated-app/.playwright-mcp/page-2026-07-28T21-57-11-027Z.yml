@@ -1,0 +1,74 @@
+- generic [ref=f12e2]:
+  - generic [ref=f12e8]:
+    - generic [ref=f12e9]:
+      - link [ref=f12e10] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f12e12]:
+        - link [ref=f12e14] [cursor=pointer]:
+          - /url: issues
+          - tooltip "Issues" [ref=f12e15]
+        - link [ref=f12e18] [cursor=pointer]:
+          - /url: dashboard
+          - tooltip "Dashboards" [ref=f12e19]
+        - link [ref=f12e22] [cursor=pointer]:
+          - /url: agiles
+          - tooltip "Agile Boards" [ref=f12e23]
+        - link [ref=f12e26] [cursor=pointer]:
+          - /url: reports
+          - tooltip "Reports" [ref=f12e27]
+        - link [ref=f12e30] [cursor=pointer]:
+          - /url: projects
+          - tooltip "Projects" [ref=f12e31]
+        - link [ref=f12e34] [cursor=pointer]:
+          - /url: articles
+          - tooltip "Knowledge Base" [ref=f12e35]
+        - link [ref=f12e38] [cursor=pointer]:
+          - /url: timesheets
+          - tooltip "Timesheets" [ref=f12e39]
+        - button [ref=f12e44] [cursor=pointer]:
+          - tooltip "More" [ref=f12e45]
+    - generic [ref=f12e48]:
+      - button [ref=f12e50] [cursor=pointer]:
+        - tooltip "Create" [ref=f12e51]
+      - button [ref=f12e55] [cursor=pointer]:
+        - tooltip "Administration" [ref=f12e56]
+      - button [ref=f12e61] [cursor=pointer]:
+        - tooltip "Help" [ref=f12e62]
+      - button [ref=f12e66] [cursor=pointer]:
+        - tooltip "Notifications" [ref=f12e67]
+      - generic "admin" [ref=f12e72] [cursor=pointer]:
+        - button "User avatar admin" [ref=f12e73]:
+          - img "User avatar" [ref=f12e75]
+          - generic [ref=f12e76]: admin
+      - button [ref=f12e77] [cursor=pointer]:
+        - tooltip "Collapse" [ref=f12e78]
+  - generic [ref=f12e128]:
+    - generic [ref=f12e129]: Global Time Logger
+    - article [ref=f12e844]:
+      - dialog [ref=f12e845]:
+        - iframe [active] [ref=f12e846]:
+          - generic [ref=f15e3]:
+            - generic [ref=f15e4]: Log spent time
+            - generic [ref=f15e14]:
+              - generic [ref=f15e15]:
+                - generic [ref=f15e16]: DEMO-41
+                - generic [ref=f15e17]: YTAPP-REVIEW-20260728T2148Z-Logger
+                - button "Change issue" [ref=f15e18] [cursor=pointer]
+              - generic [ref=f15e19]:
+                - generic [ref=f15e20]: Spent time
+                - textbox "Spent time" [ref=f15e22]:
+                  - /placeholder: "For example: 90, 1h 30m, 2d"
+                  - text: "-30"
+              - generic [ref=f15e23]:
+                - generic [ref=f15e24]: Work description
+                - textbox "Work description" [ref=f15e26]:
+                  - /placeholder: Optional
+              - generic [ref=f15e27]:
+                - generic [ref=f15e28]: Work type
+                - textbox "Work type" [ref=f15e30]:
+                  - /placeholder: Optional, must exist in the project
+              - generic [ref=f15e31]:
+                - generic [ref=f15e32]: Date
+                - textbox "Date" [ref=f15e34]
+              - button "Log time" [ref=f15e36] [cursor=pointer]
+            - generic [ref=f15e37]: "Error: 400"

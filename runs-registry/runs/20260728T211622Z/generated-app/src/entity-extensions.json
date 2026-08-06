@@ -1,0 +1,30 @@
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "Issue",
+      "properties": {
+        "criticalStatus": {
+          "type": "string",
+          "multi": false
+        },
+        "criticalStatusAt": {
+          "type": "integer",
+          "multi": false
+        },
+        "lastAlertAt": {
+          "type": "integer",
+          "multi": false
+        }
+      }
+    },
+    {
+      "entityType": "AppGlobalStorage",
+      "properties": {
+        "thresholdConfig": {
+          "type": "string",
+          "multi": false
+        }
+      }
+    }
+  ]
+}

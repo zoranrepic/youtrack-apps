@@ -1,0 +1,21 @@
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "Issue",
+      "properties": {
+        "criticalTimeLimitMinutes": {
+          "type": "integer",
+          "multi": false
+        },
+        "criticalTimeStatus": {
+          "type": "string",
+          "multi": false
+        },
+        "lastCriticalAlertAt": {
+          "type": "integer",
+          "multi": false
+        }
+      }
+    }
+  ]
+}

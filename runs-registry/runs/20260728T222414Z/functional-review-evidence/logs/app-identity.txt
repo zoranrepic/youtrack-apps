@@ -1,0 +1,22 @@
+D02/D03 — Installed app identity & module surfaces (youtrack-app info ops-command-center)
+==========================================================================================
+Name: ops-command-center            (matches reviewed package name in package.json)
+ID: 148-8225
+Title: Ops Command Center
+Version (installed): 0.0.1            (reviewed source package.json version: 0.0.0 — see note)
+Global enabled: yes                  (R-DEP-01)
+Attachable: yes
+Has broken usages: no
+Modules: 9
+Widget:
+  Issue Relation Visualizer      - ISSUE_ABOVE_ACTIVITY_STREAM
+  GitHub Action Tracker          - ISSUE_ABOVE_ACTIVITY_STREAM
+  Global Time Logger             - MAIN_MENU_ITEM
+  Critical Threshold Configurator- DASHBOARD_WIDGET
+http-handler:  config, github, time-tracking
+on-schedule:   Critical Time Monitor (critical-time-monitor)
+action:        Send status email (email-action)
+
+Note: installed version 0.0.1 vs reviewed-source package.json 0.0.0 — the deployed
+build carries a bumped patch version; module set and extension points match the
+reviewed manifest/source exactly.

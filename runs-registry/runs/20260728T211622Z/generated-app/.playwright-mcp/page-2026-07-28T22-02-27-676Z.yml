@@ -1,0 +1,95 @@
+- generic [ref=f22e2]:
+  - generic [ref=f22e8]:
+    - generic [ref=f22e9]:
+      - link [ref=f22e10] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=f22e12]:
+        - link [ref=f22e14] [cursor=pointer]:
+          - /url: issues
+          - tooltip "Issues" [ref=f22e15]
+        - link [ref=f22e18] [cursor=pointer]:
+          - /url: dashboard
+          - tooltip "Dashboards" [ref=f22e19]
+        - link [ref=f22e22] [cursor=pointer]:
+          - /url: agiles
+          - tooltip "Agile Boards" [ref=f22e23]
+        - link [ref=f22e26] [cursor=pointer]:
+          - /url: reports
+          - tooltip "Reports" [ref=f22e27]
+        - link [ref=f22e30] [cursor=pointer]:
+          - /url: projects
+          - tooltip "Projects" [ref=f22e31]
+        - link [ref=f22e34] [cursor=pointer]:
+          - /url: articles
+          - tooltip "Knowledge Base" [ref=f22e35]
+        - link [ref=f22e38] [cursor=pointer]:
+          - /url: timesheets
+          - tooltip "Timesheets" [ref=f22e39]
+        - button [ref=f22e44] [cursor=pointer]:
+          - tooltip "More" [ref=f22e45]
+    - generic [ref=f22e48]:
+      - button [ref=f22e50] [cursor=pointer]:
+        - tooltip "Create" [ref=f22e51]
+      - button [ref=f22e55] [cursor=pointer]:
+        - tooltip "Administration" [ref=f22e56]
+      - button [ref=f22e61] [cursor=pointer]:
+        - tooltip "Help" [ref=f22e62]
+      - button [ref=f22e66] [cursor=pointer]:
+        - tooltip "Notifications" [ref=f22e67]
+      - generic "admin" [ref=f22e72] [cursor=pointer]:
+        - button "User avatar admin" [ref=f22e73]:
+          - img "User avatar" [ref=f22e75]
+          - generic [ref=f22e76]: admin
+      - button [ref=f22e77] [cursor=pointer]:
+        - tooltip "Collapse" [ref=f22e78]
+  - generic [ref=f22e3]:
+    - generic [ref=f22e82]:
+      - generic [ref=f22e83]:
+        - generic [ref=f22e85]:
+          - link "N YTAPP-REVIEW-20260728T2148Z-Logger" [ref=f22e86] [cursor=pointer]:
+            - /url: issue/DEMO-41/YTAPP-REVIEW-20260728T2148Z-Logger
+            - generic [ref=f22e87]: "N"
+            - button "YTAPP-REVIEW-20260728T2148Z-Logger" [ref=f22e90]
+          - button "Remove issue" [ref=f22e92] [cursor=pointer]
+        - generic [ref=f22e95]:
+          - link "N Create a demo project" [ref=f22e96] [cursor=pointer]:
+            - /url: issue/DEMO-4/Create-a-demo-project
+            - generic [ref=f22e97]: "N"
+            - button "Create a demo project" [ref=f22e100]
+          - button "Remove issue" [ref=f22e102] [cursor=pointer]
+        - generic [ref=f22e105]:
+          - link "N YTAPP-REVIEW-20260728T2148Z-NoRel" [ref=f22e106] [cursor=pointer]:
+            - /url: issue/DEMO-47/YTAPP-REVIEW-20260728T2148Z-NoRel
+            - generic [ref=f22e107]: "N"
+            - button "YTAPP-REVIEW-20260728T2148Z-NoRel" [ref=f22e110]
+          - button "Remove issue" [ref=f22e112] [cursor=pointer]
+        - generic [ref=f22e115]:
+          - link "N YTAPP-REVIEW-20260728T2148Z-Graph" [ref=f22e116] [cursor=pointer]:
+            - /url: issue/DEMO-46/YTAPP-REVIEW-20260728T2148Z-Graph
+            - generic [ref=f22e117]: "N"
+            - button "YTAPP-REVIEW-20260728T2148Z-Graph" [ref=f22e120]
+          - button "Remove issue" [ref=f22e122] [cursor=pointer]
+      - tooltip "Show more recent items" [ref=f22e124]:
+        - button [ref=f22e125] [cursor=pointer]
+    - generic [ref=f22e128]:
+      - generic [ref=f22e129]:
+        - generic [ref=f22e132]:
+          - button "…" [ref=f22e134] [cursor=pointer]
+          - generic [ref=f22e135]: /
+          - combobox "YTAPP-REVIEW-20260728T2148Z DashboardYTAPP-REVIEW-20260728T2148Z Dashboard" [ref=f22e137]:
+            - button "YTAPP-REVIEW-20260728T2148Z DashboardYTAPP-REVIEW-20260728T2148Z Dashboard" [ref=f22e138] [cursor=pointer]
+          - tooltip "More" [ref=f22e141]:
+            - button [ref=f22e143] [cursor=pointer]
+        - generic [ref=f22e147]:
+          - button "New dashboard" [ref=f22e148] [cursor=pointer]
+          - combobox "Select an option" [ref=f22e150] [cursor=pointer]: Add widget
+      - main [ref=f22e154]:
+        - dialog [ref=f22e159]:
+          - generic [ref=f22e160]:
+            - generic [ref=f22e162]:
+              - img "Critical Threshold Configurator"
+              - heading [level=3] [ref=f22e163]:
+                - tooltip "Critical Threshold Configurator" [ref=f22e164]
+              - button [ref=f22e167] [cursor=pointer]
+            - iframe [ref=f22e173]:
+              - generic [ref=f23e1]: Critical time limits

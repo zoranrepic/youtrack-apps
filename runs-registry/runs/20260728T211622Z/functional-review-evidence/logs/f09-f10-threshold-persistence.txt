@@ -1,0 +1,41 @@
+# R-BE-04 Configuration Storage - persistence check via the app's own endpoint
+# GET /api/extensionEndpoints/issue-ops-suite/global-backend/thresholds at 2026-07-28T22:15:07Z
+{
+    "config": {
+        "defaultMinutes": 480,
+        "warningPercentage": 75,
+        "alertRepeatMinutes": 120,
+        "notificationsEnabled": true,
+        "projects": {
+            "DEMO": 960
+        },
+        "issues": {
+            "DEMO-40": 100000,
+            "DEMO-42": 600,
+            "DEMO-43": 60,
+            "DEMO-44": 30,
+            "DEMO-45": 10,
+            "DEMO-46": 5,
+            "DEMO-47": 5
+        },
+        "updatedAt": 1785276593132,
+        "updatedBy": "admin"
+    },
+    "configPresentation": {
+        "defaultLimit": "1d",
+        "alertRepeat": "2h"
+    },
+    "settingDefaults": {
+        "defaultMinutes": 480,
+        "warningPercentage": 80,
+        "alertRepeatMinutes": 60,
+        "notificationsEnabled": true
+    },
+    "notificationEmails": "zoran.repic@jetbrains.com",
+    "canEditGlobalDefaults": true
+}
+
+# Same values are read back by the scheduled workflow runtime (separate process):
+#   DEMO-43 limit 60  -> alert 'of the 1h critical limit ... Limit source: issue.'
+#   DEMO-46 limit 5   -> alert 'of the 5m critical limit ... Limit source: issue.'
+# see f13-f17-monitor-alerts.txt

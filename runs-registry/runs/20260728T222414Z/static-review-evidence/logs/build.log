@@ -1,0 +1,28 @@
+
+> ops-command-center@0.0.0 build
+> tsc -p tsconfig.app.json && if ls src/widgets/*/index.html >/dev/null 2>&1; then vite build; else npm run copy:dist; fi && youtrack-app validate dist
+
+vite v6.4.3 building for production...
+transforming...
+✓ 74 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/widgets/github-actions/index.html              0.47 kB │ gzip:  0.23 kB
+../dist/widgets/issue-relations/index.html             0.47 kB │ gzip:  0.24 kB
+../dist/widgets/time-logger/index.html                 0.55 kB │ gzip:  0.25 kB
+../dist/widgets/threshold-config/index.html            0.56 kB │ gzip:  0.26 kB
+../dist/widgets/assets/thresholdConfig-DO0rM_U5.css    0.57 kB │ gzip:  0.23 kB
+../dist/widgets/assets/issueRelations-Cp-gQVVs.css     0.65 kB │ gzip:  0.27 kB
+../dist/widgets/assets/timeLogger-DDYCLtl7.css         1.19 kB │ gzip:  0.43 kB
+../dist/widgets/assets/githubActions-tUjt99fS.css      1.21 kB │ gzip:  0.39 kB
+../dist/widgets/assets/loader-DtxBn3Vi.css           189.12 kB │ gzip: 26.98 kB
+../dist/widgets/assets/githubActions-Dh6nykey.js       2.13 kB │ gzip:  0.87 kB
+../dist/widgets/assets/issueRelations-Buc5EFKS.js      2.30 kB │ gzip:  1.05 kB
+../dist/widgets/assets/thresholdConfig-B4bABqPu.js     2.40 kB │ gzip:  1.12 kB
+../dist/widgets/assets/timeLogger-XmM15QMy.js          2.41 kB │ gzip:  1.16 kB
+../dist/widgets/assets/input-jmuf2iQG.js              21.20 kB │ gzip:  8.78 kB
+../dist/widgets/assets/loader-BRRp48BV.js            150.57 kB │ gzip: 48.76 kB
+[vite-plugin-static-copy] Copied 4 items.
+[vite-plugin-static-copy] Copied 9 items.
+✓ built in 429ms
+Manifest is valid!

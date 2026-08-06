@@ -1,0 +1,3 @@
+=== raw endpoint response while repo is misconfigured ===
+{"configured":true,"repository":"zoranrepic/ytapp-review-does-not-exist-20260728","issueId":"DEMO-41","pullRequests":[],"error":"GitHub responded with HTTP 404 for /repos/zoranrepic/ytapp-review-does-not-exist-20260728/pulls"}
+HTTP 502

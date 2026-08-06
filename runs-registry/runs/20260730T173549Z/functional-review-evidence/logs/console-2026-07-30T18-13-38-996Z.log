@@ -1,0 +1,21 @@
+[    1144ms] [WARNING] %c⚠️[ROUTER 8:13:40 PM] color: #777 onUrlChange is already in progress @ https://exploration.youtrack.cloud/manager/index.9f288ee8.js:898
+[    1146ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  121023ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  164378ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  185570ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  267287ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  277818ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  395971ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  421751ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  440952ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  505516ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  521451ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  528519ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  575659ms] [ERROR] %c🚨[AppPageStore 8:23:14 PM] color: #777 Could not find widget "issue-insight-suite:global-time-logger" [Object] @ https://exploration.youtrack.cloud/manager/index.9f288ee8.js:898
+[  607013ms] [ERROR] %c🚨[AppPageStore 8:23:46 PM] color: #777 Could not find widget "issue-insight-suite:global-time-logger" [Object] @ https://exploration.youtrack.cloud/manager/index.9f288ee8.js:898
+[  630893ms] [ERROR] %c🚨[AppPageStore 8:24:09 PM] color: #777 Could not find widget "issue-insight-suite:global-time-logger" [Object] @ https://exploration.youtrack.cloud/manager/index.9f288ee8.js:898
+[  652081ms] [ERROR] %c🚨[AppPageStore 8:24:31 PM] color: #777 Could not find widget "issue-insight-suite:global-time-logger" [Object] @ https://exploration.youtrack.cloud/manager/index.9f288ee8.js:898
+[  662268ms] [ERROR] %c🚨[AppPageStore 8:24:41 PM] color: #777 Could not find widget "issue-insight-suite:global-time-logger" [Object] @ https://exploration.youtrack.cloud/manager/index.9f288ee8.js:898
+[  672505ms] [ERROR] %c🚨[AppPageStore 8:24:51 PM] color: #777 Could not find widget "issue-insight-suite:global-time-logger" [Object] @ https://exploration.youtrack.cloud/manager/index.9f288ee8.js:898
+[  690738ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0
+[  712713ms] [WARNING] Button: "text" prop is deprecated and will be removed in 8.0. Use inline instead. @ https://exploration.youtrack.cloud/static/simplified/75445.c78b9e24.js:0

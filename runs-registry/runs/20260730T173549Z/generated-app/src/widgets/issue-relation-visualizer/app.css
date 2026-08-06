@@ -1,0 +1,12 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+  margin: calc(var(--ring-unit) / 2);
+}
+
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--ring-unit); }
+.title { font-weight: bold; }
+.empty { color: var(--ring-secondary-color); }
+.error { color: var(--ring-error-color); }
+.legend { margin: 0; padding-left: calc(var(--ring-unit) * 2); font-size: var(--ring-font-size-smaller); }

@@ -1,0 +1,61 @@
+dist/backend.js
+dist/critical-time-monitor.js
+dist/entity-extensions.json
+dist/github-action-service.js
+dist/icon.svg
+dist/manifest.json
+dist/send-critical-time-email.js
+dist/settings.json
+dist/time-tracking-service.js
+dist/widgets/assets/button-Dh-VKG4w.js
+dist/widgets/assets/button-DtxBn3Vi.css
+dist/widgets/assets/criticalThresholdConfigurator-BkwbLX3E.js
+dist/widgets/assets/criticalThresholdConfigurator-CAa44GLH.css
+dist/widgets/assets/githubActionTracker-DdvepWdP.js
+dist/widgets/assets/globalTimeLogger-BrPx-5V7.js
+dist/widgets/assets/issueRelationVisualizer-DJds1Kvj.css
+dist/widgets/assets/issueRelationVisualizer-iPRU1jaz.js
+dist/widgets/critical-threshold-configurator/index.html
+dist/widgets/critical-threshold-configurator/widget-icon.svg
+dist/widgets/github-action-tracker/index.html
+dist/widgets/github-action-tracker/widget-icon.svg
+dist/widgets/global-time-logger/index.html
+dist/widgets/global-time-logger/widget-icon.svg
+dist/widgets/issue-relation-visualizer/index.html
+dist/widgets/issue-relation-visualizer/widget-icon.svg
+Archive:  issue-operations-hub.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+      482  07-28-2026 23:05   backend.js
+     1372  07-28-2026 23:05   critical-time-monitor.js
+      402  07-28-2026 23:05   entity-extensions.json
+     1544  07-28-2026 23:05   github-action-service.js
+      993  07-28-2026 23:05   icon.svg
+     2148  07-28-2026 23:05   manifest.json
+      687  07-28-2026 23:05   send-critical-time-email.js
+     1122  07-28-2026 23:05   settings.json
+     1511  07-28-2026 23:05   time-tracking-service.js
+        0  07-28-2026 23:05   widgets/
+        0  07-28-2026 23:05   widgets/global-time-logger/
+      488  07-28-2026 23:05   widgets/global-time-logger/index.html
+      993  07-28-2026 23:05   widgets/global-time-logger/widget-icon.svg
+        0  07-28-2026 23:05   widgets/issue-relation-visualizer/
+      489  07-28-2026 23:05   widgets/issue-relation-visualizer/index.html
+      993  07-28-2026 23:05   widgets/issue-relation-visualizer/widget-icon.svg
+        0  07-28-2026 23:05   widgets/github-action-tracker/
+      491  07-28-2026 23:05   widgets/github-action-tracker/index.html
+      993  07-28-2026 23:05   widgets/github-action-tracker/widget-icon.svg
+        0  07-28-2026 23:05   widgets/critical-threshold-configurator/
+      501  07-28-2026 23:05   widgets/critical-threshold-configurator/index.html
+      993  07-28-2026 23:05   widgets/critical-threshold-configurator/widget-icon.svg
+        0  07-28-2026 23:05   widgets/assets/
+     1234  07-28-2026 23:05   widgets/assets/criticalThresholdConfigurator-BkwbLX3E.js
+     1120  07-28-2026 23:05   widgets/assets/githubActionTracker-DdvepWdP.js
+     1219  07-28-2026 23:05   widgets/assets/issueRelationVisualizer-iPRU1jaz.js
+      109  07-28-2026 23:05   widgets/assets/criticalThresholdConfigurator-CAa44GLH.css
+   189116  07-28-2026 23:05   widgets/assets/button-DtxBn3Vi.css
+      965  07-28-2026 23:05   widgets/assets/issueRelationVisualizer-DJds1Kvj.css
+     1189  07-28-2026 23:05   widgets/assets/globalTimeLogger-BrPx-5V7.js
+   158952  07-28-2026 23:05   widgets/assets/button-Dh-VKG4w.js
+---------                     -------
+   370106                     31 files

@@ -1,0 +1,19 @@
+=== manifest/settings JSON validation ===
+JSON parse: PASS
+=== suspicious credential/placeholder scan (values excluded) ===
+./src/settings.json:29:    "githubToken": {
+./src/settings.json:30:      "title": "GitHub access token",
+./src/settings.json:31:      "description": "Optional token reserved for authenticated GitHub integrations.",
+./src/settings.json:33:      "format": "secret",
+./src/widgets/global-time-logger/app.tsx:37:    <label>{'Work description'}<input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="What did you work on?" /></label>
+./package-lock.json:46:        "js-tokens": "^4.0.0",
+./package-lock.json:5312:    "node_modules/js-tokens": {
+./package-lock.json:5314:      "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz",
+./package-lock.json:5556:        "js-tokens": "^3.0.0 || ^4.0.0"
+=== package lock consistency ===
+add fsevents 2.3.3
+
+added 1 package in 522ms
+
+168 packages are looking for funding
+  run `npm fund` for details

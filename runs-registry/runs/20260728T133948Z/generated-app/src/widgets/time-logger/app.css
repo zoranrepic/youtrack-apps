@@ -1,0 +1,10 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+  margin: calc(var(--ring-unit) / 2);
+}
+
+.form { max-width: 520px; }
+.form label { display: flex; flex-direction: column; gap: 4px; }
+.form input { padding: 6px; }

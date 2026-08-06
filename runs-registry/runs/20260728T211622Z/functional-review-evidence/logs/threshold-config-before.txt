@@ -1,0 +1,29 @@
+=== current stored threshold config (GET thresholds) ===
+{
+    "config": {
+        "defaultMinutes": 480,
+        "warningPercentage": 75,
+        "alertRepeatMinutes": 120,
+        "notificationsEnabled": true,
+        "projects": {
+            "DEMO": 960
+        },
+        "issues": {
+            "DEMO-40": 100000
+        },
+        "updatedAt": 1785274884381,
+        "updatedBy": "admin"
+    },
+    "configPresentation": {
+        "defaultLimit": "1d",
+        "alertRepeat": "2h"
+    },
+    "settingDefaults": {
+        "defaultMinutes": 480,
+        "warningPercentage": 80,
+        "alertRepeatMinutes": 60,
+        "notificationsEnabled": true
+    },
+    "notificationEmails": "zoran.repic@jetbrains.com",
+    "canEditGlobalDefaults": true
+}

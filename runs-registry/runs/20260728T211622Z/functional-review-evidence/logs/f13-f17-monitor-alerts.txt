@@ -1,0 +1,55 @@
+# Critical Time Monitor - alert comments created by the app (YouTrack REST, times in UTC)
+# collected 2026-07-28T22:14:50Z
+-- DEMO-41
+   (no comments - no alert)
+-- DEMO-42
+   (no comments - no alert)
+-- DEMO-43
+   2026-07-28T22:04:00Z workflow_user_1244702255 | CRITICAL: DEMO-43 has 1h spent of the 1h critical limit (100%, 0m over the limit). Limit source: issue.
+-- DEMO-44
+   2026-07-28T22:06:00Z workflow_user_1244702255 | CRITICAL: DEMO-44 has 2h spent of the 30m critical limit (400%, 1h 30m over the limit). Limit source: issue.
+-- DEMO-45
+   2026-07-28T22:06:00Z workflow_user_1244702255 | CRITICAL: DEMO-45 has 30m spent of the 10m critical limit (300%, 20m over the limit). Limit source: issue.
+-- DEMO-46
+   2026-07-28T22:11:00Z workflow_user_1244702255 | CRITICAL: DEMO-46 has 45m spent of the 5m critical limit (900%, 40m over the limit). Limit source: issue.
+-- DEMO-47
+   2026-07-28T22:12:00Z workflow_user_1244702255 | CRITICAL: DEMO-47 has 20m spent of the 5m critical limit (400%, 15m over the limit). Limit source: issue.
+
+# App script log (youtrack-app logs issue-ops-suite), newest last
+28/07/2026 21:38:40,334Z INFO  [global-backend.js] [admin               ] Logged,45,minutes on,DEMO-40,for,admin,- status,OK
+28/07/2026 21:38:40,683Z WARN  [issue-backend.js] [admin               ] GitHub pull request lookup failed for,DEMO-40,-,GitHub request failed: undefined
+28/07/2026 21:39:00,055Z INFO  [critical-time-monitor.js] [workflow_user_1244702255] Critical time alert for,DEMO-1,-,CRITICAL,1350,of,480,minutes
+28/07/2026 21:39:33,429Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-40,- matched pull requests:,0
+28/07/2026 21:40:35,041Z INFO  [global-backend.js] [admin               ] Logged,420,minutes on,DEMO-40,for,admin,- status,CRITICAL
+28/07/2026 21:41:00,047Z INFO  [critical-time-monitor.js] [workflow_user_1244702255] Critical time alert for,DEMO-40,-,CRITICAL,505,of,480,minutes
+28/07/2026 21:41:24,389Z INFO  [global-backend.js] [admin               ] Threshold configuration saved by,admin,- project boundaries:,1,issue boundaries:,1
+28/07/2026 21:41:31,532Z INFO  [email-action.js] [admin               ] Spent time report for,DEMO-40,emailed to,1,recipients, status:,OK
+28/07/2026 21:42:15,336Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-40,- matched pull requests:,0
+28/07/2026 21:43:55,804Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-35,- matched pull requests:,0
+28/07/2026 21:45:19,954Z INFO  [global-backend.js] [admin               ] Logged,25,minutes on,DEMO-37,for,admin,- status,OK
+28/07/2026 21:46:27,787Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-35,- matched pull requests:,0
+28/07/2026 21:46:49,438Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-35,- matched pull requests:,0
+28/07/2026 21:53:55,579Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-41,- matched pull requests:,1
+28/07/2026 21:54:25,581Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-4,- matched pull requests:,1
+28/07/2026 21:54:54,395Z WARN  [issue-backend.js] [admin               ] GitHub pull request lookup failed for,DEMO-41,-,GitHub responded with HTTP 404 for /repos/zoranrepic/ytapp-review-does-not-exist-20260728/pulls
+28/07/2026 21:55:31,544Z WARN  [issue-backend.js] [admin               ] GitHub pull request lookup failed for,DEMO-41,-,GitHub responded with HTTP 404 for /repos/zoranrepic/ytapp-review-does-not-exist-20260728/pulls
+28/07/2026 21:57:55,925Z INFO  [global-backend.js] [admin               ] Logged,75,minutes on,DEMO-41,for,admin,- status,OK
+28/07/2026 21:58:33,112Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-41,- matched pull requests:,1
+28/07/2026 22:03:40,813Z INFO  [global-backend.js] [admin               ] Threshold configuration saved by,admin,- project boundaries:,1,issue boundaries:,4
+28/07/2026 22:03:54,557Z INFO  [global-backend.js] [admin               ] Logged,30,minutes on,DEMO-42,for,admin,- status,OK
+28/07/2026 22:03:54,879Z INFO  [global-backend.js] [admin               ] Logged,60,minutes on,DEMO-43,for,admin,- status,CRITICAL
+28/07/2026 22:04:00,263Z INFO  [critical-time-monitor.js] [workflow_user_1244702255] Critical time alert for,DEMO-43,-,CRITICAL,60,of,60,minutes
+28/07/2026 22:05:03,089Z INFO  [global-backend.js] [admin               ] Logged,120,minutes on,DEMO-44,for,admin,- status,CRITICAL
+28/07/2026 22:05:58,918Z INFO  [global-backend.js] [admin               ] Threshold configuration saved by,admin,- project boundaries:,1,issue boundaries:,5
+28/07/2026 22:05:59,219Z INFO  [global-backend.js] [admin               ] Logged,30,minutes on,DEMO-45,for,admin,- status,CRITICAL
+28/07/2026 22:06:12,609Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-41,- matched pull requests:,1
+28/07/2026 22:09:53,139Z INFO  [global-backend.js] [admin               ] Threshold configuration saved by,admin,- project boundaries:,1,issue boundaries:,7
+28/07/2026 22:10:02,994Z INFO  [global-backend.js] [admin               ] Logged,45,minutes on,DEMO-46,for,admin,- status,CRITICAL
+28/07/2026 22:10:15,384Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-41,- matched pull requests:,1
+28/07/2026 22:11:12,890Z INFO  [email-action.js] [admin               ] Spent time report for,DEMO-41,emailed to,1,recipients, status:,OK
+28/07/2026 22:11:34,912Z INFO  [global-backend.js] [admin               ] Logged,20,minutes on,DEMO-47,for,admin,- status,CRITICAL
+28/07/2026 22:13:18,943Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-46,- matched pull requests:,0
+28/07/2026 22:13:29,653Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-47,- matched pull requests:,0
+28/07/2026 22:13:38,359Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-42,- matched pull requests:,0
+28/07/2026 22:13:46,786Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-43,- matched pull requests:,0
+28/07/2026 22:13:53,947Z INFO  [issue-backend.js] [admin               ] GitHub action tracker for,DEMO-44,- matched pull requests:,0
